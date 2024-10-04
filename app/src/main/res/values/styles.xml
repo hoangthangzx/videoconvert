@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percents_5" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
+
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percents_10" parent="">
+        <item name="cornerSize">10%</item>
+    </style>
+
+
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percents_15" parent="">
+        <item name="cornerSize">15%</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percents_20" parent="">
+        <item name="cornerSize">20%</item>
+    </style>
+
+</resources>

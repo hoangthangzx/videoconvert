@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_home"
+    app:startDestination="@id/homeFragment2">
+
+    <fragment
+        android:id="@+id/homeFragment2"
+        android:name="com.kan.dev.st_042_video_to_mp3.ui.fragment.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment2_to_settingFragment"
+            app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_homeFragment2_to_settingFragment2"
+            app:destination="@id/settingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/storageFragment"
+        android:name="com.kan.dev.st_042_video_to_mp3.ui.fragment.storage.StorageFragment"
+        android:label="fragment_storage"
+        tools:layout="@layout/fragment_storage" >
+        <action
+            android:id="@+id/action_storageFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_storageFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.kan.dev.st_042_video_to_mp3.ui.fragment.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_settingFragment_to_storageFragment"
+            app:destination="@id/storageFragment" />
+    </fragment>
+</navigation>

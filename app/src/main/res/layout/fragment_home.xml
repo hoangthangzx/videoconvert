@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".ui.fragment.HomeFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginHorizontal="20dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/lemonada_semi_bold"
+            android:gravity="center"
+            android:text="@string/video_to_audio"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/icon_note" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <LinearLayout
+                android:id="@+id/lnVideoConvert"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/imv_video_convert"
+                android:layout_marginHorizontal="20dp"
+                android:gravity="bottom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@string/video_convert_to_mp3"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="23dp"
+                android:text="@string/video"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lnVideoConvert" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+                <LinearLayout
+                    android:id="@+id/lnVideoCutter"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_item_home"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_video_cut" />
+
+                    <TextView
+                        android:id="@+id/tvCutter"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/video_cutter"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:id="@+id/lnVideoMerger"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_item_home"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_video_merger" />
+
+                    <TextView
+                        android:id="@+id/tvMerger"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/video_merger"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="23dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+                <LinearLayout
+                    android:id="@+id/lnVideoSpeed"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_item_home"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_video_speed" />
+
+                    <TextView
+                        android:id="@+id/tvSpeed"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/video_speed"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_item_home"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="5dp"
+                        android:src="@drawable/icon_video_converter" />
+
+                    <TextView
+                        android:id="@+id/tvConverter"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/video_merger"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvAudio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/audio"
+                android:textColor="@color/white"
+                android:layout_marginStart="20dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="23dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+            <LinearLayout
+                android:id="@+id/ln3"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvAudio">
+
+                <LinearLayout
+                    android:id="@+id/lnAudioCutter"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_item_home"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_audio_cutter" />
+
+                    <TextView
+                        android:id="@+id/tvAudioCutter"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/audio_cutter"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:id="@+id/lnAudioMerger"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_item_home"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="5dp"
+                        android:src="@drawable/icon_audio_merger" />
+
+                    <TextView
+                        android:id="@+id/tvAudioMerger"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/audio_merger"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ln4"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="23dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ln3">
+
+                <LinearLayout
+                    android:id="@+id/lnAudioSpeed"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_item_home"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_audio_speed" />
+
+                    <TextView
+                        android:id="@+id/tvAudioSpeed"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/audio_speed"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:id="@+id/lnAudioConvert"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_item_home"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="5dp"
+                        android:src="@drawable/icon_audio_converter" />
+
+                    <TextView
+                        android:id="@+id/tvAudioConverter"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@string/audio_converter"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

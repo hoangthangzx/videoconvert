@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black">
+
+        <LinearLayout
+            android:id="@+id/lnStatus_2"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imvBack"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:padding="5dp"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/icon_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvLanguage2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/saved"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/imvHome"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:padding="8dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/icon_home"
+                app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView2" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/congratulations_you_have_successfully_converted_video_to_audio"
+            android:textAlignment="center"
+            android:textColor="@color/color_text_convert"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ctlVideoSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imvVideoImage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="12dp"
+                android:background="@color/white"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearance="@style/ShapeAppearanceOverlay.App.CornerSize50Percents_10" />
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/icon_pause"
+                android:layout_marginStart="2dp"
+                android:layout_marginBottom="2dp"
+                app:layout_constraintBottom_toBottomOf="@+id/imvVideoImage"
+                app:layout_constraintStart_toStartOf="@+id/imvVideoImage" />
+
+<!--            <ImageView-->
+<!--                android:id="@+id/imvVideoImage"-->
+<!--                android:layout_width="36dp"-->
+<!--                android:layout_height="36dp"-->
+<!--                android:layout_marginStart="12dp"-->
+<!--                android:background="@drawable/icon_convert_file"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+            <TextView
+                android:id="@+id/tvTitleVideoSpeed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="3dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:marqueeRepeatLimit="-1"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="@string/compressed"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imvVideoImage"
+                app:layout_constraintEnd_toStartOf="@+id/imvDelete"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@+id/imvVideoImage"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias=".45" />
+
+            <TextView
+                android:id="@+id/tvDurationVideoSP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/_00_01"
+                android:textColor="#B6B6B6"
+                android:textSize="11sp"
+                app:layout_constraintStart_toStartOf="@+id/tvTitleVideoSpeed"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitleVideoSpeed" />
+
+            <TextView
+                android:id="@+id/tvSizeSp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/_27_84_kb"
+                android:textColor="#B6B6B6"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvDurationVideoSP"
+                app:layout_constraintStart_toEndOf="@+id/tvDurationVideoSP"
+                app:layout_constraintTop_toTopOf="@+id/tvDurationVideoSP" />
+
+            <ImageView
+                android:id="@+id/imvTickSp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/icon_convert_sucess"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingStart="20dp"
+            android:visibility="gone"
+            android:paddingEnd="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:listitem="@layout/item_save_converted_file"
+            app:layout_constraintTop_toBottomOf="@id/textView7"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ctlFile"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView7">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/imvVideoFile"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/icon_convert_file"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/compressed"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:marqueeRepeatLimit="-1"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:layout_marginHorizontal="3dp"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintBottom_toBottomOf="@+id/imvVideoFile"
+                    app:layout_constraintEnd_toStartOf="@+id/imvDelete"
+                    app:layout_constraintStart_toEndOf="@+id/imvVideoFile"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias=".45" />
+
+                <TextView
+                    android:id="@+id/tvDurationVideo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/_00_01"
+                    android:textColor="#B6B6B6"
+                    android:textSize="11sp"
+                    app:layout_constraintStart_toStartOf="@+id/tvTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+                <TextView
+                    android:id="@+id/tvSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/_27_84_kb"
+                    android:textColor="#B6B6B6"
+                    android:textSize="11sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvDurationVideo"
+                    app:layout_constraintStart_toEndOf="@+id/tvDurationVideo"
+                    app:layout_constraintTop_toTopOf="@+id/tvDurationVideo" />
+
+                <ImageView
+                    android:id="@+id/imvDelete"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/icon_convert_sucess"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:layout_marginEnd="20dp"
+                android:textColor="@color/color_time_audio"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+
+            <TextView
+                android:id="@+id/tvTimeStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00 / "
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/tvDuration"
+                app:layout_constraintEnd_toStartOf="@+id/tvDuration"
+                app:layout_constraintTop_toTopOf="@+id/tvDuration" />
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginBottom="16dp"
+                android:max="10"
+                android:layout_marginTop="10dp"
+                android:paddingTop="9dp"
+                android:paddingBottom="9dp"
+                android:progress="0"
+                android:progressDrawable="@drawable/custom_progress"
+                android:splitTrack="false"
+                android:thumb="@drawable/seek_bar_1x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTimeStart"/>
+
+            <LinearLayout
+                android:id="@+id/lnBtn"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="25dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/seekBar">
+
+                <ImageView
+                    android:id="@+id/imvPlay"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/imv_play"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/seekBar"/>
+
+                <ImageView
+                    android:id="@+id/imvPause"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:visibility="gone"
+                    android:src="@drawable/imv_pause"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/seekBar"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imv15Left"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_marginEnd="40dp"
+                android:src="@drawable/imv_15_left"
+                app:layout_constraintBottom_toBottomOf="@+id/lnBtn"
+                app:layout_constraintEnd_toStartOf="@+id/lnBtn"
+                app:layout_constraintTop_toTopOf="@+id/lnBtn" />
+
+
+            <ImageView
+                android:id="@+id/imv15Right"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/imv_15_right"
+                android:layout_marginStart="40dp"
+                app:layout_constraintBottom_toBottomOf="@+id/lnBtn"
+                app:layout_constraintStart_toEndOf="@+id/lnBtn"
+                app:layout_constraintTop_toTopOf="@+id/lnBtn" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="@drawable/imv_bottom_convert"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout
+                android:id="@+id/linearLayout7"
+                android:layout_width="130dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_btn_saved_1"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/icon_ringtone" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/set_as"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="130dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="25dp"
+                android:background="@drawable/bg_btn_saved_2"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/linearLayout7">
+
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/icon_share_2" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/share"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

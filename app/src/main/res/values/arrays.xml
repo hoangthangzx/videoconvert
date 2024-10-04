@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mảng chứa giá trị mặc định cho hai thumb trên RangeSlider -->
+    <array name="default_values">
+        <item>23</item> <!-- Giá trị mặc định của thumb bên trái (giây bắt đầu) -->
+        <item>45</item> <!-- Giá trị mặc định của thumb bên phải (giây kết thúc) -->
+    </array>
+</resources>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="320dp"
+        android:padding="2dp"
+        android:background="@drawable/imv_bg_dialog"
+        android:layout_height="150dp">
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView7"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:padding="5dp"-->
+<!--            android:src="@drawable/bg_app"-->
+<!--            android:scaleType="fitXY"-->
+<!--            android:background="@drawable/bg_border_8dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/permission"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0" />
+
+
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/set_permissions_in_settings"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView16"
+            app:layout_constraintWidth_percent=".9" />
+
+        <TextView
+            android:id="@+id/tv_No"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textView17"
+            app:layout_constraintHorizontal_bias=".4"
+            app:layout_constraintStart_toStartOf="@+id/textView17"
+            app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+        <TextView
+            android:id="@+id/tv_yes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setting"
+            android:padding="10dp"
+            android:textColor="@color/color_language"
+            android:layout_marginStart="20dp"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_No"
+            app:layout_constraintStart_toEndOf="@+id/tv_No"
+            app:layout_constraintTop_toTopOf="@+id/tv_No" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</LinearLayout>

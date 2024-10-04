@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="black_70">#9A000000</color>
+    <color name="black_30">#4D000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="bg_language_color">#8A2C2C2C</color>
+    <color name="color_language">#ED86D9</color>
+    <color name="color_language_20">#4DED86D9</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="color_rate">#A9B0BE</color>
+    <color name="color_rate_title">#1D1D1D</color>
+    <color name="color_text_convert">#7A7A7A</color>
+    <color name="color_1">#4A93EB</color>
+    <color name="color_2">#FE8BEC</color>
+    <color name="color_duration_speed">#A0A0A0</color>
+    <color name="gray_70">#B05D5D5D</color>
+    <color name="color_time_audio">#BCBCBC</color>
+    <color name="text_dialog">#999999</color>
+</resources>
