@@ -37,6 +37,10 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
+        <activity android:name=".ui.PlaySongActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"/>
+
         <activity android:name=".ui.ChooseItemStorageActivity"
             android:screenOrientation="portrait"
             android:exported="false"/>
@@ -61,7 +65,15 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
+        <activity android:name=".ui.VideoConverterActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"/>
+
         <activity android:name=".ui.VideoSpeedActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"/>
+
+        <activity android:name=".ui.ActivityAudioCutter"
             android:screenOrientation="portrait"
             android:exported="false"/>
 

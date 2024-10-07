@@ -11,11 +11,36 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="12dp"
+        android:visibility="visible"
         android:background="@drawable/icon_convert_file"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imvVideoFileShb"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="12dp"
+        android:visibility="gone"
+        android:background="@color/white"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/ShapeAppearanceOverlay.App.CornerSize50Percents_10" />
+
+    <ImageView
+        android:id="@+id/imvPause"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:visibility="gone"
+        android:src="@drawable/icon_pause"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imvVideoFile"
+        app:layout_constraintStart_toStartOf="@+id/imvVideoFile" />
 
 
     <TextView

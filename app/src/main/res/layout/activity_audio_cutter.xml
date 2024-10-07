@@ -65,10 +65,12 @@
             app:layout_constraintTop_toBottomOf="@+id/lnStatus_2" />
 
 
+
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ctlBottom"
             android:layout_width="match_parent"
-            android:layout_height="320dp"
+            android:layout_height="220dp"
             android:background="@drawable/imv_bottom_convert"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +78,189 @@
 
 
 
+            <TextView
+                android:id="@+id/tvTimeCut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/_02_56"
+                android:textColor="@color/color_language"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <EditText
+                android:id="@+id/edtStartTime"
+                android:layout_width="66dp"
+                android:layout_height="24dp"
+                android:background="@drawable/bg_edt_time"
+                android:inputType="time"
+                android:gravity="center"
+                android:layout_marginStart="40dp"
+                android:paddingHorizontal="5dp"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTimeCut"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvTimeCut" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/icon_minus"
+                app:layout_constraintBottom_toBottomOf="@+id/edtStartTime"
+                app:layout_constraintEnd_toStartOf="@+id/edtStartTime"
+                app:layout_constraintTop_toTopOf="@+id/edtStartTime" />
+
+
+            <ImageView
+                android:id="@+id/btnMinus"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:layout_constraintBottom_toBottomOf="@+id/edtStartTime"
+                app:layout_constraintEnd_toStartOf="@+id/edtStartTime"
+                app:layout_constraintTop_toTopOf="@+id/edtStartTime" />
+
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="-1dp"
+                android:src="@drawable/icon_plus"
+                app:layout_constraintBottom_toBottomOf="@+id/edtStartTime"
+                app:layout_constraintStart_toEndOf="@+id/edtStartTime"
+                app:layout_constraintTop_toTopOf="@+id/edtStartTime" />
+
+            <ImageView
+                android:id="@+id/btnPlus"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:layout_constraintBottom_toBottomOf="@+id/edtStartTime"
+                app:layout_constraintStart_toEndOf="@+id/edtStartTime"
+                app:layout_constraintTop_toTopOf="@+id/edtStartTime" />
+
+
+            <EditText
+                android:id="@+id/edtEndTime"
+                android:layout_width="66dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/bg_edt_time"
+                android:inputType="time"
+                android:paddingHorizontal="5dp"
+                android:singleLine="true"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTimeCut"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imageView6" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/icon_minus"
+                app:layout_constraintBottom_toBottomOf="@+id/edtEndTime"
+                app:layout_constraintEnd_toStartOf="@+id/edtEndTime"
+                app:layout_constraintTop_toTopOf="@+id/edtEndTime" />
+
+
+            <ImageView
+                android:id="@+id/btnMinusEnd"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:layout_constraintBottom_toBottomOf="@+id/edtEndTime"
+                app:layout_constraintEnd_toStartOf="@+id/edtEndTime"
+                app:layout_constraintTop_toTopOf="@+id/edtEndTime" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="-1dp"
+                android:src="@drawable/icon_plus"
+                app:layout_constraintBottom_toBottomOf="@+id/edtEndTime"
+                app:layout_constraintStart_toEndOf="@+id/edtEndTime"
+                app:layout_constraintTop_toTopOf="@+id/edtEndTime" />
+
+            <ImageView
+                android:id="@+id/btnPlusEnd"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:layout_constraintBottom_toBottomOf="@+id/edtEndTime"
+                app:layout_constraintStart_toEndOf="@+id/edtEndTime"
+                app:layout_constraintTop_toTopOf="@+id/edtEndTime" />
+
+            <LinearLayout
+                android:id="@+id/lnBtn"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/imvPlay"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/imv_play" />
+
+                <ImageView
+                    android:id="@+id/imvPause"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/imv_pause"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imv15Left"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_marginEnd="40dp"
+                android:src="@drawable/imv_15_left"
+                app:layout_constraintBottom_toBottomOf="@+id/lnBtn"
+                app:layout_constraintEnd_toStartOf="@+id/lnBtn"
+                app:layout_constraintTop_toTopOf="@+id/lnBtn" />
+
+            <ImageView
+                android:id="@+id/imv15Right"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/imv_15_right"
+                android:layout_marginStart="40dp"
+                app:layout_constraintBottom_toBottomOf="@+id/lnBtn"
+                app:layout_constraintStart_toEndOf="@+id/lnBtn"
+                app:layout_constraintTop_toTopOf="@+id/lnBtn" />
+
+            <TextView
+                android:id="@+id/tvCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="@string/cancel"
+                android:textColor="#C2C2C2"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lnBtn" />
+
+
+            <TextView
+                android:id="@+id/tvDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="@string/done"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvCancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvCancel" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

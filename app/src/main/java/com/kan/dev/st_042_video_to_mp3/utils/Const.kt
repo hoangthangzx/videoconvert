@@ -46,6 +46,7 @@ object Const {
     var videoCutter : VideoCutterModel? = null
     var videoConvert : VideoConvertModel? = null
     var listConvertMp3 = mutableListOf<String>()
+    var listAudioSaved = mutableListOf<AudioSpeedModel>()
     var musicStorage : File? = null
     var videoStorage : File? = null
     var checkType : Boolean = false

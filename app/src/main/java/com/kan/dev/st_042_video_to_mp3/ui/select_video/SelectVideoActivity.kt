@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivitySelectVideoBinding
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
+import com.kan.dev.st_042_video_to_mp3.ui.VideoConverterActivity
 import com.kan.dev.st_042_video_to_mp3.ui.merger.MergerActivity
 import com.kan.dev.st_042_video_to_mp3.ui.VideoCutterActivity
 import com.kan.dev.st_042_video_to_mp3.ui.VideoSpeedActivity
@@ -41,11 +42,45 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         } else if (selectType.equals("VideoMerger")){
             initView()
             initActionMerger()
-        }
-        else{
+        }else if(selectType.equals("VideoConvert")){
+            initView()
+            initActionConverter()
+        }else{
             initView()
             initAction()
         }
+    }
+
+    private fun initActionConverter() {
+
+        binding.imvBack.onSingleClick {
+            finish()
+        }
+
+        binding.lnContinue.onSingleClick {
+            startActivity(Intent(this@SelectVideoActivity, VideoConverterActivity::class.java))
+        }
+
+        adapter.onClickListener(object : SelectVideoAdapter.onClickItemListener{
+            override fun onItemClick(position: Int, holder: SelectVideoAdapter.ViewHolder) {
+                if(!listVideo[position].active){
+                    positionVideoPlay = position
+                    countVideo += 1
+                    countSizeVideo += listVideo[position].sizeInMB.toInt()
+                    holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box_yes)
+                    listVideoPick.add(0, listVideo[position])
+                    listVideo[position].active = true
+                }else if(listVideo[position].active){
+                    countVideo -= 1
+                    holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box)
+                    listVideo[position].active = false
+                    listVideoPick.remove(listVideo[position])
+                    countSizeVideo -= listVideo[position].sizeInMB.toInt()
+                }
+                binding.tvSelected.text = "$countVideo Selected"
+                binding.tvSize.text = "/ $countSizeVideo MB"
+            }
+        })
     }
 
     private fun initActionMerger() {
@@ -87,7 +122,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             }
         })
     }
-
     private fun initActionSpeed() {
         binding.imvBack.onSingleClick {
             finish()

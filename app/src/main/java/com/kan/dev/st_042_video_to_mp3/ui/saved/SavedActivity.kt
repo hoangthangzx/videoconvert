@@ -22,11 +22,14 @@ import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivitySaveTheConvertedVideoFileBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
+import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.MainActivity
+import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertAdapter
 import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertToMp3Activity
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.currentRingtone
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
@@ -50,6 +53,8 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     private lateinit var updateSeekBarRunnable: Runnable
     var uriAll : Uri? = null
     lateinit var adapterSaved: AdapterSaved
+    lateinit var adapterConverter : FileConvertAdapter
+    lateinit var adapterAudioSaved: AdapterAudioSaved
     private val handler = android.os.Handler()
     private var mediaPlayer: MediaPlayer? = null
 //    private var isPlaying = false
@@ -65,18 +70,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             initRec()
             initActionMutil()
             initViewMulti()
-        }
-        if(selectTypeAudio.equals("AudioSpeed")){
-            initAudioSpeed()
-            initData()
-            initActionSpeed()
-        }
-
-//        if(selectType.equals("Speed")){
-//            initVideoSpeed()
-//        }
-
-        if(selectType.equals("VideoCutter")){
+        }else if(selectType.equals("VideoCutter")){
             initViewCutter()
             initActionCutter()
         }else if(selectType.equals("VideoCutterToMp3")){
@@ -84,6 +78,57 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             initData()
             initActionCuttertoMp3()
         }
+        if(selectTypeAudio.equals("AudioSpeed")){
+            initAudioSpeed()
+            initData()
+            initActionSpeed()
+        }else if (selectTypeAudio.equals("AudioConvert")){
+            initRecConvert()
+            initActionAudioConvert()
+        }else if(selectType.equals("VideoConvert")){
+            initViewConveter()
+            initActionCoberter()
+        }
+    }
+
+    private fun initActionCoberter() {
+        binding.lnShare.onSingleClick {
+            shareAudioUrisCv(this@SavedActivity, listAudioSaved)
+        }
+    }
+
+    private fun initViewConveter() {
+        binding.recVideo.visibility = View.VISIBLE
+        adapterSaved = AdapterSaved(this)
+        adapterSaved.getData(listAudioSaved)
+        binding.recVideo.adapter = adapterSaved
+        if(listAudioSaved.size == 1){
+            binding.lnMerger.visibility = View.GONE
+            binding.lnRingtone.visibility = View.GONE
+            binding.lnConvert.visibility = View.VISIBLE
+        }else{
+            binding.lnMerger.visibility = View.VISIBLE
+            binding.lnRingtone.visibility = View.GONE
+            binding.lnConvert.visibility = View.GONE
+        }
+
+    }
+
+    private fun initActionAudioConvert() {
+        binding.lnShare.onSingleClick {
+            shareAudioUrisCv(this@SavedActivity, listAudioSaved)
+        }
+
+        binding.lnMerger.visibility = View.VISIBLE
+        binding.lnRingtone.visibility = View.GONE
+    }
+
+    private fun initRecConvert() {
+        Log.d("check_audio__", "initRecConvert: okeeeee"+ listAudioSaved)
+        binding.recVideo.visibility = View.VISIBLE
+        adapterAudioSaved = AdapterAudioSaved(this@SavedActivity)
+        adapterAudioSaved.getData(listAudioSaved)
+        binding.recVideo.adapter = adapterAudioSaved
     }
 
     private fun initActionCuttertoMp3() {
@@ -173,6 +218,25 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         context.startActivity(Intent.createChooser(shareIntent, "Share Audio Files"))
     }
 
+    fun shareAudioUrisCv(context: Context, listAudio: MutableList<AudioSpeedModel>) {
+        // Chuyển đổi danh sách String thành danh sách Uri
+        val uriList: ArrayList<Uri> = ArrayList()
+        for (audio in listAudio) {
+            uriList.add(Uri.parse(audio.uri.toString())) // Chuyển đổi chuỗi thành Uri
+        }
+
+        // Tạo Intent để chia sẻ danh sách Uri
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND_MULTIPLE // Chia sẻ nhiều tệp
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList) // Gửi danh sách Uri
+            type = "audio/*" // Định dạng loại tệp
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Cấp quyền đọc cho các ứng dụng nhận
+        }
+
+        // Bắt đầu Intent chia sẻ
+        context.startActivity(Intent.createChooser(shareIntent, "Share Audio Files"))
+    }
+
     private fun showDialogRingtone() {
         SystemUtils.setLocale(this)
         val dialogBinding  = CustomDialogRingtoneBinding.inflate(LayoutInflater.from(this))
@@ -247,7 +311,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     private fun initRec() {
         binding.recVideo.visibility = View.VISIBLE
         adapterSaved = AdapterSaved(this)
-        adapterSaved.getData(listConvertMp3)
+        adapterSaved.getData(listAudioSaved)
         binding.recVideo.adapter = adapterSaved
     }
 
@@ -457,6 +521,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
     override fun onStop() {
         super.onStop()
+
         mediaPlayer?.release()
         mediaPlayer = null
     }

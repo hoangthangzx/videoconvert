@@ -43,7 +43,7 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
             }else{
                 binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
             }
-            binding.imvTick.setOnClickListener {
+            binding.root.setOnClickListener {
                 mListener.onClickItem(position,holder)
             }
         }

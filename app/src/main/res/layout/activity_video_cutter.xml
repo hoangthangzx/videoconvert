@@ -6,7 +6,6 @@
         android:layout_height="match_parent"
         android:background="@color/black">
 
-
         <LinearLayout
             android:id="@+id/lnStatus_2"
             android:layout_width="match_parent"
@@ -322,7 +321,7 @@
             android:layout_height="match_parent"
             android:background="@color/black"
             android:gravity="center"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -360,7 +359,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:lottie_autoPlay="true"
-                app:lottie_rawRes="@raw/aniamtion_splash"
+                app:lottie_rawRes="@raw/progress_animation"
                 app:lottie_repeatMode="restart" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

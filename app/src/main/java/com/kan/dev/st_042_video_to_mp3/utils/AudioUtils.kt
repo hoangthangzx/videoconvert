@@ -35,6 +35,8 @@ object AudioUtils {
             val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
             val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
             val dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
+            val mimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE) // Cột MIME type
+
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
@@ -45,8 +47,9 @@ object AudioUtils {
                 val audioName = cursor.getString(nameColumn)
                 val dateAdded = cursor.getLong(dateAddedColumn) * 1000L
                 val formattedDate = formatDate(dateAdded)
+                val mimeType = cursor.getString(mimeTypeColumn)
 
-                listAudio.add(0,AudioInfo(audioUri, formatTimeToHoursMinutes(duration), sizeInMB, audioName, formattedDate, false, audioName, listAudio.size))
+                listAudio.add(0,AudioInfo(audioUri, formatTimeToHoursMinutes(duration), sizeInMB, audioName, formattedDate, false, mimeType, listAudio.size))
             }
         }
     }

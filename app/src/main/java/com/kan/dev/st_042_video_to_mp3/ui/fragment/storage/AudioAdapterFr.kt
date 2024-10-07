@@ -15,6 +15,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const
 
 class AudioAdapterFr (var context: Context): RecyclerView.Adapter<AudioAdapterFr.ViewHolder>() {
     lateinit var mListener : onClickItemListener
+    var isLongPress = false
     var data = listOf<AudioInfo>()
     fun getData(mData : List<AudioInfo>){
         data = mData
@@ -56,22 +57,40 @@ class AudioAdapterFr (var context: Context): RecyclerView.Adapter<AudioAdapterFr
             binding.root.setOnTouchListener { _, event ->
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
+                        isLongPress = false
                         holder.binding.root.isPressed = true
+
                         holder.binding.root.postDelayed({
                             if (holder.binding.root.isPressed) {
+                                isLongPress = true
                                 mListener.onTouchEven(position)
                             }
-                        }, 1000) // 3000 ms = 3 giây
+                        }, 1000)
                         true
                     }
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    MotionEvent.ACTION_UP -> {
                         holder.binding.root.isPressed = false
-                        holder.binding.root.removeCallbacks(null) // Hủy hẹn giờ
+                        holder.binding.root.removeCallbacks(null) // Hủy bỏ mọi callback
+                        if (!isLongPress) {
+                            mListener.onClickItem(position, holder) // Gọi sự kiện click
+                        }
+                        true
+                    }
+                    MotionEvent.ACTION_CANCEL -> {
+                        holder.binding.root.isPressed = false
+                        holder.binding.root.removeCallbacks(null) // Hủy bỏ mọi callback
                         true
                     }
                     else -> false
                 }
             }
+
+            holder.itemView.setOnClickListener {
+                if (!isLongPress) { // Kiểm tra nếu không phải long press
+                    mListener.onClickItem(position, holder)
+                }
+            }
+
         }
     }
     override fun onCreateViewHolder(

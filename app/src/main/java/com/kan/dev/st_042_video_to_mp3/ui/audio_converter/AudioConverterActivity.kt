@@ -16,12 +16,16 @@ import com.arthenica.mobileffmpeg.FFmpeg
 //import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityAudioConverterBinding
+import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
+import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
@@ -91,6 +95,8 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                 }
             }
         }
+
+
         binding.tvDone.onSingleClick {
             if(checkItem== false || listAudioPick.size == 0){
                 Toast.makeText(this@AudioConverterActivity, "", Toast.LENGTH_SHORT).show()
@@ -116,12 +122,9 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                         }
                     }
                 }
-
             }
-
         }
     }
-
     fun convertAudio(inputPath: String, outputPath: String, format: String) {
 //        val command = "-i $inputPath -vn -ar 44100 -ac 2 -b:a 192k $outputPath.$format"
 //        val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath.$format\""
@@ -135,28 +138,28 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
 
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
-            startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
+            if(listAudioPick.size == 1){
+                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+                audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                listAudioSaved.add(audioInfo!!)
+                startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
+            }else{
+                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+                audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                listAudioSaved.add(audioInfo!!)
+            }
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }
     }
-
     private suspend fun convertAllSongsToMp3() {
         withContext(Dispatchers.IO) { // Chạy trong IO context
             for(audio in listAudioPick){
-//                val videoPath = getRealPathFromURI(this@AudioConverterActivity,audio.uri)
-//                val timestamp = System.currentTimeMillis()
-//                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-//                val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_convert.mp3"
-//                if (videoPath != null) {
-//                    convertAudio(videoPath, outputPath, audioType)
-//                }
                 showLoadingOverlay()
                 val audioPath = getRealPathFromURI(this@AudioConverterActivity,audio.uri!!)
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
                 val outputPath = "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".") }_${timestamp}_convert.${audioType}"
-//                val outputPath = "${filesDir.absolutePath}/output_$timestamp.mp3"
                 if (audioPath != null) {
                     convertAudio(audioPath,outputPath,audioType)
                 }

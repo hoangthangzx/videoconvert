@@ -15,9 +15,11 @@ import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.FragmentAudioBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.ui.ChooseItemStorageActivity
+import com.kan.dev.st_042_video_to_mp3.ui.PlaySongActivity
 import com.kan.dev.st_042_video_to_mp3.ui.audio_converter.AudioConverterAdapter
 import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioAdapter
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
+import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkDataAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
@@ -50,12 +52,15 @@ class AudioFragment : Fragment() {
     private fun initAction() {
         adapterFr.onClickListener(object : AudioAdapterFr.onClickItemListener{
             override fun onClickItem(position: Int, holder: AudioAdapterFr.ViewHolder) {
-                Log.d("check_logg", "onTouchEven: ")
+                Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
+                Const.positionAudioPlay = position
+                startActivity(Intent(requireContext(),PlaySongActivity::class.java))
             }
 
             override fun onTouchEven(position: Int) {
                 Log.d("check_logg", "onTouchEven:  ojkeeeee")
                 checkType = false
+                Const.positionAudioPlay = position
                 listAudio[position].active = true
                 listAudioPick.add(0, listAudio[position])
                 countAudio += 1

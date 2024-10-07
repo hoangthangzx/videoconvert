@@ -14,12 +14,15 @@ import com.arthenica.mobileffmpeg.FFmpeg
 //import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityFileConvertToMp3Binding
+import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.model.VideoConvertModel
 import com.kan.dev.st_042_video_to_mp3.model.VideoCutterModel
 import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
@@ -98,17 +101,17 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             finish()
         }
         binding.LnConvert.onSingleClick {
-            if(exoPlayer!=null){
-                exoPlayer!!.pause()
-            }
-            if(selectType.equals("VideoCutter")){
-                videoPath = videoCutter!!.uri.toString()
-                Log.d("check_path", "initAcrjngrgrgtion: "+ videoPath)
-                selectType = "VideoCutterToMp3"
-            }else{
-                videoPath = getRealPathFromURI(this,videoUri!!)
-            }
             if(listVideoPick.size == 1){
+                if(exoPlayer!=null){
+                    exoPlayer!!.pause()
+                }
+                if(selectType.equals("VideoCutter")){
+                    videoPath = videoCutter!!.uri.toString()
+                    Log.d("check_path", "initAcrjngrgrgtion: "+ videoPath)
+                    selectType = "VideoCutterToMp3"
+                }else{
+                    videoPath = getRealPathFromURI(this,videoUri!!)
+                }
                 showLoadingOverlay()
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
@@ -165,6 +168,10 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 val infoFile = FileInfo.getFileInfoFromPath(mp3Uri!!.toString())
                 Const.videoConvert = VideoConvertModel(mp3Uri!!, listVideo[positionVideoPlay].duration,infoFile!!.fileSize,infoFile.fileName.toString() )
                 startActivity(Intent(this@FileConvertToMp3Activity,SavedActivity::class.java))
+            }else{
+                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+                audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                listAudioSaved.add(audioInfo!!)
             }
             listConvertMp3.add(outputPath)
         } else {

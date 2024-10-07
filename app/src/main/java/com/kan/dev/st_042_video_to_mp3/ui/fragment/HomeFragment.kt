@@ -9,14 +9,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.kan.dev.st_042_video_to_mp3.databinding.FragmentHomeBinding
+import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioActivity
 import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.musicStorage
@@ -94,15 +100,29 @@ class HomeFragment : Fragment() {
     }
 
     private fun initAction() {
+        binding.lnAudioMerger.onSingleClick {
+            selectTypeAudio = "AudioMerger"
+            countAudio = 0
+            countSize = 0
+            Const.checkDataAudio = false
+            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
+        }
 
-
-        binding.lnVideoMerger.onSingleClick {
-            selectType = "VideoMerger"
+        binding.lnVideoConvertToMp3.onSingleClick {
+            selectType = "VideoConvert"
             Const.checkData = false
             countVideo = 0
             countSizeVideo = 0
             startActivity(Intent(requireContext(),SelectVideoActivity::class.java))
         }
+
+//        binding.lnVideoMerger.onSingleClick {
+//            selectType = "VideoMerger"
+//            Const.checkData = false
+//            countVideo = 0
+//            countSizeVideo = 0
+//            startActivity(Intent(requireContext(),SelectVideoActivity::class.java))
+//        }
 
         binding.lnVideoConvert.onSingleClick {
             selectType = "Video"
@@ -114,6 +134,14 @@ class HomeFragment : Fragment() {
 
         binding.lnAudioConvert.onSingleClick {
             selectTypeAudio = "AudioConvert"
+            countAudio = 0
+            countSize = 0
+            Const.checkDataAudio = false
+            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
+        }
+
+        binding.lnAudioCutter.onSingleClick {
+            selectTypeAudio = "AudioCutter"
             countAudio = 0
             countSize = 0
             Const.checkDataAudio = false
@@ -154,5 +182,10 @@ class HomeFragment : Fragment() {
         selectTypeAudio = ""
         listVideo.clear()
         listVideoPick.clear()
+        listAudio.clear()
+        listAudioPick.clear()
+        listAudioSaved.clear()
+        listConvertMp3.clear()
+        audioInfo  = null
     }
 }

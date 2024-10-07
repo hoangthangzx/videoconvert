@@ -111,4 +111,8 @@
     <string name="merger">Merger</string>
     <string name="video_convert">Video Convert</string>
     <string name="you_must_choose_the_right_time">You must choose the right time</string>
+    <string name="alarm">Alarm</string>
+    <string name="play_sound">Play Sound</string>
+    <string name="song">Song</string>
+    <string name="video_converter">Video Converter</string>
 </resources>

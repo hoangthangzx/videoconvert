@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-
 class VideoSpeedActivity : AbsBaseActivity<ActivityVideoSpeedBinding>(false) {
     override fun getFragmentID(): Int  = 0
     override fun getLayoutId(): Int = R.layout.activity_video_speed
@@ -55,8 +54,8 @@ class VideoSpeedActivity : AbsBaseActivity<ActivityVideoSpeedBinding>(false) {
             ContextCompat.getColor(this@VideoSpeedActivity, R.color.color_2)
         )
         binding.tvDone.applyGradient(this@VideoSpeedActivity,colors)
-        binding.textView6.text = "Duration : ${listVideo[positionVideoPlay].duration}"
-        binding.tvNewDuration.text = "Duration : ${listVideo[positionVideoPlay].duration}"
+        binding.textView6.text = "Duration : ${convertTimeToSeconds(listVideo[positionVideoPlay].duration)}"
+        binding.tvNewDuration.text = "Duration : ${convertTimeToSeconds(listVideo[positionVideoPlay].duration)}"
     }
 
     private fun initData() {

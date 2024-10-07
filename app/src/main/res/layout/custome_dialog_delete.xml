@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="60dp"
+        android:layout_marginHorizontal="30dp"
         android:background="@drawable/imv_bg_dialog">
 
         <TextView
@@ -38,16 +38,18 @@
             app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
         <TextView
-            android:id="@+id/textView11"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
+            android:id="@+id/tvNo"
+            android:layout_width="100dp"
+            android:layout_height="32dp"
             android:layout_marginTop="20dp"
             android:text="@string/no"
+            android:gravity="center"
+            android:background="@drawable/bg_cancel"
             android:textAlignment="center"
-            android:textColor="#C2C2C2"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:layout_marginBottom="26dp"
-            app:layout_constraintHorizontal_bias=".65"
+            app:layout_constraintHorizontal_bias=".15"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,16 +57,20 @@
             app:layout_constraintVertical_bias=".2" />
 
         <TextView
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:text="@string/yes"
-            android:gravity="center"
-            android:textStyle="bold"
+            android:id="@+id/tvYes"
+            android:layout_width="100dp"
+            android:layout_height="32dp"
             android:layout_marginStart="20dp"
-            android:textColor="@color/color_language"
-            app:layout_constraintBottom_toBottomOf="@+id/textView11"
-            app:layout_constraintStart_toEndOf="@+id/textView11"
-            app:layout_constraintTop_toTopOf="@+id/textView11" />
+            android:gravity="center"
+            android:background="@drawable/bg_ok"
+            app:layout_constraintHorizontal_bias=".85"
+            android:text="@string/yes"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/tvNo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvNo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -55,7 +55,7 @@
             <LinearLayout
                 android:id="@+id/lnVideoConvert"
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
+                android:layout_height="160dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/imv_video_convert"
                 android:layout_marginHorizontal="20dp"
@@ -135,7 +135,7 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:id="@+id/lnVideoMerger"
+                    android:id="@+id/lnVideoConvertToMp3"
                     android:layout_width="150dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
