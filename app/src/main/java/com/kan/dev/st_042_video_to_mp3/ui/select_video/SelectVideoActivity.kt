@@ -258,4 +258,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         binding.tvSize.text = "/ $countSizeVideo MB"
         adapter.notifyDataSetChanged()
     }
+
+
 }

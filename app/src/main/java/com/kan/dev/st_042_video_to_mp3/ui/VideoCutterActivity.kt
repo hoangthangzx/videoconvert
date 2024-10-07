@@ -8,9 +8,8 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -19,8 +18,12 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityVideoCutterBinding
+import com.kan.dev.st_042_video_to_mp3.model.VideoCutterModel
+import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
+import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
+import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
@@ -28,7 +31,6 @@ import java.io.File
 
 class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     override fun getFragmentID(): Int = 0
-
     override fun getLayoutId(): Int = R.layout.activity_video_cutter
     var videoUri: Uri? = null
     private var exoPlayer: ExoPlayer? = null
@@ -111,8 +113,8 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 hours = 23
             }
             startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
-            binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-            binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
+            binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
+            binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
         }
 
         binding.btnPlusEnd.setOnClickListener {
@@ -131,38 +133,35 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             if (hours > 23) {
                 hours = 0
             }
-
             endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
             binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-            binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
+            binding.edtEndTime.setSelection(binding.edtEndTime.text.length)
         }
 
         binding.edtStartTime.setText(formatTime(startTime.toInt()))
         binding.edtEndTime.setText(formatTime(startTime.toInt()))
-        binding.edtStartTime.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (s.toString().length == 2 && !s.toString().contains(":")) {
-                    s?.append(":")
+//        binding.edtStartTime.addTextChangedListener(object : TextWatcher {
+//            override fun afterTextChanged(s: Editable?) {
+//                if (s.toString().length == 2 && !s.toString().contains(":")) {
+//                    s?.append(":")
+//                }
+//            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//        })
+//
+//        binding.edtEndTime.addTextChangedListener(object : TextWatcher {
+//            override fun afterTextChanged(s: Editable?) {
+//                if (s.toString().length == 2 && !s.toString().contains(":")) {
+//                    s?.append(":") // Thêm dấu ":" sau 2 chữ số
+//                }
+//            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//        })
 
-                }
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-
-
-        binding.edtEndTime.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (s.toString().length == 2 && !s.toString().contains(":")) {
-                    s?.append(":") // Thêm dấu ":" sau 2 chữ số
-                }
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-
+        binding.edtStartTime.isClickable = false
+        binding.edtEndTime.isClickable = false
         binding.customRangeSeekBar.setMaxValue(convertDurationToSeconds(listVideo[positionVideoPlay].duration))
         binding.customRangeSeekBar.setOnRangeSeekBarChangeListener(object : CustomRangeSeekBar.OnRangeSeekBarChangeListener {
             override fun onRangeSeekBarValuesChanged(minValue: Float, maxValue: Float) {
@@ -170,17 +169,28 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 endTime = maxValue
                 timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
                 binding.tvTimeCut.text = timeCut
+                binding.edtStartTime.setText(convertSecondsToDuration(startTime.toInt()))
+                binding.edtEndTime.setText(convertSecondsToDuration(endTime.toInt()))
+
                 Log.d("check_value", "onRangeSeekBarValuesChanged: "+ minValue + "_________" + maxValue)
             }
         })
         Log.d("check_duration", "initAction: "+ listVideo[positionVideoPlay].duration)
         binding.tvDone.onSingleClick {
-            val videoPath = getRealPathFromURI(this,videoUri!!)
-            val timestamp = System.currentTimeMillis()
-            val musicDir = File(Environment.getExternalStorageDirectory(), "Movies/video")
-            val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp4"
-            if (videoPath != null) {
-                cutVideo(videoPath,outputPath,formatTime(startTime.toInt()),formatTime(endTime.toInt()))
+            val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
+            val currentValueEnd = convertDurationToSeconds(binding.edtStartTime.text.toString())
+            val durationVideo = convertDurationToSeconds(listVideo[positionVideoPlay].duration)
+            if(currentValueStart > currentValueEnd || currentValueStart > durationVideo || currentValueEnd > durationVideo || currentValueEnd <0 || currentValueStart < 0 ){
+                Toast.makeText(this@VideoCutterActivity, getString(R.string.you_must_choose_the_right_time, ), Toast.LENGTH_SHORT).show()
+            }else{
+                showLoadingOverlay()
+                val videoPath = getRealPathFromURI(this,videoUri!!)
+                val timestamp = System.currentTimeMillis()
+                val musicDir = File(Environment.getExternalStorageDirectory(), "Movies/video")
+                val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp4"
+                if (videoPath != null) {
+                    cutVideo(videoPath,outputPath,formatTime(startTime.toInt()),formatTime(endTime.toInt()))
+                }
             }
         }
     }
@@ -230,13 +240,25 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         retriever.release()
     }
 
+    private fun showLoadingOverlay() {
+        binding.loadingOverlay.visibility = View.VISIBLE
+    }
+
+    private fun hideLoadingOverlay() {
+        binding.loadingOverlay.visibility = View.GONE
+    }
+
     fun cutVideo(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         Log.d("check_audio_speed", ""+ startTime + "    " + endTime)
         val command = "-i $inputFilePath -ss $startTime -to $endTime -c copy $outputFilePath"
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
-            startActivity(Intent(this@VideoCutterActivity,SavedActivity::class.java))
-            Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thất bạihh)")
+            videoUri = Uri.parse(outputFilePath)
+            val infoFile = FileInfo.getFileInfoFromPath(videoUri!!.toString())
+            Const.videoCutter = VideoCutterModel(videoUri!!,timeCut,infoFile!!.fileSize,infoFile.fileName.toString() )
+            startActivity(Intent(this@VideoCutterActivity, SavedActivity::class.java))
+            finish()
+            Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thất bạihh" + videoUri)
         } else {
             Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thất bại. Mã lỗi: $resultCode")
         }
@@ -261,12 +283,16 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     }
 
     fun convertSecondsToDuration(seconds: Int): String {
-        val hours = seconds / 3600
-        val minutes = (seconds % 3600) / 60
+        val minutes = seconds / 60
         val remainingSeconds = seconds % 60
 
-        // Định dạng với hai chữ số cho mỗi phần
-        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+        return String.format("%02d:%02d", minutes, remainingSeconds)
+//        val hours = seconds / 3600
+//        val minutes = (seconds % 3600) / 60
+//        val remainingSeconds = seconds % 60
+//
+//        // Định dạng với hai chữ số cho mỗi phần
+//        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
     }
 
     @SuppressLint("DefaultLocale")
@@ -274,6 +300,17 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         val minutes = seconds / 60
         val remainingSeconds = seconds % 60
         return String.format("%02d:%02d", minutes, remainingSeconds)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideLoadingOverlay()
+//        initData()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer?.release()
     }
 
 }

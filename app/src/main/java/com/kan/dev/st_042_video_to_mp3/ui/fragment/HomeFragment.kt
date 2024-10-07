@@ -48,8 +48,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun initView() {
-        binding.tvConverter.isSelected = true
-        binding.tvSpeed.isSelected = true
+//        binding.tvConverter.isSelected = true
+//        binding.tvSpeed.isSelected = true
         binding.tvCutter.isSelected = true
         binding.tvMerger.isSelected = true
         binding.tvAudioConverter.isSelected = true
@@ -94,6 +94,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun initAction() {
+
+
         binding.lnVideoMerger.onSingleClick {
             selectType = "VideoMerger"
             Const.checkData = false
@@ -117,14 +119,14 @@ class HomeFragment : Fragment() {
             Const.checkDataAudio = false
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
-
-        binding.lnVideoSpeed.onSingleClick {
-            selectType = "Speed"
-            Const.checkData = false
-            countVideo = 0
-            countSizeVideo = 0
-            startActivity(Intent(requireContext(), SelectVideoActivity::class.java))
-        }
+//
+//        binding.lnVideoSpeed.onSingleClick {
+//            selectType = "Speed"
+//            Const.checkData = false
+//            countVideo = 0
+//            countSizeVideo = 0
+//            startActivity(Intent(requireContext(), SelectVideoActivity::class.java))
+//        }
 
         binding.lnAudioSpeed.onSingleClick {
             selectTypeAudio = "AudioSpeed"

@@ -91,6 +91,7 @@
                 app:shapeAppearance="@style/ShapeAppearanceOverlay.App.CornerSize50Percents_10" />
 
             <ImageView
+                android:id="@+id/imvVideoSP"
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:src="@drawable/icon_pause"
@@ -116,8 +117,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="3dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
                 android:ellipsize="marquee"
+                android:layout_marginEnd="10dp"
                 android:focusable="true"
                 android:marqueeRepeatLimit="-1"
                 android:paddingStart="2dp"
@@ -128,7 +129,7 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imvVideoImage"
-                app:layout_constraintEnd_toStartOf="@+id/imvDelete"
+                app:layout_constraintEnd_toStartOf="@+id/imvTickSp"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@+id/imvVideoImage"
                 app:layout_constraintTop_toTopOf="parent"
@@ -170,12 +171,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recVideo"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="20dp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
             app:layout_constraintEnd_toEndOf="parent"
             android:paddingStart="20dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:visibility="gone"
             android:paddingEnd="20dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -186,7 +189,7 @@
             android:id="@+id/ctlFile"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -278,7 +281,7 @@
                 android:id="@+id/tvDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:00"
+                android:text=" / 00:00"
                 android:layout_marginEnd="20dp"
                 android:textColor="@color/color_time_audio"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -289,7 +292,7 @@
                 android:id="@+id/tvTimeStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:00 / "
+                android:text="00:00"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="@+id/tvDuration"
                 app:layout_constraintEnd_toStartOf="@+id/tvDuration"
@@ -377,56 +380,117 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <LinearLayout
-                android:id="@+id/linearLayout7"
-                android:layout_width="130dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="25dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="20dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/bg_btn_saved_1"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/icon_ringtone" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/set_as"
-                    android:textColor="@color/white"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="130dp"
-                android:layout_height="60dp"
-                android:layout_marginEnd="25dp"
-                android:background="@drawable/bg_btn_saved_2"
-                android:gravity="center"
-                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/linearLayout7">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
 
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/icon_share_2" />
+                <LinearLayout
+                    android:id="@+id/lnRingtone"
+                    android:layout_width="130dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_btn_saved_1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/share"
-                    android:textColor="@color/white"
-                    android:textSize="13sp" />
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/icon_ringtone" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/set_as"
+                        android:textColor="@color/white"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnConvert"
+                    android:layout_width="130dp"
+                    android:layout_height="60dp"
+                    android:visibility="gone"
+                    android:background="@drawable/bg_btn_saved_1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/icon_convert_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/convert_to_mp3"
+                        android:textColor="@color/white"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnMerger"
+                    android:layout_width="130dp"
+                    android:layout_height="60dp"
+                    android:visibility="gone"
+                    android:background="@drawable/bg_btn_saved_1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/icon_merger_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/merger"
+                        android:textColor="@color/white"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <LinearLayout
+                    android:id="@+id/lnShare"
+                    android:layout_width="130dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_btn_saved_2"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/lnRingtone">
+
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/icon_share_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/share"
+                        android:textColor="@color/white"
+                        android:textSize="13sp" />
+
+
+                </LinearLayout>
 
             </LinearLayout>
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

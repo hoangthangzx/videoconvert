@@ -1,6 +1,5 @@
 package com.kan.dev.st_042_video_to_mp3.ui
 
-import android.R.attr.path
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -21,6 +20,7 @@ import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityVideoSpeedBinding
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
+import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const.VideoUriSpeed
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
@@ -125,7 +125,7 @@ class VideoSpeedActivity : AbsBaseActivity<ActivityVideoSpeedBinding>(false) {
                             false,
                             0
                         )
-                        startActivity(Intent(this@VideoSpeedActivity,SavedActivity::class.java))
+                        startActivity(Intent(this@VideoSpeedActivity, SavedActivity::class.java))
                         binding.ctlProgress.visibility = View.GONE // Ẩn progress sau khi hoàn tất
                     }
                 }

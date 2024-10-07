@@ -8,22 +8,32 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.arthenica.mobileffmpeg.FFmpeg
 //import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityFileConvertToMp3Binding
-import com.kan.dev.st_042_video_to_mp3.ui.SavedActivity
+import com.kan.dev.st_042_video_to_mp3.model.VideoConvertModel
+import com.kan.dev.st_042_video_to_mp3.model.VideoCutterModel
+import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
+import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.mp3Uri
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
+import com.kan.dev.st_042_video_to_mp3.utils.Const.videoCutter
+import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding>(false) {
@@ -32,10 +42,12 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     lateinit var adapter: FileConvertAdapter
     private var exoPlayer: ExoPlayer? = null
     var videoUri : Uri? = null
+    var videoPath : String? = null
+    var count = 0
+    private var isConverting = false
     override fun init() {
         initData()
         initAction()
-        initView()
         if(listVideoPick.size == 1){
             initViewFile()
             initDataFile()
@@ -47,13 +59,14 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     }
 
     private fun initData() {
-        if(listVideo.size>0){
+        if(selectType.equals("VideoCutter")){
+            videoUri = videoCutter!!.uri
+            Log.d("check_kfkfjfkf", "initData: "+ videoUri)
+        }
+        else if(listVideo.size>0 && selectType.equals("Video")){
             videoUri = Uri.parse(listVideo[positionVideoPlay].uri.toString())
             Log.d("check_mp3", "initData: "+ videoUri)
         }
-    }
-    private fun initView() {
-
     }
 
     private fun initDataFile() {
@@ -85,28 +98,75 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             finish()
         }
         binding.LnConvert.onSingleClick {
-            exoPlayer!!.pause()
-            binding.ctlProgress.visibility = View.VISIBLE
+            if(exoPlayer!=null){
+                exoPlayer!!.pause()
+            }
+            if(selectType.equals("VideoCutter")){
+                videoPath = videoCutter!!.uri.toString()
+                Log.d("check_path", "initAcrjngrgrgtion: "+ videoPath)
+                selectType = "VideoCutterToMp3"
+            }else{
+                videoPath = getRealPathFromURI(this,videoUri!!)
+            }
             if(listVideoPick.size == 1){
-                val videoPath = getRealPathFromURI(this,videoUri!!)
+                showLoadingOverlay()
+                val timestamp = System.currentTimeMillis()
+                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                Log.d("check_path", "initAction: "+ videoPath)
+                val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_convert.mp3"
+                if (videoPath != null) {
+                    convertVideoToMp3(videoPath!!, outputPath)
+                }
+//                mp3Uri = Uri.parse(outputPath)
+            }else{
+                if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
+                    showLoadingOverlay()
+                    isConverting = true
+                    // Gọi hàm chuyển đổi với Coroutine
+                    CoroutineScope(Dispatchers.Main).launch {
+                        convertAllVideosToMp3()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun convertAllVideosToMp3() {
+        withContext(Dispatchers.IO) { // Chạy trong IO context
+            for(video in listVideoPick){
+                val videoPath = getRealPathFromURI(this@FileConvertToMp3Activity,video.uri)
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
                 val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_convert.mp3"
                 if (videoPath != null) {
                     convertVideoToMp3(videoPath, outputPath)
                 }
-                mp3Uri = Uri.parse(outputPath)
-            }else{
-                Toast.makeText(this, "", Toast.LENGTH_SHORT).show()
             }
         }
+        startActivity(Intent(this, SavedActivity::class.java))
+        isConverting = false
     }
+
+
+    private fun showLoadingOverlay() {
+        binding.loadingOverlay.visibility = View.VISIBLE
+    }
+
+    private fun hideLoadingOverlay() {
+        binding.loadingOverlay.visibility = View.GONE
+    }
+
     fun convertVideoToMp3(videoUri: String, outputPath: String) {
         val command = "-i $videoUri -vn -ar 44100 -ac 2 -b:a 192k $outputPath"
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
-            binding.ctlProgress.visibility = View.GONE
-            startActivity(Intent(this@FileConvertToMp3Activity,SavedActivity::class.java))
+            if (listVideoPick.size == 1){
+                mp3Uri = Uri.parse(outputPath)
+                val infoFile = FileInfo.getFileInfoFromPath(mp3Uri!!.toString())
+                Const.videoConvert = VideoConvertModel(mp3Uri!!, listVideo[positionVideoPlay].duration,infoFile!!.fileSize,infoFile.fileName.toString() )
+                startActivity(Intent(this@FileConvertToMp3Activity,SavedActivity::class.java))
+            }
+            listConvertMp3.add(outputPath)
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }
@@ -127,9 +187,12 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         binding.recFileConvert.adapter = adapter
     }
 
-    override fun onStop() {
-        super.onStop()
-        exoPlayer?.release()
+    override fun onDestroy() {
+        super.onDestroy()
+        if (exoPlayer?.isPlaying == true) {
+            exoPlayer?.pause() // Dừng phát âm thanh nếu đang phát
+            exoPlayer?.release() // Giải phóng tài nguyên
+        }
     }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
@@ -143,5 +206,11 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             }
         }
         return path
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideLoadingOverlay()
+//        initDataFile()
     }
 }

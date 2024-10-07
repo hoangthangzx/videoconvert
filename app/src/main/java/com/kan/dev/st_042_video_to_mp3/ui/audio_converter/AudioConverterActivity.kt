@@ -5,18 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.FrameLayout
+import android.view.View
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.arthenica.mobileffmpeg.FFmpeg
 //import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityAudioConverterBinding
-import com.kan.dev.st_042_video_to_mp3.ui.SavedActivity
-import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertAdapter
-import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioAdapter
+import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
@@ -25,7 +25,11 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
-import java.net.URLEncoder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
 class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(false) {
     override fun getFragmentID(): Int = 0
@@ -33,7 +37,10 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     lateinit var adapter: AudioConverterAdapter
     var imvItems : List<LinearLayout> = listOf()
     var audioType  = ""
+    var checkItem = false
     var audioUri : Uri? = null
+    private var isConverting = false
+
     override fun init() {
         initData()
         initView()
@@ -67,6 +74,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
 
         imvItems.forEachIndexed { index, imvItem ->
             imvItem.onSingleClick {
+                checkItem = true
                 imvItems.forEach {
                     it.setBackgroundResource(R.drawable.bg_item_convert)
                 }
@@ -84,12 +92,33 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
             }
         }
         binding.tvDone.onSingleClick {
-            val audioPath = getRealPathFromURI(this,audioUri!!)
-            val timestamp = System.currentTimeMillis()
-            val outputPath = "${filesDir.absolutePath}/output_$timestamp.mp3"
-            if (audioPath != null) {
-                convertAudio(audioPath,outputPath,audioType)
+            if(checkItem== false || listAudioPick.size == 0){
+                Toast.makeText(this@AudioConverterActivity, "", Toast.LENGTH_SHORT).show()
+            }else{
+                if(listAudioPick.size == 1){
+                    showLoadingOverlay()
+                    val audioPath = getRealPathFromURI(this,audioUri!!)
+                    val timestamp = System.currentTimeMillis()
+                    val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                    val outputPath = "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".") }_${timestamp}_convert.${audioType}"
+//                val outputPath = "${filesDir.absolutePath}/output_$timestamp.mp3"
+                    if (audioPath != null) {
+                        convertAudio(audioPath,outputPath,audioType)
+                    }
+                }else{
+                    showLoadingOverlay()
+                    if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
+                        showLoadingOverlay()
+                        isConverting = true
+                        // Gọi hàm chuyển đổi với Coroutine
+                        CoroutineScope(Dispatchers.Main).launch {
+                            convertAllSongsToMp3()
+                        }
+                    }
+                }
+
             }
+
         }
     }
 
@@ -106,13 +135,36 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
 
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
-            Log.d("check_mp3", "Chuyển đổi thành cng ")
             startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }
     }
 
+    private suspend fun convertAllSongsToMp3() {
+        withContext(Dispatchers.IO) { // Chạy trong IO context
+            for(audio in listAudioPick){
+//                val videoPath = getRealPathFromURI(this@AudioConverterActivity,audio.uri)
+//                val timestamp = System.currentTimeMillis()
+//                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+//                val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_convert.mp3"
+//                if (videoPath != null) {
+//                    convertAudio(videoPath, outputPath, audioType)
+//                }
+                showLoadingOverlay()
+                val audioPath = getRealPathFromURI(this@AudioConverterActivity,audio.uri!!)
+                val timestamp = System.currentTimeMillis()
+                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                val outputPath = "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".") }_${timestamp}_convert.${audioType}"
+//                val outputPath = "${filesDir.absolutePath}/output_$timestamp.mp3"
+                if (audioPath != null) {
+                    convertAudio(audioPath,outputPath,audioType)
+                }
+            }
+        }
+        startActivity(Intent(this, SavedActivity::class.java))
+        isConverting = false
+    }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
         var path: String? = null
@@ -125,6 +177,14 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
             }
         }
         return path
+    }
+
+    private fun showLoadingOverlay() {
+        binding.loadingOverlay.visibility = View.VISIBLE
+    }
+
+    private fun hideLoadingOverlay() {
+        binding.loadingOverlay.visibility = View.GONE
     }
 
     private fun initData() {

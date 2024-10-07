@@ -5,6 +5,9 @@ import android.net.Uri
 import android.os.Environment
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
+import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
+import com.kan.dev.st_042_video_to_mp3.model.VideoConvertModel
+import com.kan.dev.st_042_video_to_mp3.model.VideoCutterModel
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
 import com.metaldetector.golddetector.finder.model.LanguageModel
 import java.io.File
@@ -29,6 +32,8 @@ object Const {
     var positionVideoPlay = 0
     var positionAudioPlay = 0
     var mp3Uri : Uri? = null
+    var videoUri : Uri? = null
+    var currentRingtone = 0
     var VideoUriSpeed : Uri? = null
     var countAudio = 0
     var countSize = 0
@@ -36,8 +41,11 @@ object Const {
     var countSizeVideo = 0
     var selectType = ""
     var selectTypeAudio = ""
-    var audioInfo : AudioInfo? = null
+    var audioInfo : AudioSpeedModel? = null
     var videoInfo : VideoInfo? = null
+    var videoCutter : VideoCutterModel? = null
+    var videoConvert : VideoConvertModel? = null
+    var listConvertMp3 = mutableListOf<String>()
     var musicStorage : File? = null
     var videoStorage : File? = null
     var checkType : Boolean = false

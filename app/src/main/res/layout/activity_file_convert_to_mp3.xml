@@ -150,7 +150,7 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ctlProgress"
+            android:id="@+id/loadingOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/black"
@@ -197,6 +197,7 @@
                 app:lottie_repeatMode="restart" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

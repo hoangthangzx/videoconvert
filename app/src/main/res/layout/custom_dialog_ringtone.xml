@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:padding="2.5dp"
+        android:background="@drawable/bg_dialog">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/set_as"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/rdGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:checkedButton="@+id/phoneRingtone"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <RadioButton
+                android:id="@+id/phoneRingtone"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:button="@null"
+                android:drawableStart="@drawable/custom_icon"
+                android:drawablePadding="20dp"
+                android:text="@string/ringtone"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/smsRingtone"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginTop="14dp"
+                android:button="@null"
+                android:drawableStart="@drawable/custom_icon"
+                android:drawablePadding="20dp"
+                android:text="@string/notification"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/alarmRingtone"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginTop="14dp"
+                android:button="@null"
+                android:drawableStart="@drawable/custom_icon"
+                android:drawablePadding="20dp"
+                android:text="Alarm"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+
+        </RadioGroup>
+
+
+        <LinearLayout
+            android:id="@+id/lnSave"
+            android:layout_width="134dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="23dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:background="@drawable/bg_ok"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+
+            <TextView
+                android:id="@+id/tvSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="@string/save"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imvSave"
+                app:layout_constraintEnd_toEndOf="@+id/imvSave"
+                app:layout_constraintStart_toStartOf="@+id/imvSave"
+                app:layout_constraintTop_toTopOf="@+id/imvSave" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/lnCancel"
+            android:layout_width="134dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginStart="23dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:background="@drawable/bg_cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rdGroup">
+
+
+            <TextView
+                android:id="@+id/tvCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="@string/cancel"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imvCancel"
+                app:layout_constraintEnd_toEndOf="@+id/imvCancel"
+                app:layout_constraintStart_toStartOf="@+id/imvCancel"
+                app:layout_constraintTop_toTopOf="@+id/imvCancel" />
+        </LinearLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

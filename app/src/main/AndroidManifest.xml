@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
@@ -51,7 +53,7 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
-        <activity android:name=".ui.SavedActivity"
+        <activity android:name=".ui.saved.SavedActivity"
             android:screenOrientation="portrait"
             android:exported="false"/>
 
