@@ -2,9 +2,12 @@ package com.kan.dev.st_042_video_to_mp3.ui
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
@@ -26,9 +29,14 @@ import androidx.core.content.ContextCompat
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityPlayAudioBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
+import com.kan.dev.st_042_video_to_mp3.databinding.CustomeDialogDeleteBinding
+import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.currentRingtone
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
 import com.kan.dev.st_042_video_to_mp3.utils.RingtoneUtils
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
@@ -84,6 +92,14 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             showDialogRingtone()
         }
 
+        binding.lnShare.onSingleClick {
+            shareAudioFile(this@PlaySongActivity, listAudio[positionAudioPlay].uri)
+        }
+
+        binding.lnDelete.onSingleClick {
+            showDialogDelete()
+        }
+
         binding.imvTick.onSingleClick {
             binding.lnMenu.visibility = View.GONE
             binding.lnMenu.visibility = View.VISIBLE
@@ -97,6 +113,8 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
                 false
             }
         }
+
+
 
         binding.imvPlay.onSingleClick {
             binding.imvPause.visibility = View.VISIBLE
@@ -113,6 +131,45 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             handler.removeCallbacksAndMessages(null)
         }
     }
+
+    private fun showDialogDelete() {
+        SystemUtils.setLocale(this)
+        val dialogBinding  = CustomeDialogDeleteBinding.inflate(LayoutInflater.from(this))
+        val dialog = Dialog(this)
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+//        dialog.window?.setBackgroundDrawable(getDrawable(R.color.transparent))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        dialog.setContentView(dialogBinding.root)
+        dialog.setCancelable(false)
+
+        dialogBinding.tvYes.onSingleClick{
+            listAudio.removeAt(positionAudioPlay)
+            deleteFileFromAudioInfo(this, listAudio[positionAudioPlay])
+            dialog.dismiss()
+        }
+        dialogBinding.tvNo.onSingleClick {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    fun deleteFileFromAudioInfo(context: Context, audioInfo: AudioInfo): Boolean {
+        val fileUri = audioInfo.uri
+        return try {
+            // Sử dụng ContentResolver để xóa file từ URI
+            val contentResolver: ContentResolver = context.contentResolver
+            val rowsDeleted = contentResolver.delete(fileUri, null, null) // Xóa file
+
+            // Kiểm tra xem có bất kỳ hàng nào bị xóa hay không
+            rowsDeleted > 0
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false // Trả về false nếu có lỗi xảy ra
+        }
+    }
+
+
 
     private fun showDialogRingtone() {
         SystemUtils.setLocale(this)
@@ -161,6 +218,20 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
         intent.setData(Uri.parse("package:" + this.packageName))
         startActivity(intent)
+    }
+
+    fun shareAudioFile(context: Context, uri: Uri) {
+        // Tạo intent gửi file âm thanh
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "audio/*"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Cấp quyền đọc URI cho ứng dụng khác
+        }
+
+        // Kiểm tra có ứng dụng nào có thể nhận intent này không
+        if (shareIntent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(Intent.createChooser(shareIntent, "Share Audio File"))
+        }
     }
 
     private fun setRingtone(type: Int) {

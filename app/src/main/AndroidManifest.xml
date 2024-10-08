@@ -41,6 +41,10 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
+        <activity android:name=".ui.PlayVideoActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"/>
+
         <activity android:name=".ui.ChooseItemStorageActivity"
             android:screenOrientation="portrait"
             android:exported="false"/>

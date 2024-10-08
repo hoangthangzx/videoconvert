@@ -21,13 +21,17 @@ import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertToMp3Ac
 import com.kan.dev.st_042_video_to_mp3.ui.merger_audio.MergerAudioActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkDataAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
@@ -126,6 +130,18 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
         binding.imvBack.onSingleClick {
             finish()
+            countAudio = 0
+            countSize = 0
+            checkType = true
+            selectType = ""
+            selectTypeAudio = ""
+            listVideo.clear()
+            listVideoPick.clear()
+            listAudio.clear()
+            listAudioPick.clear()
+            listAudioSaved.clear()
+            listConvertMp3.clear()
+            audioInfo  = null
         }
     }
 
@@ -165,6 +181,18 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
         binding.imvBack.onSingleClick {
             finish()
+            countAudio = 0
+            countSize = 0
+            checkType = true
+            selectType = ""
+            selectTypeAudio = ""
+            listVideo.clear()
+            listVideoPick.clear()
+            listAudio.clear()
+            listAudioPick.clear()
+            listAudioSaved.clear()
+            listConvertMp3.clear()
+            audioInfo  = null
         }
 
         binding.lnContinue.onSingleClick {
@@ -202,8 +230,18 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
         binding.imvBack.onSingleClick {
             finish()
-            listAudioPick.clear()
+            countAudio = 0
+            countSize = 0
+            checkType = true
+            selectType = ""
+            selectTypeAudio = ""
+            listVideo.clear()
+            listVideoPick.clear()
             listAudio.clear()
+            listAudioPick.clear()
+            listAudioSaved.clear()
+            listConvertMp3.clear()
+            audioInfo  = null
         }
 
         binding.lnContinue.onSingleClick {

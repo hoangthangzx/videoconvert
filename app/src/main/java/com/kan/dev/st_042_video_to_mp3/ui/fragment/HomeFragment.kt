@@ -184,17 +184,6 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        countAudio = 0
-        countSize = 0
-        checkType = true
-        selectType = ""
-        selectTypeAudio = ""
-//        listVideo.clear()
-//        listVideoPick.clear()
-//        listAudio.clear()
-//        listAudioPick.clear()
-        listAudioSaved.clear()
-        listConvertMp3.clear()
-        audioInfo  = null
+
     }
 }

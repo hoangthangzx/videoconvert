@@ -1,20 +1,29 @@
 package com.kan.dev.st_042_video_to_mp3.ui.fragment.storage
+import android.app.Dialog
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.OptIn
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.kan.dev.st_042_video_to_mp3.R
+import com.kan.dev.st_042_video_to_mp3.databinding.CustomeDialogDeleteBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.FragmentStorageBinding
 import com.kan.dev.st_042_video_to_mp3.interface_bottom.BottomNavVisibilityListener
+import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.ui.ChooseItemStorageActivity
 import com.kan.dev.st_042_video_to_mp3.ui.PlaySongActivity
+import com.kan.dev.st_042_video_to_mp3.ui.PlayVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkData
@@ -32,8 +41,11 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.typefr
+import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
+import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
+import java.io.File
 
 class StorageFragment : Fragment() {
     lateinit var binding : FragmentStorageBinding
@@ -105,6 +117,7 @@ class StorageFragment : Fragment() {
         })
 
         adapterVdFr.onClickListener(object : VideoAdapterFr.onClickItemListener{
+            @OptIn(UnstableApi::class)
             override fun onClickItem(position: Int, holder: VideoAdapterFr.ViewHolder) {
                 if (isTouchEventHandled) {
                     if(!listVideo[position].active){
@@ -134,10 +147,9 @@ class StorageFragment : Fragment() {
                 }else{
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
                     Const.positionAudioPlay = position
-                    startActivity(Intent(requireContext(), PlaySongActivity::class.java))
+                    startActivity(Intent(requireContext(), PlayVideoActivity::class.java))
                 }
             }
-
             override fun onTouchEven(position: Int) {
                 checkType = false
                 isTouchEventHandled = true
@@ -162,7 +174,6 @@ class StorageFragment : Fragment() {
             }
 
         })
-
 
         adapterFr.onClickListener(object : AudioAdapterFr.onClickItemListener{
             override fun onClickItem(position: Int, holder: AudioAdapterFr.ViewHolder) {
@@ -233,7 +244,6 @@ class StorageFragment : Fragment() {
                     AudioUtils.getAllAudios(requireContext().contentResolver)
                     countAudio = 0
                     countSize = 0
-                    adapterFr.notifyDataSetChanged()
                 }else{
                     checkType = true
                     listVideoPick.clear()
@@ -241,13 +251,55 @@ class StorageFragment : Fragment() {
                     VideoUtils.getAllVideos(requireContext().contentResolver)
                     countVideo = 0
                     countSizeVideo = 0
-                    adapterVdFr.notifyDataSetChanged()
                 }
+                adapterVdFr.notifyDataSetChanged()
+                adapterFr.notifyDataSetChanged()
                 viewModel.resetEvent()
                 binding.ctlStorage.visibility = View.VISIBLE
                 binding.ctlItem.visibility = View.GONE
             }
         }
+
+        binding.imvDelete.onSingleClick {
+            showDialogDelete()
+        }
+    }
+
+    private fun showDialogDelete() {
+        SystemUtils.setLocale(requireContext())
+        val dialogBinding  = CustomeDialogDeleteBinding.inflate(LayoutInflater.from(requireContext()))
+        val dialog = Dialog(requireContext())
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+//        dialog.window?.setBackgroundDrawable(getDrawable(R.color.transparent))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        dialog.setContentView(dialogBinding.root)
+        var position = 0
+        dialog.setCancelable(false)
+
+        dialogBinding.tvYes.onSingleClick{
+            for (i in 0..listAudioPick.size-1){
+                var pos = listAudioPick[i].pos
+                Log.d("check_pos", "showDialogDelete: "+ pos)
+                if(listAudio[pos].active){
+                    Log.d("check_pos", "showDialogDelete: okeeee"+ pos)
+                    listAudio.removeAt(pos)
+                    adapterFr.notifyItemRemoved(pos)
+                }
+            }
+            adapterFr.notifyDataSetChanged()
+
+            deleteAudioFiles(listAudioPick,requireContext())
+             countAudio = 0
+            countSize = 0
+            binding.tvSelectedItem.text = "$countAudio Selected"
+            binding.size.text = "$countSize KB"
+            dialog.dismiss()
+        }
+        dialogBinding.tvNo.onSingleClick {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun initRec() {
@@ -255,7 +307,6 @@ class StorageFragment : Fragment() {
         binding.recyclerViewTab2.adapter = adapterFr
         adapterVdFr.getData(listVideo)
         binding.recyclerViewTab1.adapter = adapterVdFr
-
     }
 
     private fun initData() {
@@ -266,9 +317,49 @@ class StorageFragment : Fragment() {
         binding.recyclerViewTab1.adapter = adapterVdFr
         Log.d("check_list_video", "initData: "+ listAudio)
         if (!checkData){
-
             checkData = true
         }
+    }
+
+    fun renameFile(oldFile: File, newFileName: String): Boolean {
+        val newFile = File(oldFile.parent, newFileName)
+
+        if (newFile.exists()) {
+            return false
+        }
+        return oldFile.renameTo(newFile)
+    }
+
+
+    fun deleteFileFromAudioInfo(context: Context, audioInfo: AudioInfo): Boolean {
+        val fileUri = audioInfo.uri
+        return try {
+            // Sử dụng ContentResolver để xóa file từ URI
+            val contentResolver: ContentResolver = context.contentResolver
+            val rowsDeleted = contentResolver.delete(fileUri, null, null) // Xóa file
+
+            // Kiểm tra xem có bất kỳ hàng nào bị xóa hay không
+            rowsDeleted > 0
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false // Trả về false nếu có lỗi xảy ra
+        }
+    }
+
+    fun deleteAudioFiles(audioList: List<AudioInfo>, context: Context) {
+        for (audioInfo in audioList) {
+            val isDeleted = deleteFileFromAudioInfo(context, audioInfo)
+            if (isDeleted) {
+                Log.d("check_delete_file", "deleteAudioFiles: okekekek ")
+            } else {
+                Log.d("check_delete_file", "deleteAudioFiles: Noooooo")
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adapterFr.notifyDataSetChanged()
     }
 
 }

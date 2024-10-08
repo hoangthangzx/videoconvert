@@ -50,7 +50,7 @@ object AudioUtils {
                 val formattedDate = formatDate(dateAdded)
                 val mimeType = cursor.getString(mimeTypeColumn)
 
-                Const.listAudio.add(0,AudioInfo(audioUri, formatTimeToHoursMinutes(duration), sizeInMB, audioName, formattedDate, false, mimeType, countPos))
+                Const.listAudio.add(AudioInfo(audioUri, formatTimeToHoursMinutes(duration), sizeInMB, audioName, formattedDate, false, mimeType, countPos))
                 countPos+=1
             }
         }
