@@ -10,7 +10,8 @@ import java.util.Date
 import java.util.Locale
 
 object AudioUtils {
-    fun getAllAudios(contentResolver: ContentResolver, listAudio: MutableList<AudioInfo>) {
+    var countPos = 0
+    fun getAllAudios(contentResolver: ContentResolver) {
         val uri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Audio.Media._ID,
@@ -49,7 +50,8 @@ object AudioUtils {
                 val formattedDate = formatDate(dateAdded)
                 val mimeType = cursor.getString(mimeTypeColumn)
 
-                listAudio.add(0,AudioInfo(audioUri, formatTimeToHoursMinutes(duration), sizeInMB, audioName, formattedDate, false, mimeType, listAudio.size))
+                Const.listAudio.add(0,AudioInfo(audioUri, formatTimeToHoursMinutes(duration), sizeInMB, audioName, formattedDate, false, mimeType, countPos))
+                countPos+=1
             }
         }
     }

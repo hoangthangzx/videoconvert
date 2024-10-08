@@ -140,6 +140,15 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
 
+        binding.lnAudioMerger.onSingleClick {
+            selectTypeAudio = "AudioMerger"
+            countAudio = 0
+            countSize = 0
+            listAudio.clear()
+            Const.checkDataAudio = false
+            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
+        }
+
         binding.lnAudioCutter.onSingleClick {
             selectTypeAudio = "AudioCutter"
             countAudio = 0

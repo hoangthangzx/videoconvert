@@ -115,4 +115,5 @@
     <string name="play_sound">Play Sound</string>
     <string name="song">Song</string>
     <string name="video_converter">Video Converter</string>
+    <string name="_00">00</string>
 </resources>

@@ -78,7 +78,7 @@ class AudioFragment : Fragment() {
 
     private fun initData() {
         if (!checkDataAudio){
-            AudioUtils.getAllAudios(requireContext().contentResolver, listAudio)
+            AudioUtils.getAllAudios(requireContext().contentResolver)
             Log.d("check_list_video", "initData: "+ listAudio)
             checkDataAudio = true
         }

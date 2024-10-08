@@ -12,10 +12,12 @@ import com.kan.dev.st_042_video_to_mp3.databinding.ItemAudioBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoAdapter
 import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoAdapter.onClickItemListener
+import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 
 class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudioAdapter.ViewHolder>() {
     lateinit var mListener : onClickItemListener
+    lateinit var eListener : onClickItemListenerEdt
     var data = listOf<AudioInfo>()
     fun getData(mData : List<AudioInfo>){
         data = mData
@@ -26,12 +28,40 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
         fun onClickItem (position: Int, holder: ViewHolder)
     }
 
+    interface onClickItemListenerEdt {
+        fun onPlusItem (position: Int, holder: ViewHolder)
+        fun onMinusItem  (position: Int, holder: ViewHolder)
+    }
+
+    fun onClickEdtListener (onClickItemListenerEdt: onClickItemListenerEdt){
+        eListener = onClickItemListenerEdt
+    }
+
     fun onClickListener(onClickItemListener: onClickItemListener){
         mListener = onClickItemListener
     }
 
     inner class ViewHolder(val binding : ItemAudioBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(position: Int, holder: SelectAudioAdapter.ViewHolder) {
+            if(Const.selectTypeAudio.equals("AudioMerger")){
+                binding.tvTime.visibility = View.GONE
+
+                if(!data[position].active ){
+                    binding.tvTime.visibility = View.GONE
+                    binding.lnItemCount.visibility = View.GONE
+                }else{
+                    binding.lnItemCount.visibility = View.VISIBLE
+                    binding.tvTime.visibility = View.INVISIBLE
+                }
+
+                binding.btnMinus.setOnClickListener {
+                    eListener.onMinusItem(position,holder)
+                }
+
+                binding.btnPlus.onSingleClick {
+                    eListener.onPlusItem(position,holder)
+                }
+            }
             binding.tvTitle.isSelected = true
             binding.tvSize.text = "${data[position].sizeInMB} MB"
             binding.tvTitle.text = data[position].name
@@ -46,6 +76,7 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
             binding.root.setOnClickListener {
                 mListener.onClickItem(position,holder)
             }
+
         }
     }
     override fun onCreateViewHolder(

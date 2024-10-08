@@ -104,4 +104,70 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/lnItemCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/edtStartTime"
+            android:layout_width="30dp"
+            android:layout_height="24dp"
+            android:background="@drawable/bg_edt_time"
+            android:gravity="center"
+            android:inputType="time"
+            android:maxLength="2"
+            android:text="1"
+            android:paddingHorizontal="5dp"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/icon_minus"
+            app:layout_constraintBottom_toBottomOf="@+id/edtStartTime"
+            app:layout_constraintEnd_toStartOf="@+id/edtStartTime"
+            app:layout_constraintTop_toTopOf="@+id/edtStartTime" />
+
+
+        <ImageView
+            android:id="@+id/btnMinus"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintBottom_toBottomOf="@+id/edtStartTime"
+            app:layout_constraintEnd_toStartOf="@+id/edtStartTime"
+            app:layout_constraintTop_toTopOf="@+id/edtStartTime" />
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="-1dp"
+            android:src="@drawable/icon_plus"
+            app:layout_constraintBottom_toBottomOf="@+id/edtStartTime"
+            app:layout_constraintStart_toEndOf="@+id/edtStartTime"
+            app:layout_constraintTop_toTopOf="@+id/edtStartTime" />
+
+        <ImageView
+            android:id="@+id/btnPlus"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintBottom_toBottomOf="@+id/edtStartTime"
+            app:layout_constraintStart_toEndOf="@+id/edtStartTime"
+            app:layout_constraintTop_toTopOf="@+id/edtStartTime" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

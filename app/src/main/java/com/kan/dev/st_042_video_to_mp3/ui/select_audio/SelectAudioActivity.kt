@@ -45,16 +45,84 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     override fun getLayoutId(): Int = R.layout.activity_select_audio
 
     lateinit var adapter: SelectAudioAdapter
+    var countItemt = 1
+
     override fun init() {
         initData()
         initView()
         if(Const.selectTypeAudio.equals("AudioSpeed") || Const.selectTypeAudio.equals("AudioCutter")){
             Log.d("check_click", "init: okeeeeeeeeeeeeee")
             initActionAudioSpeed()
-        }else{
+        }else if(selectTypeAudio.equals("AudioMerger")){
+            initActionAudioMerger()
+        }
+        else{
             initAction()
         }
     }
+    private fun initActionAudioMerger() {
+        binding.tvContinue.onSingleClick {
+            Log.d("check_list_audio_pick", "initActionAudioMerger: "+ listAudioPick)
+        }
+        adapter.onClickListener(object : SelectAudioAdapter.onClickItemListener{
+            override fun onClickItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
+                if(!listAudio[position].active){
+                    positionAudioPlay = position
+                    countAudio += 1
+                    holder.binding.lnItemCount.visibility = View.VISIBLE
+                    countSize += listAudio[position].sizeInMB.toInt()
+                    holder.binding.tvTime.visibility = View.INVISIBLE
+                    holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
+                    listAudioPick.add(0, listAudio[position])
+                    listAudio[position].active = true
+                }else if(listAudio[position].active){
+                    countAudio -= 1
+                    holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
+                    holder.binding.lnItemCount.visibility = View.GONE
+                    listAudio[position].active = false
+                    holder.binding.tvTime.visibility = View.GONE
+                    Log.d("check_list_audio_pick", "onClickItem: "  + listAudio.size   + " ____ " + position)
+                    listAudioPick.removeAll { it.pos == listAudio.size - position -1}
+                    countSize -= listAudio[position].sizeInMB.toInt()
+                }
+                binding.tvSelected.text = "$countAudio Selected"
+                binding.tvSize.text = "/ $countSize MB"
+            }
+        })
+
+        adapter.onClickEdtListener(object :SelectAudioAdapter.onClickItemListenerEdt{
+            override fun onPlusItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
+                countItemt = Integer.parseInt(holder.binding.edtStartTime.text.toString())
+                countItemt += 1
+                positionAudioPlay = position
+                countAudio += 1
+                countSize += listAudio[position].sizeInMB.toInt()
+                listAudioPick.add(0, listAudio[position])
+                holder.binding.edtStartTime.setText(countItemt.toString())
+                binding.tvSelected.text = "$countAudio Selected"
+                binding.tvSize.text = "/ $countSize MB"
+            }
+            override fun onMinusItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
+                countItemt = Integer.parseInt(holder.binding.edtStartTime.text.toString())
+                countItemt -= 1
+                listAudioPick.remove(listAudio[position])
+                countSize -= listAudio[position].sizeInMB.toInt()
+                countAudio -= 1
+                if(countItemt == 0){
+                    holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
+                    holder.binding.lnItemCount.visibility = View.GONE
+                    listAudio[position].active = false
+                    holder.binding.tvTime.visibility = View.GONE
+                    countItemt = 1
+                }
+                binding.tvSelected.text = "$countAudio Selected"
+                binding.tvSize.text = "/ $countSize MB"
+                holder.binding.edtStartTime.setText(countItemt.toString())
+            }
+
+        })
+    }
+
 
     private fun initActionAudioSpeed() {
         adapter.onClickListener(object : SelectAudioAdapter.onClickItemListener{
@@ -130,7 +198,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
         }
     }
 
-
     private fun initAction() {
         adapter.onClickListener(object : SelectAudioAdapter.onClickItemListener{
             override fun onClickItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
@@ -170,7 +237,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
     private fun initData() {
         if (!checkDataAudio){
-            AudioUtils.getAllAudios(contentResolver, listAudio)
+            AudioUtils.getAllAudios(contentResolver)
             checkDataAudio = true
         }
         adapter = SelectAudioAdapter(this@SelectAudioActivity)
