@@ -39,6 +39,7 @@ object Const {
     var countSize = 0
     var countVideo = 0
     var countSizeVideo = 0
+    var isTouchEventHandled = false
     var selectType = ""
     var selectTypeAudio = ""
     var audioInfo : AudioSpeedModel? = null
@@ -50,6 +51,7 @@ object Const {
     var musicStorage : File? = null
     var videoStorage : File? = null
     var checkType : Boolean = false
+    var typefr = "vd"
     var listLanguage = mutableListOf<LanguageModel>(
         LanguageModel("Spanish", "es", R.drawable.ic_flag_spanish),
         LanguageModel("French", "fr", R.drawable.ic_flag_french),

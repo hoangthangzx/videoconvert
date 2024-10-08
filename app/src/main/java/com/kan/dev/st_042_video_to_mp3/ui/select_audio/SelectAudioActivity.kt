@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.kan.dev.st_042_video_to_mp3.R
+import com.kan.dev.st_042_video_to_mp3.databinding.ActivityAudioMergerBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivitySelectAudioBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.ui.ActivityAudioCutter
@@ -17,6 +18,7 @@ import com.kan.dev.st_042_video_to_mp3.ui.AudioSpeedActivity
 import com.kan.dev.st_042_video_to_mp3.ui.audio_converter.AudioConverterActivity
 import com.kan.dev.st_042_video_to_mp3.ui.audio_converter.AudioConverterAdapter
 import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertToMp3Activity
+import com.kan.dev.st_042_video_to_mp3.ui.merger_audio.MergerAudioActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkDataAudio
@@ -38,15 +40,11 @@ import com.metaldetector.golddetector.finder.AbsBaseActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     override fun getFragmentID(): Int = 0
-
     override fun getLayoutId(): Int = R.layout.activity_select_audio
-
     lateinit var adapter: SelectAudioAdapter
     var countItemt = 1
-
     override fun init() {
         initData()
         initView()
@@ -63,6 +61,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     private fun initActionAudioMerger() {
         binding.tvContinue.onSingleClick {
             Log.d("check_list_audio_pick", "initActionAudioMerger: "+ listAudioPick)
+            startActivity(Intent(this@SelectAudioActivity,MergerAudioActivity::class.java))
         }
         adapter.onClickListener(object : SelectAudioAdapter.onClickItemListener{
             override fun onClickItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
@@ -71,19 +70,22 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     countAudio += 1
                     holder.binding.lnItemCount.visibility = View.VISIBLE
                     countSize += listAudio[position].sizeInMB.toInt()
+                    holder.binding.edtStartTime.setText("1")
                     holder.binding.tvTime.visibility = View.INVISIBLE
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
                     listAudioPick.add(0, listAudio[position])
                     listAudio[position].active = true
                 }else if(listAudio[position].active){
-                    countAudio -= 1
+                    var countEdt = Integer.parseInt(holder.binding.edtStartTime.text.toString())
+                    countAudio -= countEdt
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
                     holder.binding.lnItemCount.visibility = View.GONE
                     listAudio[position].active = false
                     holder.binding.tvTime.visibility = View.GONE
+                    countItemt = 1
                     Log.d("check_list_audio_pick", "onClickItem: "  + listAudio.size   + " ____ " + position)
-                    listAudioPick.removeAll { it.pos == listAudio.size - position -1}
-                    countSize -= listAudio[position].sizeInMB.toInt()
+                    listAudioPick.removeAll { it.pos == listAudio.size - position -1 }
+                    countSize -= countEdt*(listAudio[position].sizeInMB.toInt())
                 }
                 binding.tvSelected.text = "$countAudio Selected"
                 binding.tvSize.text = "/ $countSize MB"
@@ -121,37 +123,15 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             }
 
         })
-    }
 
+        binding.imvBack.onSingleClick {
+            finish()
+        }
+    }
 
     private fun initActionAudioSpeed() {
         adapter.onClickListener(object : SelectAudioAdapter.onClickItemListener{
             override fun onClickItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
-//                if(!listAudio[position].active){
-//                    if(listAudioPick.size!=0){
-//                        positionAudioPlay = position
-//                        val pos = listAudioPick[0].pos
-//                        listAudio[pos].active = false
-//                        listAudio[position].active = true
-//                        listAudioPick.removeAt(0)
-//                        listAudioPick.add(0,listAudio[position])
-//                        adapter.notifyDataSetChanged()
-//                    }else{
-//                        positionAudioPlay = position
-//                        countAudio += 1
-//                        countSize += listAudio[position].sizeInMB.toInt()
-//                        holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
-//                        listAudioPick.add(0, listAudio[position])
-//                        listAudio[position].active = true
-//                    }
-//                }else if(listAudio[position].active){
-//                    countAudio -= 1
-//                    holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
-//                    listAudio[position].active = false
-//                    listAudioPick.remove(listAudio[position])
-//                    countSize -= listAudio[position].sizeInMB.toInt()
-//                }
-
                 val previouslySelectedIndex = listAudio.indexOfFirst { it.active }
                 if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
                     // Nếu có item được chọn trước đó và không phải item đang click

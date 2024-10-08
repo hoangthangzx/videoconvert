@@ -256,8 +256,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             }
         })
 
-
-
         binding.seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             @SuppressLint("DefaultLocale")
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

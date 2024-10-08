@@ -13,7 +13,7 @@ import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivitySelectVideoBinding
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
 import com.kan.dev.st_042_video_to_mp3.ui.VideoConverterActivity
-import com.kan.dev.st_042_video_to_mp3.ui.merger.MergerActivity
+//import com.kan.dev.st_042_video_to_mp3.ui.merger.MergerActivity
 import com.kan.dev.st_042_video_to_mp3.ui.VideoCutterActivity
 import com.kan.dev.st_042_video_to_mp3.ui.VideoSpeedActivity
 import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertToMp3Activity
@@ -25,6 +25,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
+import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
@@ -33,7 +34,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     override fun getFragmentID(): Int = 0
     override fun getLayoutId(): Int = R.layout.activity_select_video
     lateinit var adapter: SelectVideoAdapter
-    var count = 0
+//    var count = 0
     override fun init() {
         initData()
         if(Const.selectType.equals("Speed") || Const.selectType.equals("VideoCutter")){
@@ -90,10 +91,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         binding.lnContinue.onSingleClick {
             if(countVideo>0 && selectType.equals("Video")){
                 startActivity(Intent(this@SelectVideoActivity, FileConvertToMp3Activity::class.java))
-            } else if (selectType.equals("VideoMerger")){
-                startActivity(Intent(this@SelectVideoActivity, MergerActivity::class.java))
-            }
-            else{
+            } else{
                 Toast.makeText(this@SelectVideoActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
             }
         }
@@ -163,8 +161,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             if(countVideo>0){
                 if(Const.selectType.equals("VideoCutter")){
                     startActivity(Intent(this@SelectVideoActivity, VideoCutterActivity::class.java))
-                }else if(Const.selectType.equals("VideoMerger")){
-                    startActivity(Intent(this@SelectVideoActivity, MergerActivity::class.java))
                 }
                 else{
                     startActivity(Intent(this@SelectVideoActivity, VideoSpeedActivity::class.java))
@@ -196,8 +192,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         binding.lnContinue.onSingleClick {
             if(countVideo>0 && selectType.equals("Video")){
                 startActivity(Intent(this@SelectVideoActivity, FileConvertToMp3Activity::class.java))
-            } else if (selectType.equals("VideoMerger")){
-                startActivity(Intent(this@SelectVideoActivity, MergerActivity::class.java))
             }
             else{
                 Toast.makeText(this@SelectVideoActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
@@ -238,47 +232,46 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
 
     private fun initData() {
         if (!checkData){
-            getAllVideos(contentResolver)
+            VideoUtils.getAllVideos(contentResolver)
             Log.d("check_list_video", "initData: "+ listVideo)
             checkData = true
         }
     }
-
-    fun getAllVideos(contentResolver: ContentResolver) {
-        val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        val projection = arrayOf(
-            MediaStore.Video.Media._ID,
-            MediaStore.Video.Media.DURATION,
-            MediaStore.Video.Media.SIZE, // Thêm cột SIZE để lấy dung lượng
-            MediaStore.Video.Media.DISPLAY_NAME // Thêm cột DISPLAY_NAME để lấy tên video
-        )
-        val cursor: Cursor? = contentResolver.query(
-            uri,
-            projection,
-            null,
-            null,
-            null
-        )
-        cursor?.use {
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
-            val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
-            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE) // Lấy index của cột SIZE
-            val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME) // Lấy index của cột tên video
-
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(idColumn)
-                val videoUri = Uri.withAppendedPath(uri, id.toString())
-                val duration = cursor.getLong(durationColumn)
-                val size = cursor.getLong(sizeColumn) // Lấy giá trị dung lượng
-                val sizeInMB = size / (1024 * 1024)
-                val videoName = cursor.getString(nameColumn) // Lấy giá trị tên video
-
-                // Cập nhật để bao gồm videoName trong VideoInfo
-                listVideo.add(VideoInfo(videoUri, formatTimeToHoursMinutes(duration), sizeInMB, videoName, false, count))
-                count +=1
-            }
-        }
-    }
+//    fun getAllVideos(contentResolver: ContentResolver) {
+//        val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+//        val projection = arrayOf(
+//            MediaStore.Video.Media._ID,
+//            MediaStore.Video.Media.DURATION,
+//            MediaStore.Video.Media.SIZE, // Thêm cột SIZE để lấy dung lượng
+//            MediaStore.Video.Media.DISPLAY_NAME // Thêm cột DISPLAY_NAME để lấy tên video
+//        )
+//        val cursor: Cursor? = contentResolver.query(
+//            uri,
+//            projection,
+//            null,
+//            null,
+//            null
+//        )
+//        cursor?.use {
+//            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
+//            val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
+//            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE) // Lấy index của cột SIZE
+//            val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME) // Lấy index của cột tên video
+//
+//            while (cursor.moveToNext()) {
+//                val id = cursor.getLong(idColumn)
+//                val videoUri = Uri.withAppendedPath(uri, id.toString())
+//                val duration = cursor.getLong(durationColumn)
+//                val size = cursor.getLong(sizeColumn) // Lấy giá trị dung lượng
+//                val sizeInMB = size / (1024 * 1024)
+//                val videoName = cursor.getString(nameColumn) // Lấy giá trị tên video
+//
+//                // Cập nhật để bao gồm videoName trong VideoInfo
+//                listVideo.add(VideoInfo(videoUri, formatTimeToHoursMinutes(duration), sizeInMB, videoName, false, count))
+//                count +=1
+//            }
+//        }
+//    }
 
     fun formatTimeToHoursMinutes(duration: Long): String {
         val minutes = (duration / 1000) / 60

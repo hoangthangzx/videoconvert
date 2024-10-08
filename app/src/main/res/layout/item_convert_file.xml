@@ -10,11 +10,11 @@
         android:id="@+id/imvVideoFile"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="12dp"
         android:background="@color/white"
         android:scaleType="centerCrop"
+        android:layout_marginStart="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imvTickBox"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearance="@style/ShapeAppearanceOverlay.App.CornerSize50Percents_10" />
 
@@ -72,6 +72,19 @@
         app:layout_constraintStart_toEndOf="@+id/tvDurationVideo"
         app:layout_constraintTop_toTopOf="@+id/tvDurationVideo"/>
 
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:text="@string/_19_jan_2024"
+        android:textColor="#B6B6B6"
+        android:visibility="gone"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imvDelete"
         android:layout_width="34dp"
@@ -83,8 +96,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-
     <ImageView
         android:id="@+id/imvTick"
         android:layout_width="34dp"
@@ -94,6 +105,18 @@
         android:layout_marginEnd="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imvTickBox"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/icon_check_box"
+        app:layout_constraintEnd_toStartOf="@+id/imvVideoFile"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -88,7 +88,26 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         }else if(selectType.equals("VideoConvert")){
             initViewConveter()
             initActionCoberter()
+        }else if(selectTypeAudio.equals("AudioMerger")){
+            initViewAudiMerger()
+            initData()
+            initActionFile()
         }
+    }
+
+    private fun initActionAudioMerger() {
+
+    }
+
+    private fun initViewAudiMerger() {
+        binding.imvPlay.visibility = View.GONE
+        binding.imvPause.visibility = View.VISIBLE
+        binding.tvTitle.isSelected = true
+        binding.ctlFile.visibility = View.VISIBLE
+        binding.tvTitle.text = audioInfo!!.name
+        binding.tvSize.text = audioInfo!!.sizeInMB.toString()
+        binding.tvDurationVideo.text = audioInfo!!.duration
+        binding.tvDuration.text =" / ${audioInfo!!.duration}"
     }
 
     private fun initActionCoberter() {
@@ -360,7 +379,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             uriAll = videoConvert!!.uri
         } else if (selectTypeAudio.equals("AudioSpeed")){
             uriAll = audioInfo!!.uri
-        }else{
+        }else if(selectTypeAudio.equals("AudioMerger")){
+            uriAll = audioInfo!!.uri
+        }
+        else{
             uriAll = videoCutter!!.uri
         }
         createMediaPlayer()
@@ -390,7 +412,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                     binding.tvTimeStart.text = "${elapsedTime}"
                 }
             }
-
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 handler.removeCallbacksAndMessages(null)
             }
@@ -415,12 +436,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 binding.imvPlay.visibility = View.VISIBLE
                 handler.removeCallbacksAndMessages(null)
             },1000)
-
         }
         mediaPlayer!!.start()
         updateTimeAndSeekBar()
     }
-
 
     private fun createMediaPlayer() {
         mediaPlayer = MediaPlayer().apply {
@@ -449,8 +468,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition.toLong()))
         )
         binding.tvTimeStart.text = "${elapsedTime}"
-
-        // Tiếp tục cập nhật mỗi giây
         handler.postDelayed({ updateTimeAndSeekBar() }, 1000)
     }
 

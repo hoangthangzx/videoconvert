@@ -121,6 +121,8 @@ class VideoSpeedActivity : AbsBaseActivity<ActivityVideoSpeedBinding>(false) {
                             newDuration,
                             listVideo[positionVideoPlay].sizeInMB,
                             fileName.toString(),
+                            "0"
+                            ,
                             false,
                             0
                         )

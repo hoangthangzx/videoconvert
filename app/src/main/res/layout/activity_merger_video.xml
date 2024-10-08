@@ -7,473 +7,473 @@
         android:layout_height="match_parent"
         android:background="@color/black">
 
-        <LinearLayout
-            android:id="@+id/lnStatus_2"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:gravity="center_vertical"
-            android:layout_marginTop="30dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/imvBack"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_marginStart="16dp"
-                android:padding="5dp"
-                android:src="@drawable/icon_back"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-                <LinearLayout
-                    android:layout_width="100dp"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/bg_song_merger"
-                    android:layout_height="32dp">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/icon_music"/>
-
-                    <ImageView
-                        android:layout_width="1dp"
-                        android:layout_height="9dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/line_speed"/>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:textColor="@color/white"
-                        android:textAlignment="center"
-                        android:layout_height="wrap_content"
-                        android:text="@string/original"
-                        android:layout_marginHorizontal="2dp"/>
-
-                </LinearLayout>
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-
-            <TextView
-                android:id="@+id/tvSave"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="16dp"
-                android:gravity="center"
-                android:text="@string/save"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <androidx.media3.ui.PlayerView
-            android:id="@+id/exoVideo"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="visible"
-            app:resize_mode="fit"
-            app:show_buffering="when_playing"
-            app:controller_layout_id="@layout/custom_controller_video"
-            app:layout_constraintBottom_toTopOf="@+id/ctlBottom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2" />
-
-        <LinearLayout
-            android:id="@+id/lnVideoLR"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/ctlBottom"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:gravity="center"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2">
-
-            <ImageView
-                android:id="@+id/imvVideo1"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="300dp"/>
-
-            <ImageView
-                android:id="@+id/imvVideo2"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="300dp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/lnVideoUD"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/ctlBottom"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2">
-
-            <ImageView
-                android:id="@+id/imvVideo1UD"
-                android:layout_width="200dp"
-                android:layout_weight="1"
-                android:layout_height="0dp"/>
-
-            <ImageView
-                android:id="@+id/imvVideo2UD"
-                android:layout_width="200dp"
-                android:layout_weight="1"
-                android:layout_height="0dp"/>
-
-        </LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ctlBottom"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:background="@drawable/imv_bottom_convert"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <LinearLayout
-                android:id="@+id/lnMergerStyle"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:visibility="gone"
-                android:layout_marginHorizontal="20dp"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout11"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitleBottom">
-
-                <LinearLayout
-                    android:id="@+id/lnSequence"
-                    android:layout_width="100dp"
-                    android:gravity="center"
-                    android:background="@drawable/selector_bg_merger"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/imvBoxSq"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginHorizontal="6dp"
-                        android:src="@drawable/selector_box"/>
-
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginEnd="6dp"
-                        android:gravity="center_vertical"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="20dp"
-                            android:background="@drawable/icon_seq"/>
-
-                        <TextView
-                            android:id="@+id/tvSq"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="10sp"
-                            android:ellipsize="marquee"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:marqueeRepeatLimit="marquee_forever"
-                            android:paddingStart="2dp"
-                            android:paddingEnd="2dp"
-                            android:scrollHorizontally="true"
-                            android:singleLine="true"
-                            android:layout_marginTop="5dp"
-                            android:textColor="@color/white"
-                            android:text="@string/sequence"
-                            tools:ignore="SmallSp" />
-                        
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:id="@+id/lnLeftAndRight"
-                    android:layout_width="100dp"
-                    android:gravity="center"
-                    android:background="@drawable/selector_bg_merger"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/imvBoxLR"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginHorizontal="6dp"
-                        android:src="@drawable/selector_box"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginEnd="6dp"
-                        android:gravity="center_vertical"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="20dp"
-                            android:background="@drawable/icon_lr"/>
-
-                        <TextView
-                            android:id="@+id/tvLR"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="10sp"
-                            android:ellipsize="marquee"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:marqueeRepeatLimit="marquee_forever"
-                            android:paddingStart="2dp"
-                            android:paddingEnd="2dp"
-                            android:scrollHorizontally="true"
-                            android:singleLine="true"
-                            android:layout_marginTop="5dp"
-                            android:textColor="@color/white"
-                            android:text="@string/left_and_right"
-                            tools:ignore="SmallSp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:id="@+id/lnUpAndDown"
-                    android:layout_width="100dp"
-                    android:gravity="center"
-                    android:background="@drawable/selector_bg_merger"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/imvBoxUD"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginHorizontal="6dp"
-                        android:src="@drawable/selector_box"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginEnd="6dp"
-                        android:gravity="center_vertical"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="26dp"
-                            android:background="@drawable/icon_ud"/>
-
-                        <TextView
-                            android:id="@+id/tvUD"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="10sp"
-                            android:ellipsize="marquee"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:marqueeRepeatLimit="marquee_forever"
-                            android:paddingStart="2dp"
-                            android:paddingEnd="2dp"
-                            android:scrollHorizontally="true"
-                            android:singleLine="true"
-                            android:layout_marginTop="5dp"
-                            android:textColor="@color/white"
-                            android:text="@string/up_and_down"
-                            tools:ignore="HardcodedText,SmallSp" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvTitleBottom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/multimedia_file"
-                android:textColor="@color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recVideoMerger"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_marginHorizontal="20dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout11"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitleBottom"
-                tools:listitem="@layout/item_merger_style" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout11"
-                android:layout_width="0dp"
-                android:layout_height="55dp"
-                android:layout_marginBottom="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:id="@+id/lnMedia"
-                    android:layout_width="100dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/icon_multimedia" />
-
-                    <TextView
-                        android:id="@+id/tvMulti"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/multimedia"
-                        android:textColor="@color/white"
-                        android:visibility="gone" />
-
-                    <ImageView
-                        android:id="@+id/imvMulti"
-                        android:layout_width="15dp"
-                        android:layout_height="4dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/icon_merger_pick"
-                        android:visibility="visible" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:id="@+id/lnMerger"
-                    android:layout_width="100dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/icon_merger" />
-
-                    <TextView
-                        android:id="@+id/tvMerger"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/merge_style"
-                        android:textColor="@color/white"
-                        android:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/imvMerger"
-                        android:layout_width="15dp"
-                        android:layout_height="4dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/icon_merger_pick"
-                        android:visibility="gone" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <LinearLayout
-                    android:id="@+id/lnSound"
-                    android:layout_width="100dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/icon_sound" />
-
-                    <TextView
-                        android:id="@+id/tvSound"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/sound"
-                        android:textColor="@color/white"
-                        android:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/imvSound"
-                        android:layout_width="15dp"
-                        android:layout_height="4dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/icon_merger_pick"
-                        android:visibility="gone" />
-                </LinearLayout>
-
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        <LinearLayout-->
+<!--            android:id="@+id/lnStatus_2"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="55dp"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/imvBack"-->
+<!--                android:layout_width="38dp"-->
+<!--                android:layout_height="38dp"-->
+<!--                android:layout_marginStart="16dp"-->
+<!--                android:padding="5dp"-->
+<!--                android:src="@drawable/icon_back"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--            <View-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_weight="1"/>-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:background="@drawable/bg_song_merger"-->
+<!--                    android:layout_height="32dp">-->
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="32dp"-->
+<!--                        android:layout_height="32dp"-->
+<!--                        android:background="@drawable/icon_music"/>-->
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="1dp"-->
+<!--                        android:layout_height="9dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:src="@drawable/line_speed"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:textColor="@color/white"-->
+<!--                        android:textAlignment="center"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/original"-->
+<!--                        android:layout_marginHorizontal="2dp"/>-->
+
+<!--                </LinearLayout>-->
+
+<!--            <View-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_weight="1"/>-->
+
+
+<!--            <TextView-->
+<!--                android:id="@+id/tvSave"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="5dp"-->
+<!--                android:layout_marginEnd="16dp"-->
+<!--                android:gravity="center"-->
+<!--                android:text="@string/save"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textStyle="bold" />-->
+<!--        </LinearLayout>-->
+
+<!--        <androidx.media3.ui.PlayerView-->
+<!--            android:id="@+id/exoVideo"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:visibility="visible"-->
+<!--            app:resize_mode="fit"-->
+<!--            app:show_buffering="when_playing"-->
+<!--            app:controller_layout_id="@layout/custom_controller_video"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/ctlBottom"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2" />-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/lnVideoLR"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/ctlBottom"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            android:gravity="center"-->
+<!--            android:visibility="gone"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2">-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/imvVideo1"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_height="300dp"/>-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/imvVideo2"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_height="300dp"/>-->
+
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/lnVideoUD"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/ctlBottom"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="vertical"-->
+<!--            android:visibility="gone"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2">-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/imvVideo1UD"-->
+<!--                android:layout_width="200dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_height="0dp"/>-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/imvVideo2UD"-->
+<!--                android:layout_width="200dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_height="0dp"/>-->
+
+<!--        </LinearLayout>-->
+
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/ctlBottom"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="220dp"-->
+<!--            android:background="@drawable/imv_bottom_convert"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent">-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/lnMergerStyle"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="70dp"-->
+<!--                android:visibility="gone"-->
+<!--                android:layout_marginHorizontal="20dp"-->
+<!--                app:layout_constraintBottom_toTopOf="@+id/linearLayout11"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/tvTitleBottom">-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnSequence"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:background="@drawable/selector_bg_merger"-->
+<!--                    android:layout_height="match_parent">-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/imvBoxSq"-->
+<!--                        android:layout_width="20dp"-->
+<!--                        android:layout_height="20dp"-->
+<!--                        android:layout_marginHorizontal="6dp"-->
+<!--                        android:src="@drawable/selector_box"/>-->
+
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:orientation="vertical"-->
+<!--                        android:layout_marginEnd="6dp"-->
+<!--                        android:gravity="center_vertical"-->
+<!--                        android:layout_height="match_parent">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="25dp"-->
+<!--                            android:layout_height="20dp"-->
+<!--                            android:background="@drawable/icon_seq"/>-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/tvSq"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textSize="10sp"-->
+<!--                            android:ellipsize="marquee"-->
+<!--                            android:focusable="true"-->
+<!--                            android:gravity="center"-->
+<!--                            android:marqueeRepeatLimit="marquee_forever"-->
+<!--                            android:paddingStart="2dp"-->
+<!--                            android:paddingEnd="2dp"-->
+<!--                            android:scrollHorizontally="true"-->
+<!--                            android:singleLine="true"-->
+<!--                            android:layout_marginTop="5dp"-->
+<!--                            android:textColor="@color/white"-->
+<!--                            android:text="@string/sequence"-->
+<!--                            tools:ignore="SmallSp" />-->
+<!--                        -->
+<!--                    </LinearLayout>-->
+
+
+<!--                </LinearLayout>-->
+
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnLeftAndRight"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:background="@drawable/selector_bg_merger"-->
+<!--                    android:layout_height="match_parent">-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/imvBoxLR"-->
+<!--                        android:layout_width="20dp"-->
+<!--                        android:layout_height="20dp"-->
+<!--                        android:layout_marginHorizontal="6dp"-->
+<!--                        android:src="@drawable/selector_box"/>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:orientation="vertical"-->
+<!--                        android:layout_marginEnd="6dp"-->
+<!--                        android:gravity="center_vertical"-->
+<!--                        android:layout_height="match_parent">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="25dp"-->
+<!--                            android:layout_height="20dp"-->
+<!--                            android:background="@drawable/icon_lr"/>-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/tvLR"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textSize="10sp"-->
+<!--                            android:ellipsize="marquee"-->
+<!--                            android:focusable="true"-->
+<!--                            android:gravity="center"-->
+<!--                            android:marqueeRepeatLimit="marquee_forever"-->
+<!--                            android:paddingStart="2dp"-->
+<!--                            android:paddingEnd="2dp"-->
+<!--                            android:scrollHorizontally="true"-->
+<!--                            android:singleLine="true"-->
+<!--                            android:layout_marginTop="5dp"-->
+<!--                            android:textColor="@color/white"-->
+<!--                            android:text="@string/left_and_right"-->
+<!--                            tools:ignore="SmallSp" />-->
+
+<!--                    </LinearLayout>-->
+
+<!--                </LinearLayout>-->
+
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnUpAndDown"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:background="@drawable/selector_bg_merger"-->
+<!--                    android:layout_height="match_parent">-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/imvBoxUD"-->
+<!--                        android:layout_width="20dp"-->
+<!--                        android:layout_height="20dp"-->
+<!--                        android:layout_marginHorizontal="6dp"-->
+<!--                        android:src="@drawable/selector_box"/>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:orientation="vertical"-->
+<!--                        android:layout_marginEnd="6dp"-->
+<!--                        android:gravity="center_vertical"-->
+<!--                        android:layout_height="match_parent">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="22dp"-->
+<!--                            android:layout_height="26dp"-->
+<!--                            android:background="@drawable/icon_ud"/>-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/tvUD"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textSize="10sp"-->
+<!--                            android:ellipsize="marquee"-->
+<!--                            android:focusable="true"-->
+<!--                            android:gravity="center"-->
+<!--                            android:marqueeRepeatLimit="marquee_forever"-->
+<!--                            android:paddingStart="2dp"-->
+<!--                            android:paddingEnd="2dp"-->
+<!--                            android:scrollHorizontally="true"-->
+<!--                            android:singleLine="true"-->
+<!--                            android:layout_marginTop="5dp"-->
+<!--                            android:textColor="@color/white"-->
+<!--                            android:text="@string/up_and_down"-->
+<!--                            tools:ignore="HardcodedText,SmallSp" />-->
+<!--                    </LinearLayout>-->
+
+<!--                </LinearLayout>-->
+
+<!--            </LinearLayout>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/tvTitleBottom"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="15dp"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:text="@string/multimedia_file"-->
+<!--                android:textColor="@color/white"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/recVideoMerger"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="80dp"-->
+<!--                android:layout_marginHorizontal="20dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
+<!--                app:layout_constraintBottom_toTopOf="@+id/linearLayout11"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/tvTitleBottom"-->
+<!--                tools:listitem="@layout/item_merger_style" />-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/linearLayout11"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="55dp"-->
+<!--                android:layout_marginBottom="20dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent">-->
+
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnMedia"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:gravity="center"-->
+<!--                    android:orientation="vertical">-->
+
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="28dp"-->
+<!--                        android:layout_height="28dp"-->
+<!--                        android:src="@drawable/icon_multimedia" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tvMulti"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:text="@string/multimedia"-->
+<!--                        android:textColor="@color/white"-->
+<!--                        android:visibility="gone" />-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/imvMulti"-->
+<!--                        android:layout_width="15dp"-->
+<!--                        android:layout_height="4dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:src="@drawable/icon_merger_pick"-->
+<!--                        android:visibility="visible" />-->
+
+<!--                </LinearLayout>-->
+
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnMerger"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:gravity="center"-->
+<!--                    android:orientation="vertical">-->
+
+<!--&lt;!&ndash;                    <ImageView&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_width="28dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_height="28dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:src="@drawable/icon_merger" />&ndash;&gt;-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tvMerger"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:text="@string/merge_style"-->
+<!--                        android:textColor="@color/white"-->
+<!--                        android:visibility="visible" />-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/imvMerger"-->
+<!--                        android:layout_width="15dp"-->
+<!--                        android:layout_height="4dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:src="@drawable/icon_merger_pick"-->
+<!--                        android:visibility="gone" />-->
+<!--                </LinearLayout>-->
+
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnSound"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:gravity="center"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="28dp"-->
+<!--                        android:layout_height="28dp"-->
+<!--                        android:src="@drawable/icon_sound" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tvSound"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:text="@string/sound"-->
+<!--                        android:textColor="@color/white"-->
+<!--                        android:visibility="visible" />-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/imvSound"-->
+<!--                        android:layout_width="15dp"-->
+<!--                        android:layout_height="4dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:src="@drawable/icon_merger_pick"-->
+<!--                        android:visibility="gone" />-->
+<!--                </LinearLayout>-->
+
+
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
+
+
+<!--            </LinearLayout>-->
+
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+    android:layout_marginBottom="15dp"
+    android:background="@drawable/bg_item_file">
+
+    <ImageView
+        android:id="@+id/imvVideoFile"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="12dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/icon_item_audio_converter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:marqueeRepeatLimit="-1"
+        android:paddingStart="2dp"
+        android:paddingEnd="2dp"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:text="@string/compressed"
+        android:layout_marginEnd="10dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imvVideoFile"
+        app:layout_constraintEnd_toStartOf="@+id/imvSwap"
+        app:layout_constraintStart_toEndOf="@+id/imvVideoFile"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".4" />
+
+    <TextView
+        android:id="@+id/tvDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mp3"
+        android:textAllCaps="true"
+        android:textColor="#B6B6B6"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvSize"
+        app:layout_constraintStart_toStartOf="@+id/tvTitle"
+        app:layout_constraintTop_toTopOf="@+id/tvSize" />
+
+    <TextView
+        android:id="@+id/tvSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/_27_84_kb"
+        android:textColor="#B6B6B6"
+        android:textSize="11sp"
+        android:layout_marginStart="10dp"
+        app:layout_constraintStart_toEndOf="@+id/tvDuration"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+
+    <ImageView
+        android:id="@+id/imvSwap"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/imv_swap"
+        app:layout_constraintBottom_toBottomOf="@+id/imvDelete"
+        app:layout_constraintEnd_toStartOf="@+id/imvDelete"
+        app:layout_constraintTop_toTopOf="@+id/imvDelete" />
+
+    <ImageView
+        android:id="@+id/imvDelete"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:src="@drawable/icon_delete"
+        android:layout_marginEnd="12dp"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -218,16 +218,11 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             val outputPath = "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".") }_${timestamp}_speed.mp3"
             if (audioPath != null) {
                 Log.d("check_mp3", "initData: "+ audioPath)
-//                changeAudioSpeed(audioPath, outputPath, valueSpeed)
                 lifecycleScope.launch(Dispatchers.IO) {
-                    // Bao bọc hàm changeAudioSpeed trong withContext(Dispatchers.IO)
                     withContext(Dispatchers.IO) {
                         changeAudioSpeed(audioPath, outputPath, valueSpeed)
                     }
-
-                    // Trở về luồng chính mà không làm gì
                     withContext(Dispatchers.Main) {
-                        // Không làm gì ở đây, chỉ đơn giản quay lại luồng chính
                     }
                 }
             }
@@ -246,6 +241,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         audioUri = listAudio[Const.positionAudioPlay].uri
         Log.d("check_audio", "initData: "+ audioUri)
 //        mediaPlayer = MediaPlayer.create(this,audioUri)
+//        binding.waveformSeekBar.setSampleFrom(audioUri!!)
         createMediaPlayer()
         binding.seekBarAudio.max = mediaPlayer!!.duration
         binding.tvDuration.text = "/ ${listAudio[positionAudioPlay].duration}"

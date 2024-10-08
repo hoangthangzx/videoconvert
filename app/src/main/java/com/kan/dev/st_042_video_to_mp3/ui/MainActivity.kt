@@ -4,17 +4,22 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -22,24 +27,59 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.kan.dev.st_042_video_to_mp3.R
+import com.kan.dev.st_042_video_to_mp3.databinding.ActivityMainBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.DialogRateBinding
+import com.kan.dev.st_042_video_to_mp3.interface_bottom.BottomNavVisibilityListener
+import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.utils.showSystemUI
+import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
 import kotlin.system.exitProcess
 
-class MainActivity : AppCompatActivity() {
-
+class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
     lateinit var providerSharedPreference : SharedPreferenceUtils
-
+    lateinit var binding: ActivityMainBinding
+    private val viewModel: SharedViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         SystemUtils.setLocale(this)
         showSystemUI(true)
+
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initData()
+        initAction()
+    }
+
+    private fun initAction() {
+        binding.lnShare.onSingleClick {
+            shareAudioUris(this@MainActivity,Const.listAudioPick)
+        }
+
+        binding.lnCancel.onSingleClick {
+            Const.isTouchEventHandled = false
+            viewModel.triggerEvent()
+            binding.btShare.visibility = View.GONE
+            binding.bottomNavigationView.visibility = View.VISIBLE
+        }
+    }
+
+    fun shareAudioUris(context: Context, listAudio: MutableList<AudioInfo>) {
+        val uriList: ArrayList<Uri> = ArrayList()
+        for (audio in listAudio) {
+            uriList.add(audio.uri)
+        }
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND_MULTIPLE
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+            type = "audio/*"
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        // Bắt đầu Intent chia sẻ
+        context.startActivity(Intent.createChooser(shareIntent, "Share Audio Files"))
     }
 
     private fun initData() {
@@ -155,5 +195,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onBottomNavVisibilityChanged(isVisible: Boolean) {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        val bottomShare = findViewById<ConstraintLayout>(R.id.btShare)
+        Log.d("check_visible", "onBottomNavVisibilityChanged: "+ isVisible)
+        bottomNavigationView.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
+        bottomShare.visibility = View.VISIBLE
     }
 }

@@ -55,11 +55,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 if(fromUser){
                     val seekPosition = (mediaPlayer!!.duration * progress / 100)
                     mediaPlayer!!.seekTo(seekPosition.toInt())
-
                 }
             }
         }
-
         binding.waveformSeekBar.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 handler.post(updateProgress)  // Tiếp tục cập nhật sau khi dừng kéo

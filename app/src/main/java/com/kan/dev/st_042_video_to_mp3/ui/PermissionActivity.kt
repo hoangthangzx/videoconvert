@@ -27,9 +27,7 @@ import com.metaldetector.golddetector.finder.AbsBaseActivity
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
 
 class PermissionActivity : AbsBaseActivity<ActivityPermissionBinding>(false) {
-    override fun getFragmentID(): Int = 0
-
-    override fun getLayoutId(): Int = R.layout.activity_permission
+ override fun getLayoutId(): Int = R.layout.activity_permission
     lateinit var providerSharedPreference: SharedPreferenceUtils
     private var isFirstTimeRequestCamera = true
     private var isFirstTimeRequestNoty = true
@@ -63,19 +61,19 @@ class PermissionActivity : AbsBaseActivity<ActivityPermissionBinding>(false) {
     }
     private fun checkPermissions(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-//           val storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+           val storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
             val notyPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-            return  (notyPermission == PackageManager.PERMISSION_GRANTED )
+            return  (notyPermission == PackageManager.PERMISSION_GRANTED && storagePermission == PackageManager.PERMISSION_GRANTED )
         }else{
-//            val storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            val storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
             val notyPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-            return  (notyPermission == PackageManager.PERMISSION_GRANTED )
+            return  (notyPermission == PackageManager.PERMISSION_GRANTED && storagePermission == PackageManager.PERMISSION_GRANTED)
         }
 //        val cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
     }
     private fun initAction() {
         binding.tvContinue.onSingleClick {
-            if(checkPermissions() ){
+            if(checkPermissions()){
 //                SharedPreferenceUtils.getInstance(this).putBooleanValue(Const.PERMISSION,true)
                 SharedPreferenceUtils.getInstance(this).putStringValue("firstPick","false")
                 startActivity(Intent(this@PermissionActivity, MainActivity::class.java))
@@ -238,5 +236,7 @@ class PermissionActivity : AbsBaseActivity<ActivityPermissionBinding>(false) {
         updateStoragePermissionStatus()
         updateNotyPermissionStatus()
     }
+
+    override fun getFragmentID(): Int  = 0
 
 }

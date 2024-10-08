@@ -65,7 +65,15 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
+<!--        <activity android:name=".ui.merger_audio.MergerAudioActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:exported="false"/>-->
+
         <activity android:name=".ui.VideoConverterActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"/>
+
+        <activity android:name=".ui.merger_audio.MergerAudioActivity"
             android:screenOrientation="portrait"
             android:exported="false"/>
 

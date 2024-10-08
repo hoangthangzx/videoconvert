@@ -7,6 +7,7 @@ data class VideoInfo(
     val duration: String,
     val sizeInMB: Long,
     val name: String,
+    val date : String,
     var active: Boolean,
     var pos : Int
 )
