@@ -120,4 +120,5 @@
     <string name="safe_sound"><![CDATA[Safe & Sound]]></string>
     <string name="the_file_already_exists_please_enter_a_different_name">The file already exists, please enter a different name</string>
     <string name="set_ringtone_successfully">Set ringtone successfully</string>
+    <string name="you_don_t_have_any_content_yet_create_a_new_video_now">You don\'t have any content yet, create a new video now.</string>
 </resources>

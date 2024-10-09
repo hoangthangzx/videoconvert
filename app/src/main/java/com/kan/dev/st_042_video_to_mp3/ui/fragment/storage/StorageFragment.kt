@@ -101,6 +101,12 @@ class StorageFragment : Fragment() {
                         binding.recyclerViewTab1.adapter = adapterVdFr
                         binding.recyclerViewTab1.visibility = View.VISIBLE
                         binding.recyclerViewTab2.visibility = View.GONE
+                        if(listVideoStorage.size == 0){
+                            binding.lnNoItem.visibility = View.VISIBLE
+                            binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_video_now)
+                        }else{
+                            binding.lnNoItem.visibility = View.GONE
+                        }
                     }
                     1 -> {
                         typefr ="ad"
@@ -272,15 +278,34 @@ class StorageFragment : Fragment() {
         dialog.setContentView(dialogBinding.root)
         dialog.setCancelable(false)
         dialogBinding.lnOk.onSingleClick{
-            val nameFile = dialogBinding.edtRename.text
-            listAudio[positionAudioPlay].name = nameFile.toString()
-            adapterFr.notifyDataSetChanged()
-            val result = renameAudioFile(requireContext(), listAudioStorage[positionAudioPlay].uri,nameFile.toString())
-            Log.d("check_rename", "showDialogRename: tc"+ result)
-            if(result){
-                Log.d("check_rename", "showDialogRename: tc")
+            if(typefr.equals("vd")){
+                val nameFile = dialogBinding.edtRename.text
+//            lis[positionAudioPlay].name = nameFile.toString()
+                val result = AudioUtils.renameFile(requireContext(),
+                    listVideoStorage[positionVideoPlay].uri.toString(),
+                    nameFile.toString()
+                )
+                adapterVdFr.notifyDataSetChanged()
+                Log.d("check_rename", "showDialogRename: tc"+ result)
+                if(result){
+                    Log.d("check_rename", "showDialogRename: tc")
+                }else{
+                    Log.d("check_rename", "showDialogRename: tb")
+                }
             }else{
-                Log.d("check_rename", "showDialogRename: tb")
+                val nameFile = dialogBinding.edtRename.text
+//            lis[positionAudioPlay].name = nameFile.toString()
+                val result = AudioUtils.renameFile(requireContext(),
+                    listAudioStorage[positionAudioPlay].uri.toString(),
+                    nameFile.toString()
+                )
+                adapterFr.notifyDataSetChanged()
+                Log.d("check_rename", "showDialogRename: tc"+ result)
+                if(result){
+                    Log.d("check_rename", "showDialogRename: tc")
+                }else{
+                    Log.d("check_rename", "showDialogRename: tb")
+                }
             }
             dialog.dismiss()
         }
@@ -305,11 +330,17 @@ class StorageFragment : Fragment() {
                     Log.d("check_pos", "showDialogDelete: "+ pos)
                     if(listVideoStorage[pos].active){
                         Log.d("check_pos", "showDialogDelete: okeeee"+ pos)
-                        listVideoStorage.removeAt(pos)
+                        listVideoStorage.removeAll { it.pos == pos }
                         adapterVdFr.notifyItemRemoved(pos)
                     }
                 }
                 val deleted = deleteVideos(listVideoPick)
+                if(listVideoStorage.size == 0){
+                    binding.lnNoItem.visibility = View.VISIBLE
+                    binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_video_now)
+                }else{
+                    binding.lnNoItem.visibility = View.GONE
+                }
                 if (deleted) {
                     Log.d("DeleteVideos", "All videos deleted successfully.")
                 } else {
@@ -324,11 +355,17 @@ class StorageFragment : Fragment() {
                 for (i in 0..listAudioPick.size-1){
                     var pos = listAudioPick[i].pos
                     if(listAudioStorage[pos].active){
-                        listAudioStorage.removeAt(pos)
+                        listAudioStorage.removeAll { it.pos == pos }
                         adapterFr.notifyItemRemoved(pos)
                     }
                 }
                 val deleted = deleteAudioFiles(listAudioPick)
+                if(listAudioStorage.size == 0){
+                    binding.lnNoItem.visibility = View.VISIBLE
+                    binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_audio_now)
+                }else{
+                    binding.lnNoItem.visibility = View.GONE
+                }
                 if (deleted) {
                     Log.d("DeleteAudios", "All videos deleted successfully.")
                 } else {
@@ -383,13 +420,13 @@ class StorageFragment : Fragment() {
             if (file.exists()) {
                 val deleted = file.delete()
                 if (!deleted) {
-                    Log.e("DeleteAudioFiles", "Failed to delete: ${file.name}")
+//                    Log.e("DeleteAudioFiles", "Failed to delete: ${file.name}")
                     allDeleted = false
                 } else {
-                    Log.d("DeleteAudioFiles", "Deleted: ${file.name}")
+//                    Log.d("DeleteAudioFiles", "Deleted: ${file.name}")
                 }
             } else {
-                Log.e("DeleteAudioFiles", "File does not exist: ${file.name}")
+//                Log.e("DeleteAudioFiles", "File does not exist: ${file.name}")
             }
         }
 

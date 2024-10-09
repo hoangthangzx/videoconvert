@@ -181,7 +181,12 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
                     finishAffinity()
                 }
             }
-
+            R.id.storageFragment ->{
+                finishAffinity()
+            }
+            R.id.settingFragment -> {
+                finishAffinity()
+            }
 
         }
     }

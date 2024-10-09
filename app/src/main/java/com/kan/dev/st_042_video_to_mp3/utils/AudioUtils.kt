@@ -1,21 +1,27 @@
 package com.kan.dev.st_042_video_to_mp3.utils
 
 import android.content.ContentResolver
+import android.content.Context
 import android.database.Cursor
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
+import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.typefr
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo.formatDuration
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils.getVideoDuration
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.reflect.typeOf
 
 object AudioUtils {
     var countPos = 0
@@ -99,6 +105,46 @@ object AudioUtils {
             }
         }
     }
+
+    fun renameFile(context: Context, currentFilePath: String, newFileNameWithoutExtension: String): Boolean {
+//        val currentFile = File(currentFilePath)
+        val filePath = currentFilePath.removePrefix("file:")
+
+        // Khởi tạo đối tượng File từ đường dẫn
+        val currentFile = File(filePath.trim())
+        val fileExtension = currentFile.extension
+
+        Log.d("check_file", "renameFile: "+ currentFile)
+        val newFileName = "$newFileNameWithoutExtension.$fileExtension"
+        val newFile = File(currentFile.parent, newFileName)
+
+        return if (currentFile.exists() && currentFile.isFile) {
+            // Kiểm tra xem tệp với tên mới (bao gồm cả phần mở rộng) đã tồn tại hay chưa
+            if (newFile.exists()) {
+                Toast.makeText(context, "Tên tệp đã tồn tại!", Toast.LENGTH_SHORT).show()
+                false
+            } else {
+                // Đổi tên tệp
+                if (currentFile.renameTo(newFile)) {
+                    Toast.makeText(context, "Đổi tên tệp thành công thành ${newFile.name}", Toast.LENGTH_SHORT).show()
+                    if(typefr.equals("vd")){
+                        listVideoStorage[positionVideoPlay].name = newFileName
+                    }else{
+                        listAudioStorage[positionAudioPlay].name = newFileName
+                    }
+
+                    true
+                } else {
+                    Toast.makeText(context, "Đổi tên tệp ${currentFile.name} thất bại", Toast.LENGTH_SHORT).show()
+                    false
+                }
+            }
+        } else {
+            Toast.makeText(context, "Tệp không tồn tại hoặc không phải là tệp.", Toast.LENGTH_SHORT).show()
+            false
+        }
+    }
+
 
     private fun formatTimeToHoursMinutes(duration: Long): String {
         val minutes = (duration / 1000) / 60

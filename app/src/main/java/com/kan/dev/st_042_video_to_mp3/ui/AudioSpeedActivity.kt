@@ -1,4 +1,5 @@
 package com.kan.dev.st_042_video_to_mp3.ui
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -427,13 +428,14 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
+        val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
+        animator.duration = 3000 // Thời gian chạy animation (5 giây)
+        animator.start()
     }
 
     private fun hideLoadingOverlay() {
         binding.loadingOverlay.visibility = View.GONE
     }
-
-
     fun convertTimeToSeconds(time: String): Int {
         val parts = time.split(":")
         val minutes = parts[0].toInt()

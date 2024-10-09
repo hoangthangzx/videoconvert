@@ -351,7 +351,9 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
     override fun onStop() {
         super.onStop()
-        mediaPlayer!!.release()
+        if(mediaPlayer?.isPlaying == true){
+            mediaPlayer!!.release()
+        }
     }
 
 }

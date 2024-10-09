@@ -230,7 +230,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25dp"
             android:gravity="center"
-            android:text="@string/you_don_t_have_any_content_yet_create_a_new_audio_now"
+            android:text="@string/you_don_t_have_any_content_yet_create_a_new_video_now"
             android:textColor="@color/color_time_audio"
             android:textSize="14sp" />
     </LinearLayout>

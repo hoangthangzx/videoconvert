@@ -72,7 +72,7 @@ class VideoAdapterFr (var context: Context): RecyclerView.Adapter<VideoAdapterFr
                                 isLongPress = true
                                 mListener.onTouchEven(position)
                             }
-                        }, 1000)
+                        }, 600)
                         true
                     }
                     MotionEvent.ACTION_UP -> {

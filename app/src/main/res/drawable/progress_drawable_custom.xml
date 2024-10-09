@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background trắng bo góc -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <solid android:color="#FFFFFF" />
+            <stroke android:width="2dp" android:color="#FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Gradient màu hồng tới xanh lam -->
+    <item>
+        <inset
+            android:insetLeft="4dp"
+            android:insetTop="4dp"
+            android:insetRight="4dp"
+            android:insetBottom="4dp">  <!-- Thu nhỏ layer 2 bằng cách inset 4dp -->
+            <clip>
+                <shape android:shape="rectangle">
+                    <corners android:radius="16dp" />  <!-- Bo tròn các góc nhỏ hơn một chút -->
+                    <gradient
+                        android:startColor="#FE8BEC"
+                        android:endColor="#4A93EB"
+                        android:type="linear"
+                        android:angle="0"/>
+                </shape>
+            </clip>
+        </inset>
+    </item>
+</layer-list>
