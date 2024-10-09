@@ -225,15 +225,13 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             binding.imvPlay.visibility = View.VISIBLE
             pausePlaying()
             handler.removeCallbacksAndMessages(null)
-
         }
 
         binding.imv15Left.setOnClickListener {
-            rewindAudio(15000) // Tua về 15 giây
+            rewindAudio(15000)
         }
-        // Thiết lập sự kiện cho nút tua tới 15 giây
         binding.imv15Right.setOnClickListener {
-            forwardAudio(15000) // Tua tới 15 giây
+            forwardAudio(15000)
         }
 
         binding.tvDone.onSingleClick {
@@ -399,8 +397,8 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         }
     }
     fun changeAudioSpeed(audioUri: String, outputPath: String, speed: Float) {
-        // Tạo câu lệnh FFmpeg để thay đổi tốc độ âm thanh
-        val command = "-i $audioUri -filter:a \"atempo=$speed\" $outputPath"
+//        val command = "-i $audioUri -filter:a \"atempo=$speed\" $outputPath"
+        val command = "-i \"$audioUri\" -filter:a \"atempo=$speed\" \"$outputPath\""
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
             var audioInfoSpeed = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())

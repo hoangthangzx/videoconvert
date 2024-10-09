@@ -24,6 +24,8 @@ object Const {
     val STORAGE_PERMISSION_CODE = 1
     val REQUEST_CODE_NOTIFICATION_POLICY = 3
     var listVideo = mutableListOf<VideoInfo>()
+    var listVideoStorage = mutableListOf<VideoInfo>()
+    var listAudioStorage = mutableListOf<AudioInfo>()
     var listAudio = mutableListOf<AudioInfo>()
     var listAudioPick = mutableListOf<AudioInfo>()
     var listVideoPick = mutableListOf<VideoInfo>()
@@ -32,7 +34,6 @@ object Const {
     var positionVideoPlay = 0
     var positionAudioPlay = 0
     var mp3Uri : Uri? = null
-    var videoUri : Uri? = null
     var currentRingtone = 0
     var VideoUriSpeed : Uri? = null
     var countAudio = 0
@@ -52,6 +53,8 @@ object Const {
     var videoStorage : File? = null
     var checkType : Boolean = false
     var typefr = "vd"
+    var playState = 0
+    var checkPlay = false
     var listLanguage = mutableListOf<LanguageModel>(
         LanguageModel("Spanish", "es", R.drawable.ic_flag_spanish),
         LanguageModel("French", "fr", R.drawable.ic_flag_french),

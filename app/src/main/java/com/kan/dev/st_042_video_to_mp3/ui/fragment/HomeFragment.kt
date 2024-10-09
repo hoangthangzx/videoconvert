@@ -40,9 +40,11 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.musicStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
@@ -54,13 +56,13 @@ import com.metaldetector.golddetector.finder.SharedPreferenceUtils
 import java.io.File
 import kotlin.system.exitProcess
 
-
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
     lateinit var shareData : SharedPreferenceUtils
-    lateinit var providerSharedPreference : SharedPreferenceUtils
-    private lateinit var onBackPressedCallback: OnBackPressedCallback
-
+//    lateinit var providerSharedPreference : SharedPreferenceUtils
+//    private lateinit var onBackPressedCallback: OnBackPressedCallback
+    var storageMusic = ""
+    var storageVideo = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -89,6 +91,8 @@ class HomeFragment : Fragment() {
 
     private fun initData() {
         shareData = SharedPreferenceUtils.getInstance(requireContext())
+        storageMusic = shareData.getStringValue("musicStorage").toString()
+        storageVideo = shareData.getStringValue("videoStorage").toString()
         createMusicDirectoryOnce()
     }
 
@@ -138,7 +142,6 @@ class HomeFragment : Fragment() {
             countSizeVideo = 0
             startActivity(Intent(requireContext(),SelectVideoActivity::class.java))
         }
-
 //        binding.lnVideoMerger.onSingleClick {
 //            selectType = "VideoMerger"
 //            Const.checkData = false
@@ -146,7 +149,6 @@ class HomeFragment : Fragment() {
 //            countSizeVideo = 0
 //            startActivity(Intent(requireContext(),SelectVideoActivity::class.java))
 //        }
-
         binding.lnVideoConvert.onSingleClick {
             selectType = "Video"
             Const.checkData = false
@@ -172,14 +174,13 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
 
-//        binding.lnAudioCutter.onSingleClick {
-//            selectTypeAudio = "AudioCutter"
-//            countAudio = 0
-//            countSize = 0
-//            Const.checkDataAudio = false
-//            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
-//        }
-//
+        binding.lnAudioCutter.onSingleClick {
+            selectTypeAudio = "AudioCutter"
+            countAudio = 0
+            countSize = 0
+            Const.checkDataAudio = false
+            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
+        }
 //        binding.lnVideoSpeed.onSingleClick {
 //            selectType = "Speed"
 //            Const.checkData = false
@@ -187,7 +188,6 @@ class HomeFragment : Fragment() {
 //            countSizeVideo = 0
 //            startActivity(Intent(requireContext(), SelectVideoActivity::class.java))
 //        }
-
         binding.lnAudioSpeed.onSingleClick {
             selectTypeAudio = "AudioSpeed"
             countAudio = 0
@@ -207,8 +207,13 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        AudioUtils.getAllAudios(requireContext().contentResolver)
-        VideoUtils.getAllVideos(requireContext().contentResolver)
+        if(listVideoStorage.isEmpty()){
+            VideoUtils.getAllVideosFromSpecificDirectory(storageVideo)
+        }
+        if(listAudioStorage.isEmpty()){
+            AudioUtils.getAllAudiosFromSpecificDirectory(storageMusic)
+        }
+        Log.d("check_data", "onResume: "+ listVideoStorage  + "    " + storageVideo)
     }
 
 }

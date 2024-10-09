@@ -79,7 +79,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                 val timestamp = System.currentTimeMillis()
                 Log.d("check_merger", "Chuyển đổi thành công: $validFilePath")
                 val convertedFilePath = "${validFilePath.substringBeforeLast(".")}_${timestamp}_converter.mp3"
-                val command = "-i $validFilePath -codec:a libmp3lame $convertedFilePath"
+                val command = "-i \"$validFilePath\" -codec:a libmp3lame $convertedFilePath"
                 val rc = FFmpeg.execute(command)
                 if (rc == 0) {
                     Log.d("check_merger", "Chuyển đổi thành công: $convertedFilePath")
@@ -104,44 +104,6 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
             }
         }
     }
-
-//    fun mergeAudioFilesTemp(
-//        context: Context,
-//        listAudio: List<AudioInfo>,
-//        outputPath: String
-//    ) {
-//        val audioFilePaths = listAudio.mapNotNull { getPathFromUri(it.uri, context) }
-//        Log.d("check_merger", "mergeAudioFilesTemp: $audioFilePaths") // Ghi lại đường dẫn file
-//        if (audioFilePaths.isEmpty()) {
-//            Log.e("FFmpeg", "Không có file âm thanh nào để gộp.")
-//            return
-//        }
-//        val convertedFiles = mutableListOf<String>()
-//        for (filePath in audioFilePaths) {
-//            val timestamp = System.currentTimeMillis()
-//            val convertedFilePath = "${filePath.substringBeforeLast(".")}_${timestamp}_converter.mp3"
-//            val command = "-i $filePath -codec:a libmp3lame $convertedFilePath"
-//            val rc = FFmpeg.execute(command)
-//
-//            if (rc == 0) {
-//                Log.d("check_merger", "Chuyển đổi thành công: $convertedFilePath")
-//                convertedFiles.add(convertedFilePath)
-//            } else {
-//                Log.e("FFmpeg", "Lỗi khi chuyển đổi file: $rc")
-//            }
-//        }
-//        val fileListPath = "${context.cacheDir}/file_list.txt"
-//        File(fileListPath).printWriter().use { out ->
-//            convertedFiles.forEach { out.println("file '$it'") }
-//        }
-//        val commandMerge = "-f concat -safe 0 -i $fileListPath -c copy $outputPath"
-//        val rcMerge = FFmpeg.execute(commandMerge)
-//        if (rcMerge == 0) {
-//            Log.d("check_merger", "Gộp âm thanh thành công.")
-//        } else {
-//            Log.e("FFmpeg", "Lỗi khi gộp âm thanh: $rcMerge")
-//        }
-//    }
 
     private fun initAction() {
         adapter.onClickListener(object : MergerAudioAdapter.onClickItemListener{

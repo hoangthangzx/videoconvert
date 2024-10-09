@@ -17,7 +17,6 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityIntroBinding
-import com.kan.dev.st_042_video_to_mp3.ui.HomeActivity
 import com.kan.dev.st_042_video_to_mp3.ui.MainActivity
 import com.kan.dev.st_042_video_to_mp3.ui.PermissionActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const

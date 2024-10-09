@@ -38,7 +38,7 @@ class VideoAdapterFr (var context: Context): RecyclerView.Adapter<VideoAdapterFr
         @SuppressLint("ClickableViewAccessibility")
         fun bind(position: Int, holder: VideoAdapterFr.ViewHolder) {
             binding.tvTitle.isSelected = true
-            binding.tvSize.text = "${data[position].sizeInMB} KB"
+            binding.tvSize.text = "${data[position].sizeInMB} MB"
             binding.tvTitle.text = data[position].name
             binding.tvTime.text = data[position].date
             binding.tvDurationVideo.text = data[position].duration

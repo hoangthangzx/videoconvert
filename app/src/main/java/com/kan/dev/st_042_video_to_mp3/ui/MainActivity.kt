@@ -31,8 +31,10 @@ import com.kan.dev.st_042_video_to_mp3.databinding.ActivityMainBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.DialogRateBinding
 import com.kan.dev.st_042_video_to_mp3.interface_bottom.BottomNavVisibilityListener
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
+import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.utils.showSystemUI
 import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
@@ -46,7 +48,6 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         SystemUtils.setLocale(this)
         showSystemUI(true)
-
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -78,7 +79,6 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             type = "audio/*"
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        // Bắt đầu Intent chia sẻ
         context.startActivity(Intent.createChooser(shareIntent, "Share Audio Files"))
     }
 
@@ -87,6 +87,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
         providerSharedPreference = SharedPreferenceUtils.getInstance(this)
+
     }
 
     @SuppressLint("MissingSuperCall")
@@ -95,6 +96,10 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
         val currentDestination = navController.currentDestination?.id
         when (currentDestination) {
             R.id.homeFragment2 -> {
+                Const.listVideoStorage.clear()
+                Const.listVideoPick.clear()
+                Const.listAudioPick.clear()
+                Const.listAudioStorage.clear()
                 var inAppCount = providerSharedPreference.getNumberRate("RateNumber")
                 inAppCount ++
                 providerSharedPreference.putNumber("RateNumber",inAppCount)
@@ -176,10 +181,9 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
                     finishAffinity()
                 }
             }
+
+
         }
-
-
-
     }
     private fun reviewApp(context: Context, isBackPress: Boolean) {
         val manager = ReviewManagerFactory.create(context)

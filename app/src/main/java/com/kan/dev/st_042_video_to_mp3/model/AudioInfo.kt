@@ -10,5 +10,6 @@ data class AudioInfo(
     val date : String,
     var active: Boolean,
     val mimeType: String,
-    var pos: Int
+    var pos: Int,
+    var activePl : Boolean
 )

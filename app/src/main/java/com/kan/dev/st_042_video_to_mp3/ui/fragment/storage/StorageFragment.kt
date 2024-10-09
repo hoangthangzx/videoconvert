@@ -42,8 +42,10 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.isTouchEventHandled
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.typefr
@@ -59,7 +61,6 @@ class StorageFragment : Fragment() {
     val adapterFr by lazy {
         AudioAdapterFr(requireContext())
     }
-
     val adapterVdFr by lazy {
         VideoAdapterFr(requireContext())
     }
@@ -96,24 +97,22 @@ class StorageFragment : Fragment() {
                 when (tab.position) {
                     0 -> {
                         typefr = "vd"
-//                        if (!checkData){
-//                            VideoUtils.getAllVideos(requireContext().contentResolver)
-//                            Log.d("check_list_video", "initData: "+ listVideo)
-//                            checkData = true
-//                        }
+                        adapterVdFr.getData(listVideoStorage)
+                        binding.recyclerViewTab1.adapter = adapterVdFr
                         binding.recyclerViewTab1.visibility = View.VISIBLE
                         binding.recyclerViewTab2.visibility = View.GONE
                     }
                     1 -> {
                         typefr ="ad"
-//                        if (!checkDataAudio){
-//                            AudioUtils.getAllAudios(requireContext().contentResolver)
-//                            Log.d("check_list_video", "initData: "+ listAudio)
-//                            checkDataAudio = true
-//                        }
                         initRec()
                         binding.recyclerViewTab1.visibility = View.GONE
                         binding.recyclerViewTab2.visibility = View.VISIBLE
+                        if(listAudioStorage.isEmpty()){
+                            binding.lnNoItem.visibility = View.VISIBLE
+                            binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_audio_now)
+                        }else {
+                            binding.lnNoItem.visibility = View.GONE
+                        }
                     }
                 }
             }
@@ -125,19 +124,19 @@ class StorageFragment : Fragment() {
             @OptIn(UnstableApi::class)
             override fun onClickItem(position: Int, holder: VideoAdapterFr.ViewHolder) {
                 if (isTouchEventHandled) {
-                    if(!listVideo[position].active){
+                    if(!listVideoStorage[position].active){
                         positionVideoPlay = position
                         countVideo += 1
-                        countSizeVideo += listVideo[position].sizeInMB.toInt()
+                        countSizeVideo += listVideoStorage[position].sizeInMB.toInt()
                         holder.binding.imvTickBox.setImageResource(R.drawable.icon_check_box_yes)
-                        listVideoPick.add(0, listVideo[position])
-                        listVideo[position].active = true
-                    }else if(listVideo[position].active){
+                        listVideoPick.add(0, listVideoStorage[position])
+                        listVideoStorage[position].active = true
+                    }else if(listVideoStorage[position].active){
                         countVideo -= 1
                         holder.binding.imvTickBox.setImageResource(R.drawable.icon_check_box)
-                        listVideo[position].active = false
-                        listVideoPick.remove(listVideo[position])
-                        countSizeVideo -= listVideo[position].sizeInMB.toInt()
+                        listVideoStorage[position].active = false
+                        listVideoPick.remove(listVideoStorage[position])
+                        countSizeVideo -= listVideoStorage[position].sizeInMB.toInt()
                     }
                     if(countVideo > 1){
                         binding.imvRename.visibility = View.GONE
@@ -150,7 +149,7 @@ class StorageFragment : Fragment() {
                     binding.size.text = "$countSizeVideo KB"
                 }else{
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
-                    Const.positionAudioPlay = position
+                    positionAudioPlay = position
                     startActivity(Intent(requireContext(), PlayVideoActivity::class.java))
                 }
             }
@@ -159,10 +158,10 @@ class StorageFragment : Fragment() {
                 checkType = false
                 isTouchEventHandled = true
                 Const.positionVideoPlay = position
-                listVideo[position].active = true
-                listVideoPick.add(0, listVideo[position])
+                listVideoStorage[position].active = true
+                listVideoPick.add(0, listVideoStorage[position])
                 countVideo += 1
-                countSizeVideo += listVideo[position].sizeInMB.toInt()
+                countSizeVideo += listVideoStorage[position].sizeInMB.toInt()
                 binding.ctlStorage.visibility = View.INVISIBLE
                 binding.ctlItem.visibility = View.VISIBLE
                 listener?.onBottomNavVisibilityChanged(false)
@@ -182,19 +181,19 @@ class StorageFragment : Fragment() {
         adapterFr.onClickListener(object : AudioAdapterFr.onClickItemListener{
             override fun onClickItem(position: Int, holder: AudioAdapterFr.ViewHolder) {
                 if (isTouchEventHandled) {
-                    if(!listAudio[position].active){
+                    if(!listAudioStorage[position].active){
                         positionAudioPlay = position
                         countAudio += 1
-                        countSize += listAudio[position].sizeInMB.toInt()
+                        countSize += listAudioStorage[position].sizeInMB.toInt()
                         holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
-                        listAudioPick.add(0, listAudio[position])
-                        listAudio[position].active = true
-                    }else if(listAudio[position].active){
+                        listAudioPick.add(0, listAudioStorage[position])
+                        listAudioStorage[position].active = true
+                    }else if(listAudioStorage[position].active){
                         countAudio -= 1
                         holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
-                        listAudio[position].active = false
-                        listAudioPick.remove(listAudio[position])
-                        countSize -= listAudio[position].sizeInMB.toInt()
+                        listAudioStorage[position].active = false
+                        listAudioPick.remove(listAudioStorage[position])
+                        countSize -= listAudioStorage[position].sizeInMB.toInt()
                     }
                     if(countAudio > 1){
                         binding.imvRename.visibility = View.GONE
@@ -217,10 +216,10 @@ class StorageFragment : Fragment() {
                 checkType = false
                 isTouchEventHandled = true
                 Const.positionAudioPlay = position
-                listAudio[position].active = true
-                listAudioPick.add(0, listAudio[position])
+                listAudioStorage[position].active = true
+                listAudioPick.add(0, listAudioStorage[position])
                 countAudio += 1
-                countSize += listAudio[position].sizeInMB.toInt()
+                countSize += listAudioStorage[position].sizeInMB.toInt()
                 binding.ctlStorage.visibility = View.INVISIBLE
                 binding.ctlItem.visibility = View.VISIBLE
                 listener?.onBottomNavVisibilityChanged(false)
@@ -240,17 +239,13 @@ class StorageFragment : Fragment() {
         viewModel.eventTriggered.observe(viewLifecycleOwner) { triggered ->
             if (triggered) {
                 checkType = true
-                listAudioPick.clear()
-                listAudio.clear()
                 countAudio = 0
                 countSize = 0
                 countSizeVideo = 0
                 countVideo = 0
                 checkType = true
-                listVideoPick.clear()
-                listVideo.clear()
-                AudioUtils.getAllAudios(requireContext().contentResolver)
-                VideoUtils.getAllVideos(requireContext().contentResolver)
+//                AudioUtils.getAllAudios(requireContext().contentResolver)
+//                VideoUtils.getAllVideos(requireContext().contentResolver)
                 adapterVdFr.notifyDataSetChanged()
                 adapterFr.notifyDataSetChanged()
                 viewModel.resetEvent()
@@ -280,7 +275,7 @@ class StorageFragment : Fragment() {
             val nameFile = dialogBinding.edtRename.text
             listAudio[positionAudioPlay].name = nameFile.toString()
             adapterFr.notifyDataSetChanged()
-            val result = renameAudioFile(requireContext(), listAudio[positionAudioPlay].uri,nameFile.toString())
+            val result = renameAudioFile(requireContext(), listAudioStorage[positionAudioPlay].uri,nameFile.toString())
             Log.d("check_rename", "showDialogRename: tc"+ result)
             if(result){
                 Log.d("check_rename", "showDialogRename: tc")
@@ -308,14 +303,19 @@ class StorageFragment : Fragment() {
                 for (i in 0..listVideoPick.size-1){
                     var pos = listVideoPick[i].pos
                     Log.d("check_pos", "showDialogDelete: "+ pos)
-                    if(listVideo[pos].active){
+                    if(listVideoStorage[pos].active){
                         Log.d("check_pos", "showDialogDelete: okeeee"+ pos)
-                        listVideo.removeAt(pos)
+                        listVideoStorage.removeAt(pos)
                         adapterVdFr.notifyItemRemoved(pos)
                     }
                 }
+                val deleted = deleteVideos(listVideoPick)
+                if (deleted) {
+                    Log.d("DeleteVideos", "All videos deleted successfully.")
+                } else {
+                    Log.e("DeleteVideos", "Some videos could not be deleted.")
+                }
                 adapterVdFr.notifyDataSetChanged()
-                deleteVideoFiles(listVideoPick,requireContext())
                 countVideo = 0
                 countSizeVideo = 0
                 binding.tvSelectedItem.text = "$countVideo Selected"
@@ -323,15 +323,19 @@ class StorageFragment : Fragment() {
             }else{
                 for (i in 0..listAudioPick.size-1){
                     var pos = listAudioPick[i].pos
-                    Log.d("check_pos", "showDialogDelete: "+ pos)
-                    if(listAudio[pos].active){
-                        Log.d("check_pos", "showDialogDelete: okeeee"+ pos)
-                        listAudio.removeAt(pos)
+                    if(listAudioStorage[pos].active){
+                        listAudioStorage.removeAt(pos)
                         adapterFr.notifyItemRemoved(pos)
                     }
                 }
+                val deleted = deleteAudioFiles(listAudioPick)
+                if (deleted) {
+                    Log.d("DeleteAudios", "All videos deleted successfully.")
+                } else {
+                    Log.e("DeleteAudios", "Some videos could not be deleted.")
+                }
+                Log.d("check_pos", "showDialogDelete: "+ listAudioPick)
                 adapterFr.notifyDataSetChanged()
-                deleteAudioFiles(listAudioPick,requireContext())
                 countAudio = 0
                 countSize = 0
                 binding.tvSelectedItem.text = "$countAudio Selected"
@@ -345,32 +349,71 @@ class StorageFragment : Fragment() {
         }
         dialog.show()
     }
-
     private fun initRec() {
-        adapterFr.getData(listAudio)
+        adapterFr.getData(listAudioStorage)
         binding.recyclerViewTab2.adapter = adapterFr
-        adapterVdFr.getData(listVideo)
-        binding.recyclerViewTab1.adapter = adapterVdFr
+
+    }
+
+    fun deleteVideos(videoInfos: List<VideoInfo>): Boolean {
+        var allDeleted = true
+        videoInfos.forEach { videoInfo ->
+            val file = File(videoInfo.uri.path ?: "")
+            if (file.exists()) {
+                val deleted = file.delete() // Xóa tệp
+                if (!deleted) {
+                    Log.e("DeleteVideos", "Failed to delete: ${videoInfo.name}")
+                    allDeleted = false
+                } else {
+                    Log.d("DeleteVideos", "Deleted: ${videoInfo.name}")
+                }
+            } else {
+                Log.e("DeleteVideos", "File does not exist: ${videoInfo.name}")
+            }
+        }
+
+        return allDeleted // Trả về true nếu tất cả đã được xóa thành công
+    }
+
+    fun deleteAudioFiles(audioFiles: List<AudioInfo>): Boolean {
+        var allDeleted = true
+        audioFiles.forEach { audioFile ->
+            val file = File(audioFile.uri.path ?: "")
+            Log.e("DeleteAudioFiles", "Failed to delete: ${file}")
+            if (file.exists()) {
+                val deleted = file.delete()
+                if (!deleted) {
+                    Log.e("DeleteAudioFiles", "Failed to delete: ${file.name}")
+                    allDeleted = false
+                } else {
+                    Log.d("DeleteAudioFiles", "Deleted: ${file.name}")
+                }
+            } else {
+                Log.e("DeleteAudioFiles", "File does not exist: ${file.name}")
+            }
+        }
+
+        return allDeleted // Trả về true nếu tất cả đã được xóa thành công
     }
 
     private fun initData() {
+        adapterVdFr.getData(listVideoStorage)
+        binding.recyclerViewTab1.adapter = adapterVdFr
+        binding.recyclerViewTab1.visibility = View.VISIBLE
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Video"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Audio"))
-        VideoUtils.getAllVideos(requireContext().contentResolver)
-        adapterVdFr.getData(listVideo)
-        binding.recyclerViewTab1.adapter = adapterVdFr
+        if(listVideoStorage.isEmpty()){
+            binding.lnNoItem.visibility = View.VISIBLE
+            binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_audio_now)
+        }else {
+            binding.lnNoItem.visibility = View.GONE
+        }
         Log.d("check_list_video", "initData: "+ listAudio)
         if(typefr.equals("vd")){
             binding.imvRename.visibility = View.GONE
         }
     }
-//    fun renameFile(oldFile: File, newFileName: String): Boolean {
-//        val newFile = File(oldFile.parent, newFileName)
-//        if (newFile.exists()) {
-//            return false
-//        }
-//        return oldFile.renameTo(newFile)
-//    }
+
     fun renameAudioFile(context: Context, audioUri: Uri, newFileName: String): Boolean {
         val filePath = getRealPathFromURI(requireContext(), audioUri)
         Log.d("check_rename", "showDialogRename: kt" + filePath)
@@ -401,54 +444,6 @@ class StorageFragment : Fragment() {
             }
         }
         return path
-    }
-
-
-    fun deleteFileFromAudioInfo(context: Context, audioInfo: AudioInfo): Boolean {
-        val fileUri = audioInfo.uri
-        return try {
-            val contentResolver: ContentResolver = context.contentResolver
-            val rowsDeleted = contentResolver.delete(fileUri, null, null) // Xóa file
-            rowsDeleted > 0
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false // Trả về false nếu có lỗi xảy ra
-        }
-    }
-
-    fun deleteFileFromVideoInfo(context: Context, videoInfoIt: VideoInfo): Boolean {
-        val fileUri = videoInfoIt.uri
-        Log.d("check_delete_file", "deleteFileFromVideoInfo: "+ fileUri)
-        return try {
-            val contentResolver: ContentResolver = context.contentResolver
-            val rowsDeleted = contentResolver.delete(fileUri, null, null)
-            rowsDeleted > 0
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d("check_delete_file", "deleteFileFromVideoInfo: "+ e.printStackTrace())
-            false
-        }
-    }
-
-    fun deleteAudioFiles(audioList: List<AudioInfo>, context: Context) {
-        for (audioInfo in audioList) {
-            val isDeleted = deleteFileFromAudioInfo(context, audioInfo)
-            if (isDeleted) {
-                Log.d("check_delete_file", "deleteAudioFiles: okekekek ")
-            } else {
-                Log.d("check_delete_file", "deleteAudioFiles: Noooooo")
-            }
-        }
-    }
-    fun deleteVideoFiles(videoList: List<VideoInfo>, context: Context) {
-        for (videoInfo in videoList) {
-            val isDeleted = deleteFileFromVideoInfo(context, videoInfo)
-            if (isDeleted) {
-                Log.d("check_delete_file", "deleteVideoFiles: okekekek ")
-            } else {
-                Log.d("check_delete_file", "deleteVideoFiles: Noooooo")
-            }
-        }
     }
 
     override fun onResume() {

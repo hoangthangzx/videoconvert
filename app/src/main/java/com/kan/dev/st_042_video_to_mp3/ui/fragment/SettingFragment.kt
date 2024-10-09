@@ -22,15 +22,12 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.kan.dev.st_042_video_to_mp3.R
-import com.kan.dev.st_042_video_to_mp3.databinding.ActivityHomeBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.DialogRateBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.FragmentSettingBinding
 import com.kan.dev.st_042_video_to_mp3.ui.language.LanguageActivity
-import com.kan.dev.st_042_video_to_mp3.utils.Const.musicStorage
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
-import java.io.File
 import kotlin.system.exitProcess
 
 
@@ -44,17 +41,14 @@ class SettingFragment : Fragment() {
         binding = FragmentSettingBinding.inflate(inflater,container,false)
         return binding.root
     }
-
     var storageMusic = ""
     var storageVideo = ""
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initData()
         initView()
         initAction()
     }
-
     private fun initData() {
         providerSharedPreference = SharedPreferenceUtils.getInstance(requireContext())
         storageMusic = providerSharedPreference.getStringValue("musicStorage").toString()

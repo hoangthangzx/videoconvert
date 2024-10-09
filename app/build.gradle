@@ -12,7 +12,11 @@ android {
         minSdk 23
         targetSdk 34
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
+
+        def formattedDate = new Date().format('MM.dd.yyyy')
+        archivesBaseName = "ST042_Video_to_Mp3_v${versionName}_${formattedDate}"
+
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
