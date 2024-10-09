@@ -11,7 +11,7 @@ import java.util.Date
 import java.util.Locale
 
 object VideoUtils {
-    var count = 0
+    var countVd = 0
     fun getAllVideos(contentResolver: ContentResolver) {
         val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
@@ -44,9 +44,8 @@ object VideoUtils {
                 val sizeInMB = size / (1024 * 1024)
                 val videoName = cursor.getString(nameColumn) // Lấy giá trị tên video
                 val formattedDate = formatDate(dateAdded)
-
-                listVideo.add(VideoInfo(videoUri, formatTimeToHoursMinutes(duration), sizeInMB, videoName,formattedDate ,false, count))
-                count +=1
+                listVideo.add(VideoInfo(videoUri, formatTimeToHoursMinutes(duration), sizeInMB, videoName,formattedDate ,false, countVd))
+                countVd +=1
             }
         }
 

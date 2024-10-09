@@ -523,6 +523,38 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             pausePlaying()
             handler.removeCallbacksAndMessages(null)
         }
+
+        binding.imv15Left.setOnClickListener {
+            rewindAudio(15000) // Tua về 15 giây
+        }
+        // Thiết lập sự kiện cho nút tua tới 15 giây
+        binding.imv15Right.setOnClickListener {
+            forwardAudio(15000) // Tua tới 15 giây
+        }
+
+    }
+
+    private fun rewindAudio(milliseconds: Int) {
+        mediaPlayer?.let {
+            val newPosition = it.currentPosition - milliseconds
+            if (newPosition >= 0) {
+                it.seekTo(newPosition)
+            } else {
+                it.seekTo(0) // Nếu tua về trước 0, đặt về 0
+            }
+        }
+    }
+
+    // Hàm tua tới audio
+    private fun forwardAudio(milliseconds: Int) {
+        mediaPlayer?.let {
+            val newPosition = it.currentPosition + milliseconds
+            if (newPosition <= it.duration) {
+                it.seekTo(newPosition)
+            } else {
+                it.seekTo(it.duration) // Nếu tua tới sau khi bài hát kết thúc, đặt về cuối bài hát
+            }
+        }
     }
 
     private fun startPlaying() {

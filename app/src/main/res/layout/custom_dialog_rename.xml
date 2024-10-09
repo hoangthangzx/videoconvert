@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="60dp"
+        android:layout_marginHorizontal="20dp"
         android:background="@drawable/imv_bg_dialog">
 
         <TextView
@@ -40,7 +40,7 @@
 
         <EditText
             android:id="@+id/edtRename"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="34dp"
             android:layout_marginHorizontal="30dp"
             android:layout_marginTop="15dp"
@@ -89,13 +89,13 @@
 
 
         <LinearLayout
+            android:id="@+id/lnOk"
             android:layout_width="100dp"
             android:layout_height="35dp"
-            android:gravity="center"
             android:background="@drawable/bg_ok"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="@+id/lnCancel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/lnCancel"
+            app:layout_constraintEnd_toEndOf="@+id/edtRename"
             app:layout_constraintTop_toTopOf="@+id/lnCancel">
 
             <TextView

@@ -113,9 +113,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
                 false
             }
         }
-
-
-
         binding.imvPlay.onSingleClick {
             binding.imvPause.visibility = View.VISIBLE
             binding.imvPlay.visibility = View.GONE
@@ -130,6 +127,14 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             pausePlaying()
             handler.removeCallbacksAndMessages(null)
         }
+
+        binding.imv15Left.setOnClickListener {
+            rewindAudio(15000) // Tua về 15 giây
+        }
+        // Thiết lập sự kiện cho nút tua tới 15 giây
+        binding.imv15Right.setOnClickListener {
+            forwardAudio(15000) // Tua tới 15 giây
+        }
     }
 
     private fun showDialogDelete() {
@@ -137,12 +142,9 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         val dialogBinding  = CustomeDialogDeleteBinding.inflate(LayoutInflater.from(this))
         val dialog = Dialog(this)
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-//        dialog.window?.setBackgroundDrawable(getDrawable(R.color.transparent))
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
         dialog.setContentView(dialogBinding.root)
         dialog.setCancelable(false)
-
         dialogBinding.tvYes.onSingleClick{
             listAudio.removeAt(positionAudioPlay)
             deleteFileFromAudioInfo(this, listAudio[positionAudioPlay])
@@ -157,15 +159,12 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
     fun deleteFileFromAudioInfo(context: Context, audioInfo: AudioInfo): Boolean {
         val fileUri = audioInfo.uri
         return try {
-            // Sử dụng ContentResolver để xóa file từ URI
             val contentResolver: ContentResolver = context.contentResolver
             val rowsDeleted = contentResolver.delete(fileUri, null, null) // Xóa file
-
-            // Kiểm tra xem có bất kỳ hàng nào bị xóa hay không
             rowsDeleted > 0
         } catch (e: Exception) {
             e.printStackTrace()
-            false // Trả về false nếu có lỗi xảy ra
+            false
         }
     }
 
@@ -221,14 +220,11 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
     }
 
     fun shareAudioFile(context: Context, uri: Uri) {
-        // Tạo intent gửi file âm thanh
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "audio/*"
             putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Cấp quyền đọc URI cho ứng dụng khác
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-
-        // Kiểm tra có ứng dụng nào có thể nhận intent này không
         if (shareIntent.resolveActivity(context.packageManager) != null) {
             context.startActivity(Intent.createChooser(shareIntent, "Share Audio File"))
         }
@@ -385,6 +381,29 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         if (isPlaying) {
             mediaPlayer?.pause()
             isPlaying = false
+        }
+    }
+
+    private fun rewindAudio(milliseconds: Int) {
+        mediaPlayer?.let {
+            val newPosition = it.currentPosition - milliseconds
+            if (newPosition >= 0) {
+                it.seekTo(newPosition)
+            } else {
+                it.seekTo(0) // Nếu tua về trước 0, đặt về 0
+            }
+        }
+    }
+
+    // Hàm tua tới audio
+    private fun forwardAudio(milliseconds: Int) {
+        mediaPlayer?.let {
+            val newPosition = it.currentPosition + milliseconds
+            if (newPosition <= it.duration) {
+                it.seekTo(newPosition)
+            } else {
+                it.seekTo(it.duration) // Nếu tua tới sau khi bài hát kết thúc, đặt về cuối bài hát
+            }
         }
     }
 

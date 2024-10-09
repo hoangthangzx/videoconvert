@@ -1,17 +1,35 @@
 package com.kan.dev.st_042_video_to_mp3.ui.fragment
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat.finishAffinity
+import androidx.core.content.ContextCompat
+import com.google.android.gms.tasks.Task
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.kan.dev.st_042_video_to_mp3.R
+import com.kan.dev.st_042_video_to_mp3.databinding.DialogRateBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.FragmentHomeBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioActivity
 import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoActivity
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
@@ -29,14 +47,19 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.musicStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoStorage
+import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
+import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
 import java.io.File
+import kotlin.system.exitProcess
 
 
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
     lateinit var shareData : SharedPreferenceUtils
+    lateinit var providerSharedPreference : SharedPreferenceUtils
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -149,13 +172,13 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
 
-        binding.lnAudioCutter.onSingleClick {
-            selectTypeAudio = "AudioCutter"
-            countAudio = 0
-            countSize = 0
-            Const.checkDataAudio = false
-            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
-        }
+//        binding.lnAudioCutter.onSingleClick {
+//            selectTypeAudio = "AudioCutter"
+//            countAudio = 0
+//            countSize = 0
+//            Const.checkDataAudio = false
+//            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
+//        }
 //
 //        binding.lnVideoSpeed.onSingleClick {
 //            selectType = "Speed"
@@ -184,6 +207,8 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-
+        AudioUtils.getAllAudios(requireContext().contentResolver)
+        VideoUtils.getAllVideos(requireContext().contentResolver)
     }
+
 }

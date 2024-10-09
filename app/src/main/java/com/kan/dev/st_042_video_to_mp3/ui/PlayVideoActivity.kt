@@ -11,6 +11,7 @@ import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityPlayVideoBinding
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
+import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 
 @UnstableApi
@@ -20,10 +21,18 @@ class PlayVideoActivity : AbsBaseActivity<ActivityPlayVideoBinding>(false) {
     override fun getLayoutId(): Int = R.layout.activity_play_video
 
     private lateinit var playerView: PlayerView
-    private lateinit var controlView: PlayerControlView
     private lateinit var exoPlayer: ExoPlayer
 
     override fun init() {
+        initAction()
+    }
+
+    private fun initAction() {
+        binding.imvBack.onSingleClick {
+            finish()
+        }
+
+
         playerView = findViewById(R.id.player_view)
 
         // Khởi tạo ExoPlayer

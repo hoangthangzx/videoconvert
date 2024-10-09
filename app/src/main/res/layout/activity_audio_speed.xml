@@ -115,6 +115,66 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.5x"
+                android:layout_marginTop="-5dp"
+                app:layout_constraintHorizontal_bias="0.025"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/seekBar"
+                app:layout_constraintStart_toStartOf="@+id/seekBar"
+                app:layout_constraintTop_toBottomOf="@+id/lnPick" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1x"
+                android:layout_marginTop="-5dp"
+                app:layout_constraintHorizontal_bias="0.17"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/seekBar"
+                app:layout_constraintStart_toStartOf="@+id/seekBar"
+                app:layout_constraintTop_toBottomOf="@+id/lnPick" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2x"
+                android:layout_marginTop="-5dp"
+                app:layout_constraintHorizontal_bias="0.435"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/seekBar"
+                app:layout_constraintStart_toStartOf="@+id/seekBar"
+                app:layout_constraintTop_toBottomOf="@+id/lnPick" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3x"
+                android:layout_marginTop="-5dp"
+                app:layout_constraintHorizontal_bias="0.7"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/seekBar"
+                app:layout_constraintStart_toStartOf="@+id/seekBar"
+                app:layout_constraintTop_toBottomOf="@+id/lnPick" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4x"
+                android:layout_marginTop="-5dp"
+                app:layout_constraintHorizontal_bias="0.96"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@+id/seekBar"
+                app:layout_constraintStart_toStartOf="@+id/seekBar"
+                app:layout_constraintTop_toBottomOf="@+id/lnPick" />
+
+            <TextView
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -153,7 +213,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="@string/_0_5x"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="15dp"
                 android:textColor="@color/color_language"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView6" />
@@ -636,6 +696,7 @@
                 android:layout_height="wrap_content"
                 android:text=" / 00:00"
                 android:layout_marginEnd="20dp"
+                android:layout_marginTop="25dp"
                 android:textColor="@color/color_time_audio"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/lnPick" />
@@ -672,7 +733,7 @@
                 android:id="@+id/lnBtn"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/seekBarAudio">
@@ -738,51 +799,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvCancel" />
 
-            <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-            <!--                android:id="@+id/LnConvert"-->
-            <!--                android:layout_width="173dp"-->
-            <!--                android:layout_marginTop="20dp"-->
-            <!--                android:background="@drawable/imv_bg_btn_convert"-->
-            <!--                android:layout_height="55dp">-->
-
-            <!--                <ImageView-->
-            <!--                    android:id="@+id/imageView4"-->
-            <!--                    android:layout_width="36dp"-->
-            <!--                    android:layout_height="36dp"-->
-            <!--                    android:layout_marginStart="15dp"-->
-            <!--                    android:src="@drawable/icon_convert"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-            <!--                <TextView-->
-            <!--                    android:id="@+id/tvConvert"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:layout_marginStart="5dp"-->
-            <!--                    android:text="@string/convert"-->
-            <!--                    android:textColor="@color/white"-->
-            <!--                    android:textSize="13sp"-->
-            <!--                    app:layout_constraintStart_toEndOf="@+id/imageView4"-->
-            <!--                    app:layout_constraintTop_toTopOf="@+id/imageView4" />-->
-
-            <!--                <TextView-->
-            <!--                    android:id="@+id/tvVidoeToMp3"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="@string/video_to_mp3"-->
-            <!--                    android:textAllCaps="true"-->
-            <!--                    android:layout_marginStart="5dp"-->
-            <!--                    android:textColor="@color/white"-->
-            <!--                    android:textStyle="bold"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="@+id/imageView4"-->
-            <!--                    app:layout_constraintStart_toEndOf="@+id/imageView4"-->
-            <!--                    app:layout_constraintTop_toBottomOf="@+id/tvConvert" />-->
-
-
-            <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loadingOverlay"
@@ -822,13 +840,13 @@
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottieAnimationView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="220dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:lottie_autoPlay="true"
-                app:lottie_rawRes="@raw/aniamtion_splash"
+                app:lottie_rawRes="@raw/animation_progress"
                 app:lottie_repeatMode="restart" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
