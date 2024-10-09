@@ -159,7 +159,7 @@ class ChooseItemStorageActivity: AbsBaseActivity<ActivityChooseItemStorageBindin
 
             else                                                   -> {}
         }
-        Toast.makeText(this@ChooseItemStorageActivity, R.string.successful, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@ChooseItemStorageActivity, R.string.set_ringtone_successfully, Toast.LENGTH_SHORT).show()
     }
 
     fun deleteFilesByUri(contentResolver: ContentResolver, listAudioP: List<AudioInfo>) {

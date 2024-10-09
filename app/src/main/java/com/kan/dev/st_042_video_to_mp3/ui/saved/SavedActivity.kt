@@ -264,8 +264,8 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     private fun showDialogRingtone() {
         SystemUtils.setLocale(this)
         val dialogBinding  = CustomDialogRingtoneBinding.inflate(LayoutInflater.from(this))
-        val dialog = Dialog(this)
-        dialog.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val dialog = Dialog(this@SavedActivity)
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         dialog.window?.setBackgroundDrawable(getDrawable(R.color.transparent))
         dialog.setContentView(dialogBinding.root)
         var position = 0
@@ -327,7 +327,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
             else                                                   -> {}
         }
-        Toast.makeText(this@SavedActivity, R.string.successful, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@SavedActivity, R.string.set_ringtone_successfully, Toast.LENGTH_SHORT).show()
     }
 
 

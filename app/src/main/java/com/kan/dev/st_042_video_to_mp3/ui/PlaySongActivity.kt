@@ -247,7 +247,7 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
 
             else                                                   -> {}
         }
-        Toast.makeText(this@PlaySongActivity, R.string.successful, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@PlaySongActivity, R.string.set_ringtone_successfully, Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("ClickableViewAccessibility")

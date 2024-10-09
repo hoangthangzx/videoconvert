@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:padding="2.5dp"
-        android:background="@drawable/bg_dialog">
+        android:background="@drawable/imv_bg_dialog">
 
         <TextView
             android:id="@+id/tvTitle"
@@ -28,7 +28,7 @@
 
         <RadioGroup
             android:id="@+id/rdGroup"
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:checkedButton="@+id/phoneRingtone"
@@ -78,8 +78,6 @@
                 android:text="@string/alarm"
                 android:textColor="#A2A2A2"
                 android:textSize="14sp" />
-
-
         </RadioGroup>
 
 

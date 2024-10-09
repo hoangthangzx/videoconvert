@@ -119,4 +119,5 @@
     <string name="_3_audio_files">3 audio files</string>
     <string name="safe_sound"><![CDATA[Safe & Sound]]></string>
     <string name="the_file_already_exists_please_enter_a_different_name">The file already exists, please enter a different name</string>
+    <string name="set_ringtone_successfully">Set ringtone successfully</string>
 </resources>
