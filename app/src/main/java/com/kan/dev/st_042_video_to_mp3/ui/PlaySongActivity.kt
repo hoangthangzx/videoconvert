@@ -32,12 +32,15 @@ import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomeDialogDeleteBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.currentRingtone
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.uriPlay
 import com.kan.dev.st_042_video_to_mp3.utils.RingtoneUtils
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
@@ -93,7 +96,7 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         }
 
         binding.lnShare.onSingleClick {
-            shareAudioFile(this@PlaySongActivity, listAudio[positionAudioPlay].uri)
+            shareAudioFile(this@PlaySongActivity, audioInformation!!.uri)
         }
 
         binding.lnDelete.onSingleClick {
@@ -146,8 +149,8 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         dialog.setContentView(dialogBinding.root)
         dialog.setCancelable(false)
         dialogBinding.tvYes.onSingleClick{
-            listAudio.removeAt(positionAudioPlay)
-            deleteFileFromAudioInfo(this, listAudio[positionAudioPlay])
+            listAudioStorage.removeAt(positionAudioPlay)
+            deleteFileFromAudioInfo(this, audioInformation!!)
             dialog.dismiss()
         }
         dialogBinding.tvNo.onSingleClick {
@@ -167,8 +170,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             false
         }
     }
-
-
 
     private fun showDialogRingtone() {
         SystemUtils.setLocale(this)
@@ -231,7 +232,7 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
     }
 
     private fun setRingtone(type: Int) {
-        val customRingtoneUri = Uri.parse(listAudio[positionAudioPlay].uri.toString())
+        val customRingtoneUri = Uri.parse(audioInformation!!.uri.toString())
         when (type) {
             0       -> {
                 RingtoneManager.setActualDefaultRingtoneUri(this, RingtoneManager.TYPE_RINGTONE, customRingtoneUri)
@@ -305,14 +306,13 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         binding.tvNameSong.isSelected = true
         binding.imvPause.visibility = View.VISIBLE
         binding.imvPlay.visibility = View.GONE
-        binding.tvNameSong.text =  listAudio[Const.positionAudioPlay].name
-        audioString = getRealPathFromURI(this@PlaySongActivity, listAudio[Const.positionAudioPlay].uri)
-        audioUri = listAudio[Const.positionAudioPlay].uri
+        binding.tvNameSong.text =  audioInformation!!.name
+        audioString = audioInformation!!.uri.toString()
+        audioUri = audioInformation!!.uri
         Log.d("check_audio", "initData: "+ audioUri)
-//        mediaPlayer = MediaPlayer.create(this,audioUri)
         createMediaPlayer()
         binding.seekBarAudio.max = mediaPlayer!!.duration
-        binding.tvDuration.text = "/ ${listAudio[positionAudioPlay].duration}"
+        binding.tvDuration.text = "/ ${audioInformation!!.duration}"
         runOnUiThread(object : Runnable {
             override fun run() {
                 if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
@@ -351,9 +351,8 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
                 updateTimeAndSeekBar()
             }
         })
-
         mediaPlayer!!.setOnCompletionListener {
-            binding.tvTimeStart.text = listAudio[positionAudioPlay].duration
+            binding.tvTimeStart.text = audioInformation!!.duration
             handler.postDelayed({
                 binding.seekBarAudio.progress = 0
                 binding.waveformSeekBar.progress = 0f
@@ -369,33 +368,28 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         mediaPlayer!!.start()
         updateTimeAndSeekBar()
     }
-
     fun startPlaying() {
         if (!isPlaying) {
             mediaPlayer?.start()
             isPlaying = true
         }
     }
-
     fun pausePlaying() {
         if (isPlaying) {
             mediaPlayer?.pause()
             isPlaying = false
         }
     }
-
     private fun rewindAudio(milliseconds: Int) {
         mediaPlayer?.let {
             val newPosition = it.currentPosition - milliseconds
             if (newPosition >= 0) {
                 it.seekTo(newPosition)
             } else {
-                it.seekTo(0) // Nếu tua về trước 0, đặt về 0
+                it.seekTo(0)
             }
         }
     }
-
-    // Hàm tua tới audio
     private fun forwardAudio(milliseconds: Int) {
         mediaPlayer?.let {
             val newPosition = it.currentPosition + milliseconds
@@ -406,8 +400,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             }
         }
     }
-
-
     @SuppressLint("DefaultLocale")
     private fun updateTimeAndSeekBar() {
         val mediaPlayer = mediaPlayer ?: return
@@ -435,25 +427,11 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             }
         }
     }
-    fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
-        var path: String? = null
-        val proj = arrayOf(MediaStore.Video.Media.DATA)
-        val cursor: Cursor? = context.contentResolver.query(contentUri, proj, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
-                path = it.getString(columnIndex)
-            }
-        }
-        return path
-    }
-
     override fun onStop() {
         super.onStop()
         mediaPlayer?.release()
         mediaPlayer = null
     }
-
     override fun onDestroy() {
         super.onDestroy()
         if (mediaPlayer!=null){

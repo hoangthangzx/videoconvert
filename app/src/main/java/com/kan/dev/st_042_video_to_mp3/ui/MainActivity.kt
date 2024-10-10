@@ -21,6 +21,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.google.android.gms.tasks.Task
@@ -31,6 +33,9 @@ import com.kan.dev.st_042_video_to_mp3.databinding.ActivityMainBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.DialogRateBinding
 import com.kan.dev.st_042_video_to_mp3.interface_bottom.BottomNavVisibilityListener
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
+import com.kan.dev.st_042_video_to_mp3.ui.fragment.HomeFragment
+import com.kan.dev.st_042_video_to_mp3.ui.fragment.SettingFragment
+import com.kan.dev.st_042_video_to_mp3.ui.fragment.storage.StorageFragment
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
@@ -45,6 +50,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
     lateinit var providerSharedPreference : SharedPreferenceUtils
     lateinit var binding: ActivityMainBinding
     private val viewModel: SharedViewModel by viewModels()
+    var currentDestination = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         SystemUtils.setLocale(this)
         showSystemUI(true)
@@ -60,6 +66,38 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             shareAudioUris(this@MainActivity,Const.listAudioPick)
         }
 
+        binding.homeFragment.onSingleClick {
+            currentDestination = 0
+            binding.iconHome.isSelected = true
+            binding.homeFragment.isSelected = true
+            binding.storageFragment.isSelected = false
+            binding.settingFragment.isSelected = false
+            binding.iconStorage.isSelected = false
+            binding.iconSetting.isSelected = false
+            loadFragment(HomeFragment())
+        }
+
+        binding.storageFragment.onSingleClick {
+            currentDestination = 1
+            binding.iconHome.isSelected = false
+            binding.iconStorage.isSelected = true
+            binding.homeFragment.isSelected = false
+            binding.storageFragment.isSelected = true
+            binding.settingFragment.isSelected = false
+            binding.iconSetting.isSelected = false
+            loadFragment(StorageFragment())
+        }
+
+        binding.settingFragment.onSingleClick {
+            currentDestination = 2
+            binding.iconHome.isSelected = false
+            binding.iconStorage.isSelected = false
+            binding.homeFragment.isSelected = false
+            binding.storageFragment.isSelected = false
+            binding.settingFragment.isSelected = true
+            binding.iconSetting.isSelected = true
+            loadFragment(SettingFragment())
+        }
         binding.lnCancel.onSingleClick {
             Const.isTouchEventHandled = false
             viewModel.triggerEvent()
@@ -67,6 +105,13 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             binding.bottomNavigationView.visibility = View.VISIBLE
         }
     }
+
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
+    }
+
 
     fun shareAudioUris(context: Context, listAudio: MutableList<AudioInfo>) {
         val uriList: ArrayList<Uri> = ArrayList()
@@ -83,19 +128,20 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
     }
 
     private fun initData() {
-        val navController = findNavController(R.id.nav_host_fragment)
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        NavigationUI.setupWithNavController(bottomNavigationView, navController)
         providerSharedPreference = SharedPreferenceUtils.getInstance(this)
-
+        loadFragment(HomeFragment())
+        binding.iconHome.isSelected = true
+        binding.homeFragment.isSelected = true
+        binding.storageFragment.isSelected = false
+        binding.settingFragment.isSelected = false
+        binding.iconStorage.isSelected = false
+        binding.iconSetting.isSelected = false
     }
 
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        val navController = findNavController(R.id.nav_host_fragment)
-        val currentDestination = navController.currentDestination?.id
         when (currentDestination) {
-            R.id.homeFragment2 -> {
+            0-> {
                 Const.listVideoStorage.clear()
                 Const.listVideoPick.clear()
                 Const.listAudioPick.clear()
@@ -181,10 +227,10 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
                     finishAffinity()
                 }
             }
-            R.id.storageFragment ->{
+            1 ->{
                 finishAffinity()
             }
-            R.id.settingFragment -> {
+            2 -> {
                 finishAffinity()
             }
 
@@ -200,26 +246,23 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
                 val flow = (context as Activity?)?.let { manager.launchReviewFlow(it, reviewInfo) }
                 flow?.addOnCompleteListener { task2: Task<Void> ->
                     Log.e("ReviewSuccess", task2.toString())
-//                    finishAffinity()
                     if (isBackPress) {
                         exitProcess(0)
                     }
                 }
             } else {
                 Log.e("ReviewError", task.exception.toString());
-//                finishAffinity()
                 if (isBackPress) {
                     exitProcess(0)
                 }
             }
         }
     }
-
     override fun onBottomNavVisibilityChanged(isVisible: Boolean) {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        val linearLayout = findViewById<LinearLayout>(R.id.bottomNavigationView)
         val bottomShare = findViewById<ConstraintLayout>(R.id.btShare)
         Log.d("check_visible", "onBottomNavVisibilityChanged: "+ isVisible)
-        bottomNavigationView.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
+        linearLayout.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
         bottomShare.visibility = View.VISIBLE
     }
 }

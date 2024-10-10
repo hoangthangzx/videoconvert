@@ -23,6 +23,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.REQUEST_CODE_NOTIFICATION_POL
 import com.kan.dev.st_042_video_to_mp3.utils.Const.STORAGE_PERMISSION_CODE
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
+import com.kan.dev.st_042_video_to_mp3.utils.applyGradientWidth
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
@@ -51,7 +52,7 @@ class PermissionActivity : AbsBaseActivity<ActivityPermissionBinding>(false) {
             ContextCompat.getColor(this@PermissionActivity, R.color.color_1),
             ContextCompat.getColor(this@PermissionActivity, R.color.color_2)
         )
-        binding.tvContinue.applyGradient(this@PermissionActivity,colors)
+        binding.tvContinue.applyGradientWidth(this@PermissionActivity,colors)
     }
 
     override fun onBackPressed() {

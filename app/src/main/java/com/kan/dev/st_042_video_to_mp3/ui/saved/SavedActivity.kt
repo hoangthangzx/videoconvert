@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
@@ -18,6 +20,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivitySaveTheConvertedVideoFileBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
@@ -62,7 +65,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     lateinit var adapterAudioSaved: AdapterAudioSaved
     private val handler = android.os.Handler()
     private var mediaPlayer: MediaPlayer? = null
-//    private var isPlaying = false
     override fun init() {
         Log.d("check_uri", "init: "+ Const.mp3Uri)
         mediaPlayer = MediaPlayer()
@@ -99,11 +101,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             initActionFile()
         }
     }
-
-    private fun initActionAudioMerger() {
-
-    }
-
     private fun initViewAudiMerger() {
         binding.imvPlay.visibility = View.GONE
         binding.imvPause.visibility = View.VISIBLE
@@ -194,12 +191,26 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.tvTitleVideoSpeed.text = videoCutter!!.name
         binding.tvDurationVideoSP.text = videoCutter!!.duration
         binding.tvSizeSp.text = videoCutter!!.sizeInMB
+        Log.d("check_cutter_uri", "initViewCutter: "+ videoCutter!!.uri)
 
-        Glide.with(this)
-            .asBitmap()
-            .load(videoCutter!!.uri)
-            .into(binding.imvVideoSP)
+        val bitmap = getVideoFrameFromUri(this, videoCutter!!.uri)
+        bitmap?.let {
+            binding.imvVideoImage.setImageBitmap(it)
+        }
         binding.tvTitleVideoSpeed.isSelected = true
+    }
+
+    private fun getVideoFrameFromUri(context: Context, videoUri: Uri): Bitmap? {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(context, videoUri)
+            retriever.getFrameAtTime(0)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            retriever.release()
+        }
     }
 
     private fun initViewMulti() {
@@ -392,7 +403,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         }
         createMediaPlayer()
         binding.seekBar.max = mediaPlayer!!.duration
-
         runOnUiThread(object : Runnable {
             override fun run() {
                 if (mediaPlayer != null) {
@@ -507,6 +517,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
         binding.imvBack.onSingleClick {
             listConvertMp3.clear()
+            listAudioSaved.clear()
             finish()
         }
 
@@ -599,6 +610,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         }
         handler.removeCallbacksAndMessages(null) // Dừng Handler
     }
+
 
 //    override fun onResume() {
 //        super.onResume()

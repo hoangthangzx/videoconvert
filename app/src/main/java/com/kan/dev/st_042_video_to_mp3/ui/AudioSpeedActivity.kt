@@ -57,6 +57,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     var mediaPlayer: MediaPlayer? = null
     var valueSpeed = 1f
     var duration = 0
+    var checkSpeed = false
     private var isPlaying: Boolean = true
     private val handler = android.os.Handler()
     private val handlerPro = Handler(Looper.getMainLooper())
@@ -84,10 +85,8 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
     @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
     private fun initView() {
-
         binding.textView6.text = "Duration : ${listAudio[positionAudioPlay].duration}"
-        binding.tvNewDuration.text = "Duration : ${listAudio[positionAudioPlay].duration}"
-
+        binding.tvNewDuration.text = " ${listAudio[positionAudioPlay].duration}"
         val colors = intArrayOf(
             ContextCompat.getColor(this@AudioSpeedActivity, R.color.color_1),
             ContextCompat.getColor(this@AudioSpeedActivity, R.color.color_2)
@@ -97,31 +96,14 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         val handler = Handler(Looper.getMainLooper())
         val updateProgress = object : Runnable {
             override fun run() {
-//                if (mediaPlayer != null) {
-//                    try {
-//                        if (mediaPlayer!!.isPlaying) {
-//                            binding.waveformSeekBar.progress = (mediaPlayer!!.currentPosition * 100 / mediaPlayer!!.duration).toFloat()
-//                            handler.postDelayed(this, 100)
-//                        }
-//                    } catch (e: IllegalStateException) {
-//                        Log.e("MediaPlayerError", "MediaPlayer is in an illegal state", e)
-//                    }
-//                }
                 if (mediaPlayer != null) {
                     try {
                         if (mediaPlayer!!.isPlaying ) {
-                            // Chỉ cập nhật progress nếu người dùng không kéo
                             binding.waveformSeekBar.progress = (mediaPlayer!!.currentPosition * 100 / mediaPlayer!!.duration).toFloat()
                             binding.seekBarAudio.progress = mediaPlayer!!.currentPosition
-//                            handler.postDelayed(this, 100)
                         }
                         handler.postDelayed(this, 100)
-//                        if (mediaPlayer!!.isPlaying && !isUserSeeking) {
-//                            // Chỉ cập nhật progress nếu người dùng không kéo
-//                            binding.waveformSeekBar.progress = (mediaPlayer!!.currentPosition * 100 / mediaPlayer!!.duration).toFloat()
-//                            binding.seekBarAudio.progress = mediaPlayer!!.currentPosition
-//                            handler.postDelayed(this, 100)
-//                        }
+
                     } catch (e: IllegalStateException) {
                         Log.e("MediaPlayerError", "MediaPlayer is in an illegal state", e)
                     }
@@ -160,6 +142,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     }
     fun startPlaying() {
         if (!isPlaying) {
+            mediaPlayer?.playbackParams = mediaPlayer?.playbackParams?.setSpeed(valueSpeed) ?: return
             mediaPlayer?.start()
             isPlaying = true
         }
@@ -203,6 +186,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                checkSpeed = true
                 updateView(progress)
                 updateSpeed(progress)
                 Log.d("check_size", "onProgressChanged: "+ progress)
@@ -251,7 +235,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                     withContext(Dispatchers.IO) {
                         changeAudioSpeed(audioPath, outputPath, valueSpeed)
                     }
-                    withContext(Dispatchers.Main) {
+                        withContext(Dispatchers.Main) {
                     }
                 }
             }
@@ -336,7 +320,8 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     @SuppressLint("DefaultLocale")
     private fun updateTimeAndSeekBar() {
         val mediaPlayer = mediaPlayer ?: return
-        val currentPosition = mediaPlayer.currentPosition
+//        mediaPlayer?.playbackParams = mediaPlayer?.playbackParams?.setSpeed(valueSpeed) ?: return
+        val currentPosition = mediaPlayer!!.currentPosition
         binding.seekBarAudio.progress = currentPosition
         val elapsedTime = String.format(
             "%02d:%02d",
@@ -366,9 +351,18 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         Log.d("check_size", "onProgressChanged: "+(progress/10) + " NNNNN  " + valueSpeed)
         val playbackParams = PlaybackParams()
         playbackParams.speed = valueSpeed
-        mediaPlayer!!.playbackParams = playbackParams
+        if(mediaPlayer!!.isPlaying){
+            mediaPlayer!!.playbackParams = playbackParams
+        }
         duration = convertTimeToSeconds(listAudio[positionVideoPlay].duration)
-        binding.tvNewDuration.text = convertSecondsToTime((duration/valueSpeed).toDouble())
+        if (valueSpeed == 1f){
+            binding.tvNewDuration.text = listAudio[positionAudioPlay].duration
+            binding.tvDuration.text = "/ ${listAudio[positionAudioPlay].duration}"
+        }else{
+            binding.tvNewDuration.text = convertSecondsToTime((duration/valueSpeed).toDouble())
+            binding.tvDuration.text = "/ ${convertSecondsToTime((duration/valueSpeed).toDouble())}"
+        }
+
         Log.d("check_time", "updateSpeed: "+ convertSecondsToTime((duration/valueSpeed).toDouble()))
     }
 

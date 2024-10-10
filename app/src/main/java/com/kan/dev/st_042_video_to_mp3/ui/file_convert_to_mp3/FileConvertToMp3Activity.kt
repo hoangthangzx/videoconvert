@@ -1,5 +1,6 @@
 package com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -96,7 +97,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     }
 
     private fun initAction() {
-
         binding.imvBack.onSingleClick {
             finish()
         }
@@ -120,12 +120,10 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 if (videoPath != null) {
                     convertVideoToMp3(videoPath!!, outputPath)
                 }
-//                mp3Uri = Uri.parse(outputPath)
             }else{
-                if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
+                if (!isConverting) {
                     showLoadingOverlay()
                     isConverting = true
-                    // Gọi hàm chuyển đổi với Coroutine
                     CoroutineScope(Dispatchers.Main).launch {
                         convertAllVideosToMp3()
                     }
@@ -153,6 +151,9 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
+        val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
+        animator.duration = 1000 // Thời gian chạy animation (5 giây)
+        animator.start()
     }
 
     private fun hideLoadingOverlay() {
@@ -166,7 +167,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             if (listVideoPick.size == 1){
                 mp3Uri = Uri.parse(outputPath)
                 val infoFile = FileInfo.getFileInfoFromPath(mp3Uri!!.toString())
-                Const.videoConvert = VideoConvertModel(mp3Uri!!, listVideo[positionVideoPlay].duration,infoFile!!.fileSize,infoFile.fileName.toString() )
+                Const.videoConvert = VideoConvertModel(mp3Uri!!, videoCutter!!.duration,infoFile!!.fileSize,infoFile.fileName.toString() )
                 startActivity(Intent(this@FileConvertToMp3Activity,SavedActivity::class.java))
             }else{
                 var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
@@ -192,6 +193,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         adapter = FileConvertAdapter(this@FileConvertToMp3Activity)
         adapter.getData(listVideoPick)
         binding.recFileConvert.adapter = adapter
+        Log.d("check_list_video_pick", "initDataMulti: " + listVideoPick)
     }
 
     override fun onDestroy() {
@@ -218,6 +220,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     override fun onResume() {
         super.onResume()
         hideLoadingOverlay()
-//        initDataFile()
+        initData()
     }
 }

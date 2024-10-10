@@ -1,5 +1,6 @@
 package com.kan.dev.st_042_video_to_mp3.ui
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import com.kan.dev.st_042_video_to_mp3.R
@@ -35,6 +36,9 @@ class SplashActivity : AbsBaseActivity<ActivitySpalshBinding>(false) {
     }
 
     private fun initData() {
+        val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
+        animator.duration = 3000 // Thời gian chạy animation (5 giây)
+        animator.start()
         CoroutineScope(Dispatchers.Main).launch {
             val delayMillis = SPLASH_DELAY
             delay(delayMillis)

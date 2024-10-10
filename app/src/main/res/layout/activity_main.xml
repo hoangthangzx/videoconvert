@@ -8,31 +8,113 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <fragment
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+<!--    <fragment-->
+<!--        android:id="@+id/nav_host_fragment"-->
+<!--        android:name="androidx.navigation.fragment.NavHostFragment"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:defaultNavHost="true"-->
+<!--        app:navGraph="@navigation/nav_graph_home"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:id="@+id/bottomNavigationView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        android:background="@color/black"-->
+<!--        app:itemIconSize="30dp"-->
+<!--        app:itemIconTint="@color/bottom_nav_icon_color"-->
+<!--        app:labelVisibilityMode="unlabeled"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:menu="@menu/bottom_nav_menu" />-->
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph_home"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <LinearLayout
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/black"
-        app:itemIconSize="30dp"
-        app:itemIconTint="@color/bottom_nav_icon_color"
-        app:labelVisibilityMode="unlabeled"
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:background="@drawable/bg_bottom_navigation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        app:layout_constraintStart_toStartOf="parent">
+
+
+        <LinearLayout
+            android:id="@+id/homeFragment"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="30dp"
+            android:background="@drawable/bg_item_selector_bottom"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/iconHome"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/bottom_nav_item_home" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:id="@+id/storageFragment"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_item_selector_bottom"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/icon_storage"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/bottom_nav_item_storage" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:id="@+id/settingFragment"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_item_selector_bottom"
+            android:layout_marginEnd="30dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/iconSetting"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/bottom_nav_item_setting" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btShare"

@@ -17,7 +17,7 @@ import java.util.Locale
 
 object VideoUtils {
     var countVd = 0
-    var countVideoSt = 0
+//    var countVideoSt = 0
     fun getAllVideosFromSpecificDirectory(directoryPath: String) {
         val directory = File(directoryPath)
 
@@ -136,6 +136,8 @@ object VideoUtils {
                 countVd +=1
             }
         }
+
+        Log.d("check_count", "getAllVideos: "+ countVd)
 
     }
 

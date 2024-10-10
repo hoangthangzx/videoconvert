@@ -1,4 +1,5 @@
 package com.kan.dev.st_042_video_to_mp3.ui
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -12,8 +13,11 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
@@ -23,6 +27,7 @@ import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
@@ -36,14 +41,14 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     private var exoPlayer: ExoPlayer? = null
     var startTime = 0f
     var endTime = 0f
+    var maxValueTime = 0f
     var timeCut = ""
     private lateinit var frames: Array<ImageView>
     override fun init() {
-        initData()
+//        initData()
         initView()
         initAction()
     }
-
     private fun initView() {
         val colors = intArrayOf(
             ContextCompat.getColor(this@VideoCutterActivity, R.color.color_1),
@@ -51,12 +56,13 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         )
         binding.tvDone.applyGradient(this@VideoCutterActivity,colors)
     }
-
     private fun initAction() {
         binding.imvBack.onSingleClick {
             finish()
         }
-
+        binding.tvCancel.onSingleClick {
+            finish()
+        }
         binding.btnPlus.setOnClickListener {
             val currentTime = binding.edtStartTime.text.toString()
             val parts = currentTime.split(":")
@@ -71,9 +77,16 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 hours = 0
             }
             startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
+            binding.customRangeSeekBar.setSelectedMinValue(startTime + 1f)
+            if(binding.customRangeSeekBar.getSelectedMinValue() > 1f){
+                binding.btnMinus.isClickable = true
+            }
+            if(binding.customRangeSeekBar.getSelectedMinValue() >= binding.customRangeSeekBar.getSelectedMaxValue() -1f){
+                binding.btnPlus.isClickable = false
+            }
             binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
             binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
-            timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
+            timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
             binding.tvTimeCut.text = timeCut
         }
 
@@ -82,21 +95,27 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-
             minutes += 1
-
             if (minutes >= 60) {
                 minutes = 0
                 hours += 1
             }
-
             if (hours > 23) {
                 hours = 0
             }
             endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
+            binding.customRangeSeekBar.setSelectedMaxValue(endTime + 1f)
+            Log.d("check_value", "initActionMinus: "+ startTime)
             binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
+            if(binding.customRangeSeekBar.getSelectedMaxValue() >= maxValueTime){
+                binding.btnPlusEnd.isClickable = false
+                Toast.makeText(this, getString(R.string.time_reaches_its_maximum_value), Toast.LENGTH_SHORT).show()
+            }
+            if(binding.customRangeSeekBar.getSelectedMaxValue() > binding.customRangeSeekBar.getSelectedMinValue() + 1f){
+                binding.btnMinusEnd.isClickable = true
+            }
             binding.edtEndTime.setSelection(binding.edtEndTime.text.length)
-            timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
+            timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
             binding.tvTimeCut.text = timeCut
         }
 
@@ -105,7 +124,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-
             minutes -= 1
 
             if (minutes < 0) {
@@ -117,9 +135,16 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 hours = 23
             }
             endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
+            binding.customRangeSeekBar.setSelectedMaxValue(endTime - 1f)
             binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
+            if(binding.customRangeSeekBar.getSelectedMaxValue() < maxValueTime){
+                binding.btnPlusEnd.isClickable = true
+            }
+            if(binding.customRangeSeekBar.getSelectedMaxValue() <= binding.customRangeSeekBar.getSelectedMinValue() + 1f){
+                binding.btnMinusEnd.isClickable = false
+            }
             binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
-            timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
+            timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
             binding.tvTimeCut.text = timeCut
         }
 
@@ -128,9 +153,7 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-
             minutes -= 1
-
             if (minutes < 0) {
                 minutes = 59
                 hours -= 1
@@ -140,39 +163,24 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 hours = 23
             }
             startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
+            binding.customRangeSeekBar.setSelectedMinValue(startTime - 1f)
+            if(binding.customRangeSeekBar.getSelectedMinValue() < 1f){
+                binding.btnMinus.isClickable = false
+                Toast.makeText(this, getString(R.string.time_to_reach_minimum_value), Toast.LENGTH_SHORT).show()
+            }
+
+            if(binding.customRangeSeekBar.getSelectedMinValue() < binding.customRangeSeekBar.getSelectedMaxValue() ){
+                binding.btnPlus.isClickable = true
+            }
             binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
             binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
-            timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
+            timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
             binding.tvTimeCut.text = timeCut
         }
-
-
-
         binding.edtStartTime.setText(formatTime(startTime.toInt()))
         binding.edtEndTime.setText(formatTime(endTime.toInt()))
-//        binding.edtStartTime.addTextChangedListener(object : TextWatcher {
-//            override fun afterTextChanged(s: Editable?) {
-//                if (s.toString().length == 2 && !s.toString().contains(":")) {
-//                    s?.append(":")
-//                }
-//            }
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-//        })
-//
-//        binding.edtEndTime.addTextChangedListener(object : TextWatcher {
-//            override fun afterTextChanged(s: Editable?) {
-//                if (s.toString().length == 2 && !s.toString().contains(":")) {
-//                    s?.append(":") // Thêm dấu ":" sau 2 chữ số
-//                }
-//            }
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-//        })
-
-        binding.edtStartTime.isClickable = false
-        binding.edtEndTime.isClickable = false
-        binding.customRangeSeekBar.setMaxValue(convertDurationToSeconds(listVideo[positionVideoPlay].duration))
+//        binding.edtStartTime.isClickable = false
+//        binding.edtEndTime.isClickable = false
         binding.customRangeSeekBar.setOnRangeSeekBarChangeListener(object : CustomRangeSeekBar.OnRangeSeekBarChangeListener {
             override fun onRangeSeekBarValuesChanged(minValue: Float, maxValue: Float) {
                 startTime = minValue
@@ -181,7 +189,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 binding.tvTimeCut.text = timeCut
                 binding.edtStartTime.setText(convertSecondsToDuration(startTime.toInt()))
                 binding.edtEndTime.setText(convertSecondsToDuration(endTime.toInt()))
-
                 Log.d("check_value", "onRangeSeekBarValuesChanged: "+ minValue + "_________" + maxValue)
             }
         })
@@ -191,7 +198,7 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
             val durationVideo = convertDurationToSeconds(listVideo[positionVideoPlay].duration)
             if(currentValueStart > currentValueEnd || currentValueStart > durationVideo || currentValueEnd > durationVideo || currentValueEnd <0 || currentValueStart < 0 ){
-                Toast.makeText(this@VideoCutterActivity, getString(R.string.you_must_choose_the_right_time, ), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@VideoCutterActivity, getString(R.string.you_must_choose_the_right_time), Toast.LENGTH_SHORT).show()
             }else{
                 showLoadingOverlay()
                 val videoPath = getRealPathFromURI(this,videoUri!!)
@@ -199,16 +206,18 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Movies/video")
                 val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp4"
                 if (videoPath != null) {
-                    cutVideo(videoPath,outputPath,formatTime(startTime.toInt()),formatTime(endTime.toInt()))
+                    cutVideo(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
                 }
             }
         }
     }
-
     private fun initData() {
+        maxValueTime = (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())
         startTime = (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())*(1f/3f)
         endTime =  (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())*(2f/3f)
-        Log.d("check_value_time", "initData: "+ startTime + "    "+ (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toString() + " mmmmm "+ endTime))
+        binding.customRangeSeekBar.setSelectedMinValue(startTime)
+        binding.customRangeSeekBar.setSelectedMaxValue(endTime)
+        binding.customRangeSeekBar.setMaxValue(convertDurationToSeconds(listVideo[positionVideoPlay].duration))
         timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
         binding.tvTimeCut.text = timeCut
         if (listVideo.size > 0) {
@@ -220,7 +229,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         exoPlayer!!.setMediaItem(mediaItem)
         exoPlayer!!.prepare()
         exoPlayer!!.playWhenReady = true
-
         frames = arrayOf(
             findViewById(R.id.imvFrame1),
             findViewById(R.id.imvFrame2),
@@ -245,12 +253,19 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         }
         retriever.release()
     }
+
+
     private fun showLoadingOverlay() {
+        val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
+        animator.duration = 1000 // Thời gian chạy animation (5 giây)
+        animator.start()
         binding.loadingOverlay.visibility = View.VISIBLE
     }
+
     private fun hideLoadingOverlay() {
         binding.loadingOverlay.visibility = View.GONE
     }
+
     fun cutVideo(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         Log.d("check_audio_speed", ""+ startTime + "    " + endTime)
         val command = "-i \"$inputFilePath\" -ss $startTime -to $endTime -c copy $outputFilePath"
@@ -260,12 +275,12 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             val infoFile = FileInfo.getFileInfoFromPath(videoUri!!.toString())
             Const.videoCutter = VideoCutterModel(videoUri!!,timeCut,infoFile!!.fileSize,infoFile.fileName.toString() )
             startActivity(Intent(this@VideoCutterActivity, SavedActivity::class.java))
-            finish()
             Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thất bạihh" + videoUri)
         } else {
             Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thất bại. Mã lỗi: $resultCode")
         }
     }
+
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
         var path: String? = null
         val proj = arrayOf(MediaStore.Video.Media.DATA)
@@ -279,6 +294,8 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         return path
     }
 
+
+
     fun convertDurationToSeconds(duration: String): Int {
         val parts = duration.split(":").map { it.toInt() }
         return parts.fold(0) { acc, part -> acc * 60 + part }
@@ -287,14 +304,7 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     fun convertSecondsToDuration(seconds: Int): String {
         val minutes = seconds / 60
         val remainingSeconds = seconds % 60
-
         return String.format("%02d:%02d", minutes, remainingSeconds)
-//        val hours = seconds / 3600
-//        val minutes = (seconds % 3600) / 60
-//        val remainingSeconds = seconds % 60
-//
-//        // Định dạng với hai chữ số cho mỗi phần
-//        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
     }
 
     @SuppressLint("DefaultLocale")
@@ -303,13 +313,13 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         val remainingSeconds = seconds % 60
         return String.format("%02d:%02d", minutes, remainingSeconds)
     }
-
     override fun onResume() {
         super.onResume()
         hideLoadingOverlay()
+        initData()
+        Log.d("check_type_fr", "onResume: " + selectType)
 //        initData()
     }
-
     override fun onStop() {
         super.onStop()
         exoPlayer?.release()

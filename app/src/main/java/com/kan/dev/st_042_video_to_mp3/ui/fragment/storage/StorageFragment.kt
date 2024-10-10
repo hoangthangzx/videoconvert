@@ -32,6 +32,8 @@ import com.kan.dev.st_042_video_to_mp3.ui.PlaySongActivity
 import com.kan.dev.st_042_video_to_mp3.ui.PlayVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkData
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkDataAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
@@ -49,6 +51,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.typefr
+import com.kan.dev.st_042_video_to_mp3.utils.Const.uriPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoInfo
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
@@ -214,6 +217,9 @@ class StorageFragment : Fragment() {
                 }else{
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
                     Const.positionAudioPlay = position
+                    uriPlay = listAudioStorage[position].uri
+                    audioInformation = listAudioStorage[position]
+                    Log.d("check_data", "onClickItem: "+ audioInformation)
                     startActivity(Intent(requireContext(), PlaySongActivity::class.java))
                 }
             }
@@ -250,8 +256,6 @@ class StorageFragment : Fragment() {
                 countSizeVideo = 0
                 countVideo = 0
                 checkType = true
-//                AudioUtils.getAllAudios(requireContext().contentResolver)
-//                VideoUtils.getAllVideos(requireContext().contentResolver)
                 adapterVdFr.notifyDataSetChanged()
                 adapterFr.notifyDataSetChanged()
                 viewModel.resetEvent()
@@ -335,6 +339,7 @@ class StorageFragment : Fragment() {
                     }
                 }
                 val deleted = deleteVideos(listVideoPick)
+                listVideoPick.clear()
                 if(listVideoStorage.size == 0){
                     binding.lnNoItem.visibility = View.VISIBLE
                     binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_video_now)
@@ -360,6 +365,7 @@ class StorageFragment : Fragment() {
                     }
                 }
                 val deleted = deleteAudioFiles(listAudioPick)
+                listAudioPick.clear()
                 if(listAudioStorage.size == 0){
                     binding.lnNoItem.visibility = View.VISIBLE
                     binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_audio_now)

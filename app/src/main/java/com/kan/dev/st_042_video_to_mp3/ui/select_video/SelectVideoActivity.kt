@@ -43,40 +43,21 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     override fun getFragmentID(): Int = 0
     override fun getLayoutId(): Int = R.layout.activity_select_video
     lateinit var adapter: SelectVideoAdapter
-//    var count = 0
     override fun init() {
         initData()
-        if(Const.selectType.equals("Speed") || Const.selectType.equals("VideoCutter")){
-            initViewSpeed()
+        initView()
+        if(selectType.equals("VideoCutter")){
             initActionSpeed()
-        } else if (selectType.equals("VideoMerger")){
-            initView()
-            initActionMerger()
         }else if(selectType.equals("VideoConvert")){
-            initView()
             initActionConverter()
         }else{
-            initView()
             initAction()
         }
     }
 
     private fun initActionConverter() {
-
         binding.imvBack.onSingleClick {
             finish()
-            countAudio = 0
-            countSize = 0
-            checkType = true
-            selectType = ""
-            selectTypeAudio = ""
-            listVideo.clear()
-            listVideoPick.clear()
-            listAudio.clear()
-            listAudioPick.clear()
-            listAudioSaved.clear()
-            listConvertMp3.clear()
-            audioInfo  = null
         }
 
         binding.lnContinue.onSingleClick {
@@ -108,18 +89,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     private fun initActionMerger() {
         binding.imvBack.onSingleClick {
             finish()
-            countAudio = 0
-            countSize = 0
-            checkType = true
-            selectType = ""
-            selectTypeAudio = ""
-            listVideo.clear()
-            listVideoPick.clear()
-            listAudio.clear()
-            listAudioPick.clear()
-            listAudioSaved.clear()
-            listConvertMp3.clear()
-            audioInfo  = null
+
         }
         binding.lnContinue.onSingleClick {
             if(countVideo>0 && selectType.equals("Video")){
@@ -156,18 +126,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     private fun initActionSpeed() {
         binding.imvBack.onSingleClick {
             finish()
-            countAudio = 0
-            countSize = 0
-            checkType = true
-            selectType = ""
-            selectTypeAudio = ""
-            listVideo.clear()
-            listVideoPick.clear()
-            listAudio.clear()
-            listAudioPick.clear()
-            listAudioSaved.clear()
-            listConvertMp3.clear()
-            audioInfo  = null
         }
 
         adapter.onClickListener(object : SelectVideoAdapter.onClickItemListener{
@@ -204,47 +162,15 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
 
         binding.lnContinue.onSingleClick {
             if(countVideo>0){
-                if(Const.selectType.equals("VideoCutter")){
-                    startActivity(Intent(this@SelectVideoActivity, VideoCutterActivity::class.java))
-                }
-                else{
-                    startActivity(Intent(this@SelectVideoActivity, VideoSpeedActivity::class.java))
-                }
+                startActivity(Intent(this@SelectVideoActivity, VideoCutterActivity::class.java))
             }else{
                 Toast.makeText(this@SelectVideoActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
             }
         }
-
     }
-
-    private fun initViewSpeed() {
-        binding.imvTick.visibility = View.INVISIBLE
-        val colors = intArrayOf(
-            ContextCompat.getColor(this@SelectVideoActivity, R.color.color_1),
-            ContextCompat.getColor(this@SelectVideoActivity, R.color.color_2)
-        )
-        binding.tvContinue.applyGradient(this@SelectVideoActivity,colors)
-        binding.tvSelected.text = "$countVideo Selected"
-        adapter = SelectVideoAdapter(this@SelectVideoActivity)
-        adapter.getData(listVideo)
-        binding.recVideo.adapter = adapter
-    }
-
     private fun initAction() {
         binding.imvBack.onSingleClick {
             finish()
-            countAudio = 0
-            countSize = 0
-            checkType = true
-            selectType = ""
-            selectTypeAudio = ""
-            listVideo.clear()
-            listVideoPick.clear()
-            listAudio.clear()
-            listAudioPick.clear()
-            listAudioSaved.clear()
-            listConvertMp3.clear()
-            audioInfo  = null
         }
         binding.lnContinue.onSingleClick {
             if(countVideo>0 && selectType.equals("Video")){
@@ -294,41 +220,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             checkData = true
         }
     }
-//    fun getAllVideos(contentResolver: ContentResolver) {
-//        val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-//        val projection = arrayOf(
-//            MediaStore.Video.Media._ID,
-//            MediaStore.Video.Media.DURATION,
-//            MediaStore.Video.Media.SIZE, // Thêm cột SIZE để lấy dung lượng
-//            MediaStore.Video.Media.DISPLAY_NAME // Thêm cột DISPLAY_NAME để lấy tên video
-//        )
-//        val cursor: Cursor? = contentResolver.query(
-//            uri,
-//            projection,
-//            null,
-//            null,
-//            null
-//        )
-//        cursor?.use {
-//            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
-//            val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
-//            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE) // Lấy index của cột SIZE
-//            val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME) // Lấy index của cột tên video
-//
-//            while (cursor.moveToNext()) {
-//                val id = cursor.getLong(idColumn)
-//                val videoUri = Uri.withAppendedPath(uri, id.toString())
-//                val duration = cursor.getLong(durationColumn)
-//                val size = cursor.getLong(sizeColumn) // Lấy giá trị dung lượng
-//                val sizeInMB = size / (1024 * 1024)
-//                val videoName = cursor.getString(nameColumn) // Lấy giá trị tên video
-//
-//                // Cập nhật để bao gồm videoName trong VideoInfo
-//                listVideo.add(VideoInfo(videoUri, formatTimeToHoursMinutes(duration), sizeInMB, videoName, false, count))
-//                count +=1
-//            }
-//        }
-//    }
 
     fun formatTimeToHoursMinutes(duration: Long): String {
         val minutes = (duration / 1000) / 60

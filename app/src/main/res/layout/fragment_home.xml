@@ -55,7 +55,7 @@
             <LinearLayout
                 android:id="@+id/lnVideoConvert"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="140dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/imv_video_convert"
                 android:layout_marginHorizontal="20dp"

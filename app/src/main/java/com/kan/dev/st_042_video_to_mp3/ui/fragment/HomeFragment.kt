@@ -51,6 +51,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
+import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils.countVd
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
 import java.io.File
@@ -131,6 +132,7 @@ class HomeFragment : Fragment() {
             selectTypeAudio = "AudioMerger"
             countAudio = 0
             countSize = 0
+            listAudioStorage.clear()
             Const.checkDataAudio = false
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
@@ -140,6 +142,7 @@ class HomeFragment : Fragment() {
             Const.checkData = false
             countVideo = 0
             countSizeVideo = 0
+            listVideoStorage.clear()
             startActivity(Intent(requireContext(),SelectVideoActivity::class.java))
         }
 //        binding.lnVideoMerger.onSingleClick {
@@ -154,6 +157,7 @@ class HomeFragment : Fragment() {
             Const.checkData = false
             countVideo = 0
             countSizeVideo = 0
+            listVideoStorage.clear()
             startActivity(Intent(requireContext(), SelectVideoActivity::class.java))
         }
 
@@ -161,6 +165,7 @@ class HomeFragment : Fragment() {
             selectTypeAudio = "AudioConvert"
             countAudio = 0
             countSize = 0
+            listAudioStorage.clear()
             Const.checkDataAudio = false
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
@@ -169,7 +174,8 @@ class HomeFragment : Fragment() {
             selectTypeAudio = "AudioMerger"
             countAudio = 0
             countSize = 0
-            listAudio.clear()
+//            listAudio.clear()
+            listAudioStorage.clear()
             Const.checkDataAudio = false
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
@@ -178,6 +184,7 @@ class HomeFragment : Fragment() {
             selectTypeAudio = "AudioCutter"
             countAudio = 0
             countSize = 0
+            listAudioStorage.clear()
             Const.checkDataAudio = false
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
@@ -192,6 +199,7 @@ class HomeFragment : Fragment() {
             selectTypeAudio = "AudioSpeed"
             countAudio = 0
             countSize = 0
+            listAudioStorage.clear()
             Const.checkDataAudio = false
             startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
         }
@@ -201,6 +209,7 @@ class HomeFragment : Fragment() {
             Const.checkData = false
             countVideo = 0
             countSizeVideo = 0
+            listVideoStorage.clear()
             startActivity(Intent(requireContext(), SelectVideoActivity::class.java))
         }
     }
@@ -213,6 +222,19 @@ class HomeFragment : Fragment() {
         if(listAudioStorage.isEmpty()){
             AudioUtils.getAllAudiosFromSpecificDirectory(storageMusic)
         }
+        countVd = 0
+        countAudio = 0
+        countSize = 0
+        checkType = true
+        selectType = ""
+        selectTypeAudio = ""
+        listVideo.clear()
+        listVideoPick.clear()
+        listAudio.clear()
+        listAudioPick.clear()
+        listAudioSaved.clear()
+        listConvertMp3.clear()
+        audioInfo  = null
         Log.d("check_data", "onResume: "+ listVideoStorage  + "    " + storageVideo)
     }
 

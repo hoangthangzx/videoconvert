@@ -51,6 +51,10 @@ class AudioAdapterFr (var context: Context): RecyclerView.Adapter<AudioAdapterFr
             }else{
                 binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
             }
+
+            if(Const.selectType.equals("")){
+                binding.imvPlayVideo.setImageResource(R.drawable.icon_item_audio_converter)
+            }
             binding.imvTick.setOnClickListener {
                 mListener.onClickItem(position,holder)
             }

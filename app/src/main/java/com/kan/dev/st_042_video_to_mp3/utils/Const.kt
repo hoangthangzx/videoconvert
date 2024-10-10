@@ -19,8 +19,6 @@ object Const {
     var SPLASH_DELAY = 2500L
     var positionLanguageOld = 0
     val LANGUAGE: String = "tjii6tyh5"
-    var Interact : String ="fghjkl"
-    val PERMISSION: String = "krkgeas"
     val STORAGE_PERMISSION_CODE = 1
     val REQUEST_CODE_NOTIFICATION_POLICY = 3
     var listVideo = mutableListOf<VideoInfo>()
@@ -34,6 +32,7 @@ object Const {
     var positionVideoPlay = 0
     var positionAudioPlay = 0
     var mp3Uri : Uri? = null
+    var uriPlay : Uri? = null
     var currentRingtone = 0
     var VideoUriSpeed : Uri? = null
     var countAudio = 0
@@ -45,6 +44,7 @@ object Const {
     var selectTypeAudio = ""
     var audioInfo : AudioSpeedModel? = null
     var videoInfo : VideoInfo? = null
+    var audioInformation : AudioInfo? = null
     var videoCutter : VideoCutterModel? = null
     var videoConvert : VideoConvertModel? = null
     var listConvertMp3 = mutableListOf<String>()

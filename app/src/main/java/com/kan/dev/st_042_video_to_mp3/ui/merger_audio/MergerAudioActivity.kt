@@ -1,5 +1,6 @@
 package com.kan.dev.st_042_video_to_mp3.ui.merger_audio
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -121,6 +122,10 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
 
         }
 
+        binding.imvBack.onSingleClick {
+            finish()
+        }
+
         binding.tvDone.onSingleClick {
             showLoadingOverlay()
             val timestamp = System.currentTimeMillis()
@@ -180,6 +185,9 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
 
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
+        val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
+        animator.duration = 3000 // Thời gian chạy animation (5 giây)
+        animator.start()
     }
 
     private fun hideLoadingOverlay() {

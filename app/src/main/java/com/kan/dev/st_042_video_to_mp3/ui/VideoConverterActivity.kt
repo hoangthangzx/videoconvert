@@ -1,5 +1,7 @@
 package com.kan.dev.st_042_video_to_mp3.ui
 
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -47,8 +49,11 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         initViewMutil()
         initActionMulti()
     }
-
     private fun initActionMulti() {
+        binding.tvCancel.onSingleClick {
+            finish()
+        }
+
         imvItems.forEachIndexed { index, imvItem ->
             imvItem.onSingleClick {
                 checkItem = true
@@ -58,13 +63,16 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
                 imvItem.setBackgroundResource(R.drawable.bg_item_convert_pick)
                 Log.d("check_style", "initAction: ")
                 when(index){
-                    0 -> audioType ="mp3"
-                    1 -> audioType ="flac"
-                    2 -> audioType ="acc"
-                    3 -> audioType ="ogg"
-                    4 -> audioType ="wav"
-                    5 -> audioType ="wma"
-                    6 -> audioType ="ac3"
+                    0 -> audioType ="3gp"
+                    1 -> audioType ="mp4"
+                    2 -> audioType ="mov"
+                    3 -> audioType ="flv"
+                    4 -> audioType ="mkv"
+                    5 -> audioType ="avi"
+                    6 -> audioType ="mv4"
+                    7 -> audioType ="mts"
+                    8 -> audioType ="m2ts"
+                    9-> audioType ="ts"
                 }
             }
         }
@@ -85,13 +93,11 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
 
         binding.tvDone.onSingleClick {
             if(checkItem== false || listVideoPick.size == 0){
-                Toast.makeText(this@VideoConverterActivity, "", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@VideoConverterActivity, getString(R.string.there_are_no_items_to_convert), Toast.LENGTH_SHORT).show()
             }else{
                 showLoadingOverlay()
-                if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
-                    showLoadingOverlay()
+                if (!isConverting) {
                     isConverting = true
-                    // Gọi hàm chuyển đổi với Coroutine
                     CoroutineScope(Dispatchers.Main).launch {
                         convertAllVideoToSong()
                     }
@@ -103,12 +109,11 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
     private suspend fun convertAllVideoToSong() {
         withContext(Dispatchers.IO) { // Chạy trong IO context
             for (video in listVideoPick) {
-                showLoadingOverlay()
                 val videoPath = getRealPathFromURI(this@VideoConverterActivity, video.uri!!)
                 val timestamp = System.currentTimeMillis()
                 val originalFileName = File(videoPath).name
                 val baseFileName = originalFileName.substringBeforeLast(".", originalFileName)
-                val videoDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                val videoDir = File(Environment.getExternalStorageDirectory(), "Movies/video")
                 val outputPath = "${videoDir.absolutePath}/${baseFileName}_${timestamp}_convert.${audioType}" // Thay audioType nếu cần
                 if (videoPath != null) {
                     convertVideo(videoPath, outputPath, audioType)
@@ -142,6 +147,9 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
 
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
+        val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
+        animator.duration = 1000L // Thời gian chạy animation (5 giây)
+        animator.start()
     }
 
     private fun hideLoadingOverlay() {
@@ -165,7 +173,8 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         adapter = FileConvertAdapter(this@VideoConverterActivity)
         adapter.getData(listVideoPick)
         binding.recFileConvert.adapter = adapter
-        imvItems = listOf(binding.lnMp3,binding.lnFLAC,binding.lnAcc,binding.lnOgg,binding.lnWAV,binding.lnWMA,binding.lnAc3)
+        imvItems = listOf(binding.ln3Gp,binding.lnMp4,binding.lnMov,binding.lnFlv,binding.lnMkv,binding.lnAvi
+            ,binding.lnM4v,binding.lnMts,binding.lnM2ts,binding.lnTs)
     }
 
     private fun initViewMutil() {
@@ -181,6 +190,12 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
     override fun onDestroy() {
         super.onDestroy()
 
+    }
+
+    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        hideLoadingOverlay()
     }
 
     override fun onStop() {

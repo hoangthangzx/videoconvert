@@ -44,15 +44,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="wrap_content"
-            android:layout_height="120dp"
-            android:layout_marginBottom="-35dp"
-            app:lottie_autoPlay="true"
+        <ProgressBar
+            android:id="@+id/lottieAnimationView"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="180dp"
+            android:layout_height="6dp"
+            android:max="100"
+            android:progress="10"
+            android:layout_marginBottom="10dp"
+            android:progressDrawable="@drawable/progress_splash"
             app:layout_constraintBottom_toTopOf="@+id/textView"
-            app:layout_constraintEnd_toEndOf="@+id/textView"
-            app:lottie_rawRes="@raw/animation_progress"
-            app:layout_constraintStart_toStartOf="@+id/textView" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

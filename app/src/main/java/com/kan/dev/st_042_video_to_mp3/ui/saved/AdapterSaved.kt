@@ -49,6 +49,7 @@ class AdapterSaved (var context: Context): RecyclerView.Adapter<AdapterSaved.Vie
             binding.tvTitle.text = data[position].name
             binding.tvSize.text = "${data[position].sizeInMB}"
             binding.tvDurationVideo.text = data[position].duration
+            binding.tvTitle.isSelected = true
         }
     }
     override fun onCreateViewHolder(

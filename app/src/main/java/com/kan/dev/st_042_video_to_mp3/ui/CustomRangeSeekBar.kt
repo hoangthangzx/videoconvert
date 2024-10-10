@@ -29,7 +29,7 @@ class CustomRangeSeekBar @JvmOverloads constructor(
     }
 
     private val thumbPaint: Paint = Paint().apply {
-        color = Color.MAGENTA // Màu của thumb
+        color = Color.parseColor("#ED86D9") // Màu của thumb
     }
 
     private val backgroundPaint: Paint = Paint().apply {
@@ -41,8 +41,8 @@ class CustomRangeSeekBar @JvmOverloads constructor(
     }
 
     private val borderPaint: Paint = Paint().apply {
-        color = Color.MAGENTA // Màu viền hồng
-        strokeWidth = 8f
+        color = Color.parseColor("#ED86D9") // Màu viền hồng
+        strokeWidth = 12f
         style = Paint.Style.STROKE // Vẽ viền
     }
 
@@ -71,9 +71,10 @@ class CustomRangeSeekBar @JvmOverloads constructor(
         val minX = (width * (selectedMinValue - minValue) / (maxValue - minValue)) - thumbWidth / 2
         val maxX = (width * (selectedMaxValue - minValue) / (maxValue - minValue)) - thumbWidth / 2
 
+
         // Vẽ nền sáng giữa hai thumb
         val backgroundRect = RectF((minX + thumbWidth / 2).toFloat(), 0f, maxX + thumbWidth / 2, height)
-        canvas.drawRoundRect(backgroundRect, 20f, 20f, borderPaint) // Vẽ viền hồng
+        canvas.drawRoundRect(backgroundRect, 0f, 0f, borderPaint) // Vẽ viền hồng
 
 
         // Vẽ màu nền đen bên ngoài hai thumb
@@ -83,18 +84,18 @@ class CustomRangeSeekBar @JvmOverloads constructor(
         canvas.drawRect(rightBackgroundRect, backgroundPaint)
 
 
-
         canvas.drawRect(
-            minX.toFloat(), (height / 2 - thumbHeight / 2),
-            (minX + thumbWidth).toFloat(), (height / 2 + thumbHeight / 2),
+            minX, (height / 2 - thumbHeight ) ,
+            (minX + thumbWidth) - 5f, (height / 2 + thumbHeight ) ,
             thumbPaint
         )
 
         canvas.drawRect(
-            maxX, (height / 2 - thumbHeight / 2),
-            maxX + thumbWidth, (height / 2 + thumbHeight / 2),
+            maxX + 5f, (height / 2 - thumbHeight ),
+            maxX + thumbWidth , (height / 2 + thumbHeight ),
             thumbPaint
         )
+
     }
 
     interface OnRangeSeekBarChangeListener {
@@ -113,8 +114,8 @@ class CustomRangeSeekBar @JvmOverloads constructor(
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                val minX = (width * (selectedMinValue - minValue) / (maxValue - minValue)) - thumbWidth / 2
-                val maxX = (width * (selectedMaxValue - minValue) / (maxValue - minValue)) - thumbWidth / 2
+                val minX = (width * (selectedMinValue - minValue) / (maxValue - minValue))
+                val maxX = (width * (selectedMaxValue - minValue) / (maxValue - minValue))
 
                 if (x in (minX - thumbPadding)..(minX + thumbWidth + thumbPadding) && !isDraggingEndThumb) {
                     isDraggingStartThumb = true
@@ -158,15 +159,14 @@ class CustomRangeSeekBar @JvmOverloads constructor(
 
     fun getSelectedMinValue() = selectedMinValue
     fun getSelectedMaxValue() = selectedMaxValue
+    fun getMaxValue() = maxValue
     fun setSelectedMinValue(newMinValue : Float) {
         selectedMinValue = newMinValue
-        setupDefaultValues()
         invalidate()
     }
 
     fun setSelectedMaxValue(newMaxValue : Float) {
-        selectedMinValue = newMaxValue
-        setupDefaultValues()
+        selectedMaxValue = newMaxValue
         invalidate()
     }
     fun setMaxValue(newMaxValue: Int) {

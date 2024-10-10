@@ -69,3 +69,25 @@ fun TextView.applyGradient(context: Context, colors: IntArray) {
         }
     })
 }
+
+fun TextView.applyGradientWidth(context: Context, colors: IntArray) {
+    this.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
+
+            val paint = this@applyGradientWidth.paint
+            val textWidth = this@applyGradientWidth.width.toFloat()  // Lấy chiều rộng của TextView
+
+            if (textWidth > 0) {
+                // Gradient theo chiều ngang từ trái sang phải
+                val shader = LinearGradient(
+                    0f, 0f, textWidth, 0f,  // Thay đổi từ chiều dọc sang chiều ngang
+                    colors,
+                    null, Shader.TileMode.CLAMP
+                )
+                paint.shader = shader
+                // Xóa listener để tránh việc gọi lại nhiều lần
+                this@applyGradientWidth.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        }
+    })
+}
