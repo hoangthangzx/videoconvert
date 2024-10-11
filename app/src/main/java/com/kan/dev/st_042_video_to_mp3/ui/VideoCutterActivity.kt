@@ -177,8 +177,7 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
             binding.tvTimeCut.text = timeCut
         }
-        binding.edtStartTime.setText(formatTime(startTime.toInt()))
-        binding.edtEndTime.setText(formatTime(endTime.toInt()))
+
 //        binding.edtStartTime.isClickable = false
 //        binding.edtEndTime.isClickable = false
         binding.customRangeSeekBar.setOnRangeSeekBarChangeListener(object : CustomRangeSeekBar.OnRangeSeekBarChangeListener {
@@ -220,6 +219,8 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         binding.customRangeSeekBar.setMaxValue(convertDurationToSeconds(listVideo[positionVideoPlay].duration))
         timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
         binding.tvTimeCut.text = timeCut
+        binding.edtStartTime.setText(formatTime(startTime.toInt()))
+        binding.edtEndTime.setText(formatTime(endTime.toInt()))
         if (listVideo.size > 0) {
             videoUri = Uri.parse(listVideo[positionVideoPlay].uri.toString())
         }

@@ -17,12 +17,15 @@ import com.arthenica.mobileffmpeg.FFmpeg
 //import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityAudioConverterBinding
+import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioMerger
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
@@ -130,13 +133,19 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         if (resultCode == 0) {
             if(listAudioPick.size == 1){
                 var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse("$outputPath.$format").toString())
-                audioInfo = AudioSpeedModel(Uri.parse("$outputPath.$format"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                audioInfo = AudioSpeedModel(Uri.parse("$outputPath"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                 listAudioSaved.add(audioInfo!!)
                 startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
             }else{
-                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse("$outputPath.$format").toString())
-                audioInfo = AudioSpeedModel(Uri.parse("$outputPath.$format"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse("$outputPath").toString())
+                audioInfo = AudioSpeedModel(Uri.parse("$outputPath"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                 listAudioSaved.add(audioInfo!!)
+                Log.d("check---------------", "convertAudio: "+ audioInfo)
+//                audioInformation = audioInfoConverter!!.duration?.let {
+//                    AudioInfo(Uri.parse("$outputPath.$format"), it,audioInfoConverter.fileSize!!.toLong(),
+//                        audioInfoConverter!!.fileName,"00", false ,"00",0,false)
+//                }
+//                listAudioMerger.add(audioInformation!!)
             }
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")

@@ -26,6 +26,7 @@ object Const {
     var listAudioStorage = mutableListOf<AudioInfo>()
     var listAudio = mutableListOf<AudioInfo>()
     var listAudioPick = mutableListOf<AudioInfo>()
+    var listAudioMerger = mutableListOf<AudioInfo>()
     var listVideoPick = mutableListOf<VideoInfo>()
     var checkData = false
     var checkDataAudio = false
@@ -46,6 +47,7 @@ object Const {
     var videoInfo : VideoInfo? = null
     var audioInformation : AudioInfo? = null
     var videoCutter : VideoCutterModel? = null
+    var audioCutter : VideoCutterModel? = null
     var videoConvert : VideoConvertModel? = null
     var listConvertMp3 = mutableListOf<String>()
     var listAudioSaved = mutableListOf<AudioSpeedModel>()

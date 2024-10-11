@@ -32,6 +32,7 @@ import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.countPos
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
@@ -49,6 +50,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.musicStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.videoCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
@@ -223,6 +225,8 @@ class HomeFragment : Fragment() {
         if(listAudioStorage.isEmpty()){
             AudioUtils.getAllAudiosFromSpecificDirectory(storageMusic)
         }
+        audioCutter = null
+        videoCutter = null
         countPos = 0
         countVd = 0
         countAudio = 0

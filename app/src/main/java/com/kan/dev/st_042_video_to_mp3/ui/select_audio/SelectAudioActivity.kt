@@ -164,6 +164,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             override fun onClickItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
                 val previouslySelectedIndex = listAudio.indexOfFirst { it.active }
                 if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
+                    positionAudioPlay = position
                     listAudio[previouslySelectedIndex].active = false
                     countAudio -= 1
                     countSize -= listAudio[previouslySelectedIndex].sizeInMB.toInt()
@@ -176,7 +177,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
                     listAudio[position].active = true
                     listAudioPick.clear() // Xóa danh sách đã chọn trước đó
-                    listAudioPick.add(0, listAudio[position])
+                    listAudioPick.add( listAudio[position])
                 } else {
                     countAudio -= 1
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)

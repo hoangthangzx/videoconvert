@@ -29,13 +29,16 @@ import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.MainActivity
 import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertAdapter
 import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertToMp3Activity
+import com.kan.dev.st_042_video_to_mp3.ui.merger_audio.MergerAudioActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.currentRingtone
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioMerger
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
@@ -101,7 +104,34 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             initData()
             initActionFile()
         }
+        if(selectTypeAudio.equals("AudioCutter")){
+            initActionAudioCutter()
+            initData()
+            initViewAudioCutter()
+        }
     }
+
+    private fun initActionAudioCutter() {
+        binding.lnShare.onSingleClick {
+            uriAll?.let { shareMp3File(this@SavedActivity, it) }
+        }
+
+        binding.lnRingtone.onSingleClick {
+            showDialogRingtone()
+        }
+    }
+
+    private fun initViewAudioCutter() {
+        binding.imvPlay.visibility = View.GONE
+        binding.imvPause.visibility = View.VISIBLE
+        binding.tvTitle.isSelected = true
+        binding.ctlFile.visibility = View.VISIBLE
+        binding.tvTitle.text = audioCutter!!.name
+        binding.tvSize.text = audioCutter!!.sizeInMB.toString()
+        binding.tvDurationVideo.text = audioCutter!!.duration
+        binding.tvDuration.text =" / ${audioCutter!!.duration}"
+    }
+
     private fun initViewAudiMerger() {
         binding.imvPlay.visibility = View.GONE
         binding.imvPause.visibility = View.VISIBLE
@@ -139,6 +169,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     private fun initActionAudioConvert() {
         binding.lnShare.onSingleClick {
             shareAudioUrisCv(this@SavedActivity, listAudioSaved)
+        }
+
+        binding.lnMerger.onSingleClick {
+            startActivity(Intent(this@SavedActivity,MergerAudioActivity::class.java))
         }
 
         binding.lnMerger.visibility = View.VISIBLE
@@ -398,6 +432,8 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             uriAll = audioInfo!!.uri
         }else if(selectTypeAudio.equals("AudioMerger")){
             uriAll = audioInfo!!.uri
+        }else if(selectTypeAudio.equals("AudioCutter")){
+            uriAll = audioCutter!!.uri
         }
         else{
             uriAll = videoCutter!!.uri
@@ -519,6 +555,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.imvBack.onSingleClick {
             listConvertMp3.clear()
             listAudioSaved.clear()
+            listAudioMerger.clear()
             finish()
         }
 
@@ -599,7 +636,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
     override fun onStop() {
         super.onStop()
-
         mediaPlayer?.release()
         mediaPlayer = null
     }

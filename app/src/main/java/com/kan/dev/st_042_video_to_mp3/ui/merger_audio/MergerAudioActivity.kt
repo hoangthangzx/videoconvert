@@ -1,6 +1,7 @@
 package com.kan.dev.st_042_video_to_mp3.ui.merger_audio
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -29,9 +30,11 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioMerger
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
@@ -50,9 +53,17 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
     lateinit var mediaPlayer: MediaPlayer
     var outputPath =""
     override fun init() {
+        initData()
         initView()
         initRec()
         initAction()
+    }
+
+    private fun initData() {
+        if(selectTypeAudio.equals("AudioConvert")){
+            listAudioPick = listAudioMerger
+            Log.d("check_list_data", "initData: "+ listAudioMerger)
+        }
     }
 
     private fun initView() {
@@ -191,6 +202,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
 
     }
 
+    @SuppressLint("ObjectAnimatorBinding")
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
         val animator = ObjectAnimator.ofFloat(binding.lottieAnimationView, "progress", 0f, 1f)
