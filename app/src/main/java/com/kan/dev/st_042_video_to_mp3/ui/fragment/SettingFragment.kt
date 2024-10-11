@@ -61,92 +61,156 @@ class SettingFragment : Fragment() {
             startActivity(intent)
         }
 
+//        binding.lnRate.onSingleClick {
+//            val dialog = Dialog(activityC)
+//            SystemUtils.setLocale(requireActivity())
+//            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+//            val bindingDialog = DialogRateBinding.inflate(layoutInflater)
+//            dialog.setContentView(bindingDialog.root)
+//            dialog.setCanceledOnTouchOutside(false)
+//            dialog.setCancelable(false)
+//            val window = dialog.window ?: return@onSingleClick
+//            window.setGravity(Gravity.CENTER)
+//            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+//            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//            bindingDialog.apply{
+//                ll1.rating = 0f
+//                ll1.setOnRatingChangeListener { _, p1, _ ->
+//                    if (p1.toInt() == 0) {
+//                        tv1.text = getString(R.string.zero_start_title)
+//                        tv2.text = getString(R.string.zero_start)
+//                    } else if (p1.toInt() in 1..3) {
+//                        tv1.text = getString(R.string.one_start_title)
+//                        tv2.text = getString(R.string.one_start)
+//                    } else {
+//                        tv1.text = getString(R.string.four_start_title)
+//                        tv2.text = getString(R.string.four_start)
+//                    }
+//                    when (p1.toInt()) {
+//                        0 -> {
+//                            imvAvtRate.setImageDrawable(
+//                                ContextCompat.getDrawable(requireActivity(),
+//                                R.drawable.ic_rate_rero
+//                            ))
+//                        }
+//                        1 -> {
+//                            imvAvtRate.setImageDrawable(
+//                                ContextCompat.getDrawable(requireActivity(),
+//                                R.drawable.ic_rate_one
+//                            ))
+//                        }
+//                        2 -> {
+//                            imvAvtRate.setImageDrawable(
+//                                ContextCompat.getDrawable(requireActivity(),
+//                                R.drawable.ic_rate_two
+//                            ))
+//                        }
+//                        3 -> {
+//                            imvAvtRate.setImageDrawable(
+//                                ContextCompat.getDrawable(requireActivity(),
+//                                R.drawable.ic_rate_three
+//                            ))
+//                        }
+//                        4 -> {
+//                            imvAvtRate.setImageDrawable(
+//                                ContextCompat.getDrawable(requireActivity(),
+//                                R.drawable.ic_rate_four
+//                            ))
+//                        }
+//                        5 -> {
+//                            imvAvtRate.setImageDrawable(
+//                                ContextCompat.getDrawable(requireActivity(),
+//                                R.drawable.ic_rate_five
+//                            ))
+//                        }
+//                    }
+//                }
+//                btnVote.onSingleClick {
+//                    if (ll1.rating.toInt() > 3) {
+//                        Toast.makeText(requireActivity(), R.string.successful, Toast.LENGTH_SHORT).show()
+//                        reviewApp(requireActivity(), true)
+//                        binding.lnRate.visibility = View.GONE
+//                        providerSharedPreference.putBooleanValue("booleanRate", true)
+//                        binding.lnRate.visibility = View.GONE
+//                        dialog.dismiss()
+//                    } else if(ll1.rating.toInt() == 0){
+//                        Toast.makeText(requireActivity(), R.string.please_give_a_review, Toast.LENGTH_SHORT).show()
+//                    }else{
+//                        providerSharedPreference.putBooleanValue("booleanRate", true)
+//                        dialog.dismiss()
+//                        binding.lnRate.visibility = View.GONE
+//                    }
+//                }
+//                btnCancal.onSingleClick {
+//                    dialog.dismiss()
+//                }
+//            }
+//            dialog.show()
+//        }
+
         binding.lnRate.onSingleClick {
-            val dialog = Dialog(requireContext())
-            SystemUtils.setLocale(requireContext())
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            val bindingDialog = DialogRateBinding.inflate(layoutInflater)
-            dialog.setContentView(bindingDialog.root)
-            dialog.setCanceledOnTouchOutside(false)
-            dialog.setCancelable(false)
-            val window = dialog.window ?: return@onSingleClick
-            window.setGravity(Gravity.CENTER)
-            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
-            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            bindingDialog.apply{
-                ll1.rating = 0f
-                ll1.setOnRatingChangeListener { _, p1, _ ->
-                    if (p1.toInt() == 0) {
-                        tv1.text = getString(R.string.zero_start_title)
-                        tv2.text = getString(R.string.zero_start)
-                    } else if (p1.toInt() in 1..3) {
-                        tv1.text = getString(R.string.one_start_title)
-                        tv2.text = getString(R.string.one_start)
-                    } else {
-                        tv1.text = getString(R.string.four_start_title)
-                        tv2.text = getString(R.string.four_start)
-                    }
-                    when (p1.toInt()) {
-                        0 -> {
-                            imvAvtRate.setImageDrawable(
-                                ContextCompat.getDrawable(requireContext(),
-                                R.drawable.ic_rate_rero
-                            ))
+            activity?.let { activityContext ->
+                val dialog = Dialog(activityContext)
+                SystemUtils.setLocale(activityContext)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                val bindingDialog = DialogRateBinding.inflate(layoutInflater)
+                dialog.setContentView(bindingDialog.root)
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.setCancelable(false)
+
+                val window = dialog.window ?: return@onSingleClick
+                window.setGravity(Gravity.CENTER)
+                window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
+                bindingDialog.apply {
+                    ll1.rating = 0f
+                    ll1.setOnRatingChangeListener { _, p1, _ ->
+                        if (p1.toInt() == 0) {
+                            tv1.text = getString(R.string.zero_start_title)
+                            tv2.text = getString(R.string.zero_start)
+                        } else if (p1.toInt() in 1..3) {
+                            tv1.text = getString(R.string.one_start_title)
+                            tv2.text = getString(R.string.one_start)
+                        } else {
+                            tv1.text = getString(R.string.four_start_title)
+                            tv2.text = getString(R.string.four_start)
                         }
-                        1 -> {
-                            imvAvtRate.setImageDrawable(
-                                ContextCompat.getDrawable(requireContext(),
-                                R.drawable.ic_rate_one
-                            ))
-                        }
-                        2 -> {
-                            imvAvtRate.setImageDrawable(
-                                ContextCompat.getDrawable(requireContext(),
-                                R.drawable.ic_rate_two
-                            ))
-                        }
-                        3 -> {
-                            imvAvtRate.setImageDrawable(
-                                ContextCompat.getDrawable(requireContext(),
-                                R.drawable.ic_rate_three
-                            ))
-                        }
-                        4 -> {
-                            imvAvtRate.setImageDrawable(
-                                ContextCompat.getDrawable(requireContext(),
-                                R.drawable.ic_rate_four
-                            ))
-                        }
-                        5 -> {
-                            imvAvtRate.setImageDrawable(
-                                ContextCompat.getDrawable(requireContext(),
-                                R.drawable.ic_rate_five
-                            ))
+                        when (p1.toInt()) {
+                            0 -> imvAvtRate.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_rate_rero))
+                            1 -> imvAvtRate.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_rate_one))
+                            2 -> imvAvtRate.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_rate_two))
+                            3 -> imvAvtRate.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_rate_three))
+                            4 -> imvAvtRate.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_rate_four))
+                            5 -> imvAvtRate.setImageDrawable(ContextCompat.getDrawable(activityContext, R.drawable.ic_rate_five))
                         }
                     }
-                }
-                btnVote.onSingleClick {
-                    Toast.makeText(requireContext(), R.string.successful, Toast.LENGTH_SHORT).show()
-                    if (ll1.rating.toInt() >= 3) {
-                        reviewApp(requireContext(), true)
-                        binding.lnRate.visibility = View.GONE
-                        providerSharedPreference.putBooleanValue("booleanRate", true)
-                        binding.lnRate.visibility = View.GONE
+
+                    btnVote.onSingleClick {
+                        if (ll1.rating.toInt() > 3) {
+                            Toast.makeText(activityContext, R.string.successful, Toast.LENGTH_SHORT).show()
+                            reviewApp(activityContext, true)
+                            binding.lnRate.visibility = View.GONE
+                            providerSharedPreference.putBooleanValue("booleanRate", true)
+                            binding.lnRate.visibility = View.GONE
+                            dialog.dismiss()
+                        } else if(ll1.rating.toInt() == 0){
+                            Toast.makeText(activityContext, R.string.please_give_a_review, Toast.LENGTH_SHORT).show()
+                        } else {
+                            providerSharedPreference.putBooleanValue("booleanRate", true)
+                            dialog.dismiss()
+                            binding.lnRate.visibility = View.GONE
+                        }
+                    }
+
+                    btnCancal.onSingleClick {
                         dialog.dismiss()
-                    } else if(ll1.rating.toInt() == 0){
-                        Toast.makeText(requireContext(), R.string.please_give_a_review, Toast.LENGTH_SHORT).show()
-                    }else{
-                        providerSharedPreference.putBooleanValue("booleanRate", true)
-                        dialog.dismiss()
-                        binding.lnRate.visibility = View.GONE
                     }
                 }
-                btnCancal.onSingleClick {
-                    dialog.dismiss()
-                }
+                dialog.show()
             }
-            dialog.show()
         }
 
 
@@ -162,17 +226,13 @@ class SettingFragment : Fragment() {
             } catch (e: Exception) {
             }
         }
-
         binding.lnPolicy.onSingleClick {
             val url = "https://sites.google.com/view/lvt-policy-gold-finder/"
             val i = Intent(Intent.ACTION_VIEW)
             i.data = Uri.parse(url)
             startActivity(i)
         }
-
     }
-
-
     private fun initView() {
         binding.tvPathAudio.text = storageMusic
         binding.tvPathVideo.text = storageVideo
@@ -194,14 +254,14 @@ class SettingFragment : Fragment() {
                     Log.e("ReviewSuccess", task2.toString())
 //                    finishAffinity()
                     if (isBackPress) {
-                        exitProcess(0)
+//                        exitProcess(0)
                     }
                 }
             } else {
                 Log.e("ReviewError", task.exception.toString());
 //                finishAffinity()
                 if (isBackPress) {
-                    exitProcess(0)
+//                    exitProcess(0)
                 }
             }
         }

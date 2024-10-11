@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
@@ -60,6 +61,8 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
             ContextCompat.getColor(this@MergerAudioActivity, R.color.color_2)
         )
         binding.tvDone.applyGradient(this@MergerAudioActivity,colors)
+
+        binding.tvTitle.text = "${listAudioPick.size} audio files"
     }
 
     suspend fun mergeAudioFilesTemp(
@@ -110,6 +113,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
         adapter.onClickListener(object : MergerAudioAdapter.onClickItemListener{
             override fun onItemClick(position: Int) {
                 val pos = listAudioPick[position].pos
+                Log.d("check_sizze_audio_pick", "onItemClick: " + pos + "   "+ listAudioPick)
                 listAudio[pos].active = false
                 countAudio -= 1
                 countSize -= listAudio[pos].sizeInMB.toInt()
@@ -127,17 +131,21 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
         }
 
         binding.tvDone.onSingleClick {
-            showLoadingOverlay()
-            val timestamp = System.currentTimeMillis()
-            val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-            Log.d("check_audio_link", "initData: "+ musicDir)
-            outputPath = "${musicDir.absolutePath}/${timestamp}_merger.mp3"
-            CoroutineScope(Dispatchers.Main).launch{
-                val isMergedSuccessfully = mergeAudioFilesTemp(this@MergerAudioActivity, listAudioPick, outputPath)
-                if (isMergedSuccessfully) {
-                    var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-                    audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
-                    startActivity(Intent(this@MergerAudioActivity,SavedActivity::class.java))
+            if(listAudioPick.size ==1 ){
+                Toast.makeText(this, getString(R.string.you_must_choose_2_or_more_items), Toast.LENGTH_SHORT).show()
+            }else{
+                showLoadingOverlay()
+                val timestamp = System.currentTimeMillis()
+                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                Log.d("check_audio_link", "initData: "+ musicDir)
+                outputPath = "${musicDir.absolutePath}/${timestamp}_merger.mp3"
+                CoroutineScope(Dispatchers.Main).launch{
+                    val isMergedSuccessfully = mergeAudioFilesTemp(this@MergerAudioActivity, listAudioPick, outputPath)
+                    if (isMergedSuccessfully) {
+                        var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+                        audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                        startActivity(Intent(this@MergerAudioActivity,SavedActivity::class.java))
+                    }
                 }
             }
         }
@@ -185,8 +193,8 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
 
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
-        val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
-        animator.duration = 3000 // Thời gian chạy animation (5 giây)
+        val animator = ObjectAnimator.ofFloat(binding.lottieAnimationView, "progress", 0f, 1f)
+        animator.duration = 2000 // Thời gian chạy animation (2 giây)
         animator.start()
     }
 

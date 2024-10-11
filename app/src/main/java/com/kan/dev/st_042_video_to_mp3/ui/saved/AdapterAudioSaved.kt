@@ -29,8 +29,9 @@ class AdapterAudioSaved (var context: Context): RecyclerView.Adapter<AdapterAudi
         @SuppressLint("SetTextI18n")
         fun bind(position: Int, holder: AdapterAudioSaved.ViewHolder) {
             binding.tvTitle.text = data[position].name
-            binding.tvSize.text = "${data[position].sizeInMB} MB"
+            binding.tvSize.text = "${data[position].sizeInMB}"
             binding.tvDurationVideo.text = data[position].duration
+            binding.tvTitle.isSelected = true
         }
     }
     override fun onCreateViewHolder(

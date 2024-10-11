@@ -134,4 +134,5 @@
     <string name="mts">MTS</string>
     <string name="m2ts">M2TS</string>
     <string name="ts">TS</string>
+    <string name="you_must_choose_2_or_more_items">You must choose 2 or more items</string>
 </resources>

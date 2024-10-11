@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="60dp"
             android:paddingEnd="60dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:text="@string/congratulations_you_have_successfully_converted_video_to_audio"
             android:textAlignment="center"
             android:textColor="#7A7A7A"

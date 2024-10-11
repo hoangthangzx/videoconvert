@@ -12,18 +12,6 @@ import java.text.DecimalFormat
 
 object FileInfo {
 
-//    fun getFileInfoFromPath(path: String): FileInfoModel {
-//        val file = File(path)
-//        val fileName = file.name // Lấy tên file
-//        val fileSize = if (file.exists()) {
-//            formatFileSize(file.length()) // Lấy kích thước file
-//        } else {
-//            null // Nếu file không tồn tại
-//        }
-//
-//        return FileInfoModel(fileName, fileSize)
-//    }
-
     fun getFileInfoFromPath(path: String): FileInfoModel? {
         val file = File(path)
         val fileName = file.name // Lấy tên file

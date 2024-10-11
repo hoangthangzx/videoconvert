@@ -1,5 +1,6 @@
 package com.kan.dev.st_042_video_to_mp3.ui.audio_converter
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -98,23 +99,20 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
 
 
         binding.tvDone.onSingleClick {
-            if(checkItem== false || listAudioPick.size == 0){
-                Toast.makeText(this@AudioConverterActivity, "", Toast.LENGTH_SHORT).show()
+            if(listAudioPick.size == 0){
+                Toast.makeText(this@AudioConverterActivity, getString(R.string.you_must_choose_2_or_more_items), Toast.LENGTH_SHORT).show()
             }else{
+                showLoadingOverlay()
                 if(listAudioPick.size == 1){
-                    showLoadingOverlay()
                     val audioPath = getRealPathFromURI(this,audioUri!!)
                     val timestamp = System.currentTimeMillis()
                     val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
                     val outputPath = "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".") }_${timestamp}_convert.${audioType}"
-//                val outputPath = "${filesDir.absolutePath}/output_$timestamp.mp3"
                     if (audioPath != null) {
                         convertAudio(audioPath,outputPath,audioType)
                     }
                 }else{
-                    showLoadingOverlay()
                     if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
-                        showLoadingOverlay()
                         isConverting = true
                         // Gọi hàm chuyển đổi với Coroutine
                         CoroutineScope(Dispatchers.Main).launch {
@@ -126,26 +124,18 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         }
     }
     fun convertAudio(inputPath: String, outputPath: String, format: String) {
-//        val command = "-i $inputPath -vn -ar 44100 -ac 2 -b:a 192k $outputPath.$format"
-//        val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath.$format\""
-        val fixedInputPath = inputPath.replace(" ", "\\ ")
-        val fixedOutputPath = outputPath.replace(" ", "\\ ")
-        val command = "-i \"$fixedInputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$fixedOutputPath.$format\""
-//        val fixedInputPath = URLEncoder.encode(inputPath, "UTF-8")
-//        val fixedOutputPath = URLEncoder.encode(outputPath, "UTF-8")
-//        val command = "-i \"$fixedInputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$fixedOutputPath.$format\""
+        val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
         Log.d("check_mp3", "Chuyển đổi : $command")
-
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
             if(listAudioPick.size == 1){
-                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-                audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse("$outputPath.$format").toString())
+                audioInfo = AudioSpeedModel(Uri.parse("$outputPath.$format"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                 listAudioSaved.add(audioInfo!!)
                 startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
             }else{
-                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-                audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse("$outputPath.$format").toString())
+                audioInfo = AudioSpeedModel(Uri.parse("$outputPath.$format"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                 listAudioSaved.add(audioInfo!!)
             }
         } else {
@@ -155,7 +145,6 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     private suspend fun convertAllSongsToMp3() {
         withContext(Dispatchers.IO) { // Chạy trong IO context
             for(audio in listAudioPick){
-                showLoadingOverlay()
                 val audioPath = getRealPathFromURI(this@AudioConverterActivity,audio.uri!!)
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
@@ -184,10 +173,18 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
 
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
+        val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
+        animator.duration = 2000 // Thời gian chạy animation (5 giây)
+        animator.start()
     }
 
     private fun hideLoadingOverlay() {
         binding.loadingOverlay.visibility = View.GONE
+    }
+
+    override fun onStop() {
+        super.onStop()
+        hideLoadingOverlay()
     }
 
     private fun initData() {

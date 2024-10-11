@@ -30,6 +30,7 @@ import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioActivity
 import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.countPos
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
@@ -222,6 +223,7 @@ class HomeFragment : Fragment() {
         if(listAudioStorage.isEmpty()){
             AudioUtils.getAllAudiosFromSpecificDirectory(storageMusic)
         }
+        countPos = 0
         countVd = 0
         countAudio = 0
         countSize = 0

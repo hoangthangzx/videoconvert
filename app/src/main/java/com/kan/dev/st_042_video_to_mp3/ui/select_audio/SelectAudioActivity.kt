@@ -71,7 +71,11 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     private fun initActionAudioMerger() {
         binding.tvContinue.onSingleClick {
             Log.d("check_list_audio_pick", "initActionAudioMerger: "+ listAudioPick)
-            startActivity(Intent(this@SelectAudioActivity,MergerAudioActivity::class.java))
+            if (listAudioPick.size < 2){
+                Toast.makeText(this@SelectAudioActivity, getString(R.string.you_must_choose_2_or_more_items), Toast.LENGTH_SHORT).show()
+            }else{
+                startActivity(Intent(this@SelectAudioActivity,MergerAudioActivity::class.java))
+            }
         }
         adapter.onClickListener(object : SelectAudioAdapter.onClickItemListener{
             override fun onClickItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
@@ -83,7 +87,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     holder.binding.edtStartTime.setText("1")
                     holder.binding.tvTime.visibility = View.INVISIBLE
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
-                    listAudioPick.add(0, listAudio[position])
+                    listAudioPick.add( listAudio[position])
                     listAudio[position].active = true
                 }else if(listAudio[position].active){
                     var countEdt = Integer.parseInt(holder.binding.edtStartTime.text.toString())
@@ -113,7 +117,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 positionAudioPlay = position
                 countAudio += 1
                 countSize += listAudio[position].sizeInMB.toInt()
-                listAudioPick.add(0, listAudio[position])
+                listAudioPick.add( listAudio[position])
                 holder.binding.edtStartTime.setText(countItemt.toString())
                 binding.tvSelected.text = "$countAudio Selected"
                 binding.tvSize.text = "/ $countSize MB"
@@ -289,12 +293,12 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             }
         }
     }
-
     private fun initData() {
         if (!checkDataAudio){
             AudioUtils.getAllAudios(contentResolver)
             checkDataAudio = true
         }
+        Log.d("check_data_list", "initData: "+ listAudio.size + ":   "+ listAudio)
         adapter = SelectAudioAdapter(this@SelectAudioActivity)
         adapter.getData(listAudio)
         binding.recFileConvert.adapter = adapter

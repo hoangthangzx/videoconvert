@@ -69,6 +69,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         Log.d("check_uri", "init: "+ Const.mp3Uri)
         mediaPlayer = MediaPlayer()
         initAction()
+        binding.tvTitleVideoSpeed.isSelected = true
         if(listVideoPick.size == 1 && selectType.equals("Video")){
             initActionFile()
             initData()
@@ -125,10 +126,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.recVideo.adapter = adapterSaved
         if(listAudioSaved.size == 1){
             binding.lnMerger.visibility = View.GONE
-            binding.lnRingtone.visibility = View.GONE
+            binding.lnRingtone.visibility = View.VISIBLE
             binding.lnConvert.visibility = View.VISIBLE
         }else{
-            binding.lnMerger.visibility = View.VISIBLE
+            binding.lnMerger.visibility = View.GONE
             binding.lnRingtone.visibility = View.GONE
             binding.lnConvert.visibility = View.GONE
         }

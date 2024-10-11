@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
                 providerSharedPreference.putNumber("RateNumber",inAppCount)
                 Log.d("check_rate", "onBackPressed: "+ inAppCount + providerSharedPreference.getBooleanValue("booleanRate"))
                 if(!providerSharedPreference.getBooleanValue("booleanRate")){
-                    if( inAppCount % 2 == 0 ){
+                    if( inAppCount % 2 != 0 ){
                         val dialog = Dialog(this)
                         SystemUtils.setLocale(this)
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
