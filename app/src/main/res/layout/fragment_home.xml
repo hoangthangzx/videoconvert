@@ -33,6 +33,7 @@
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/imvAboutUs"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/icon_note" />
@@ -90,7 +91,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/lnVideoConvert" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/linearLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
@@ -100,12 +101,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView3">
 
+                <!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
+
                 <LinearLayout
                     android:id="@+id/lnVideoCutter"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
+                    app:layout_constraintWidth_percent=".45"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
-                    android:gravity="center">
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
                     <ImageView
                         android:layout_width="32dp"
@@ -129,17 +138,16 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
                 <LinearLayout
                     android:id="@+id/lnVideoConvertToMp3"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
+                    app:layout_constraintWidth_percent=".45"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
-                    android:gravity="center">
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="32dp"
@@ -165,7 +173,7 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 <!--            <LinearLayout-->
 <!--                android:id="@+id/linearLayout3"-->
@@ -255,7 +263,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ln3"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
@@ -268,10 +276,14 @@
 
                 <LinearLayout
                     android:id="@+id/lnAudioCutter"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
+                    app:layout_constraintWidth_percent=".45"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
-                    android:gravity="center">
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="32dp"
@@ -295,17 +307,21 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
 
                 <LinearLayout
                     android:id="@+id/lnAudioMerger"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
+                    app:layout_constraintWidth_percent=".45"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
-                    android:gravity="center">
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="32dp"
@@ -330,9 +346,9 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ln4"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
@@ -344,10 +360,14 @@
 
                 <LinearLayout
                     android:id="@+id/lnAudioSpeed"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
+                    app:layout_constraintWidth_percent=".45"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
-                    android:gravity="center">
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="32dp"
@@ -371,17 +391,21 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
 
                 <LinearLayout
                     android:id="@+id/lnAudioConvert"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
+                    app:layout_constraintWidth_percent=".45"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
-                    android:gravity="center">
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="32dp"
@@ -406,7 +430,7 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

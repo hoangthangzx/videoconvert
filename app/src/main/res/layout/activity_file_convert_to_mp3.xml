@@ -72,10 +72,26 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone"
+            app:resize_mode="fit"
+            app:show_buffering="when_playing"
+            app:use_controller="false"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lnStatus_2" />
+
+        <androidx.media3.ui.PlayerControlView
+            android:id="@+id/player_control_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/exoVideo"
+            app:layout_constraintEnd_toEndOf="@+id/exoVideo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2"
+            app:show_next_button="false"
+            app:show_timeout="3000"
+            app:show_previous_button="false" />
 
         <LinearLayout
             android:id="@+id/linearLayout6"

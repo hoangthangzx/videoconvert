@@ -53,9 +53,14 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
-        <activity android:name=".ui.merger.MergerActivity"
+
+        <activity android:name=".ui.ActivityAboutUs"
             android:screenOrientation="portrait"
             android:exported="false"/>
+
+<!--        <activity android:name=".ui.merger.MergerActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:exported="false"/>-->
 
         <activity android:name=".ui.audio_converter.AudioConverterActivity"
             android:screenOrientation="portrait"
@@ -111,9 +116,9 @@
             android:exported="false"/>
 
 
-        <activity android:name=".ui.HomeActivity"
-            android:screenOrientation="portrait"
-            android:exported="false"/>
+<!--        <activity android:name=".ui.HomeActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:exported="false"/>-->
 
         <activity android:name=".ui.intro.IntroActivity"
             android:screenOrientation="portrait"

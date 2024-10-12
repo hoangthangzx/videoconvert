@@ -257,6 +257,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.lnShare.onSingleClick {
             shareAudioUris(this@SavedActivity, listConvertMp3)
         }
+
+        binding.lnMerger.onSingleClick {
+            startActivity(Intent(this@SavedActivity,MergerAudioActivity::class.java))
+        }
     }
 
     private fun initActionFile() {
@@ -421,7 +425,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)  // Cấp quyền đọc URI cho ứng dụng chia sẻ
         }
 
-        // Khởi động Intent để chia sẻ
         context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ tệp MP3"))
     }
 
@@ -570,15 +573,17 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             binding.imvPlay.visibility = View.VISIBLE
             binding.imvPause.visibility = View.GONE
             pausePlaying()
-            handler.removeCallbacksAndMessages(null)
+//            handler.removeCallbacksAndMessages(null)
         }
 
         binding.imv15Left.setOnClickListener {
             rewindAudio(15000) // Tua về 15 giây
+            Log.d("check_clickkkkkkk", "initAction: ")
         }
         // Thiết lập sự kiện cho nút tua tới 15 giây
         binding.imv15Right.setOnClickListener {
-            forwardAudio(15000) // Tua tới 15 giây
+            forwardAudio(15000)
+            Log.d("check_clickkkkkkk", "initAction: ")// Tua tới 15 giây
         }
 
     }
@@ -638,6 +643,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         super.onStop()
         mediaPlayer?.release()
         mediaPlayer = null
+        handler.removeCallbacksAndMessages(null)
     }
 
     override fun onDestroy() {
@@ -647,8 +653,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         }
         handler.removeCallbacksAndMessages(null) // Dừng Handler
     }
-
-
 //    override fun onResume() {
 //        super.onResume()
 ////        if(!mediaPlayer!!.isPlaying && Const.selectType.equals("Video")){

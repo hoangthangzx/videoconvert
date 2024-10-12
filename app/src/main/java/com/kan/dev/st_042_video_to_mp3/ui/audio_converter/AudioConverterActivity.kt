@@ -48,7 +48,6 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     var checkItem = false
     var audioUri : Uri? = null
     private var isConverting = false
-
     override fun init() {
         initData()
         initView()
@@ -75,8 +74,11 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                 adapter.notifyDataSetChanged()
             }
         })
-
         binding.imvBack.onSingleClick {
+            finish()
+        }
+
+        binding.tvCancel.onSingleClick {
             finish()
         }
 
@@ -91,7 +93,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                 when(index){
                     0 -> audioType ="mp3"
                     1 -> audioType ="flac"
-                    2 -> audioType ="acc"
+                    2 -> audioType ="aac"
                     3 -> audioType ="ogg"
                     4 -> audioType ="wav"
                     5 -> audioType ="wma"
@@ -106,15 +108,6 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                 Toast.makeText(this@AudioConverterActivity, getString(R.string.you_must_choose_2_or_more_items), Toast.LENGTH_SHORT).show()
             }else{
                 showLoadingOverlay()
-                if(listAudioPick.size == 1){
-                    val audioPath = getRealPathFromURI(this,audioUri!!)
-                    val timestamp = System.currentTimeMillis()
-                    val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                    val outputPath = "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".") }_${timestamp}_convert.${audioType}"
-                    if (audioPath != null) {
-                        convertAudio(audioPath,outputPath,audioType)
-                    }
-                }else{
                     if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
                         isConverting = true
                         // Gọi hàm chuyển đổi với Coroutine
@@ -122,7 +115,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                             convertAllSongsToMp3()
                         }
                     }
-                }
+
             }
         }
     }
@@ -131,12 +124,6 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         Log.d("check_mp3", "Chuyển đổi : $command")
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
-            if(listAudioPick.size == 1){
-                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse("$outputPath.$format").toString())
-                audioInfo = AudioSpeedModel(Uri.parse("$outputPath"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
-                listAudioSaved.add(audioInfo!!)
-                startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
-            }else{
                 var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse("$outputPath").toString())
                 audioInfo = AudioSpeedModel(Uri.parse("$outputPath"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                 listAudioSaved.add(audioInfo!!)
@@ -146,7 +133,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
 //                        audioInfoConverter!!.fileName,"00", false ,"00",0,false)
 //                }
 //                listAudioMerger.add(audioInformation!!)
-            }
+
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }

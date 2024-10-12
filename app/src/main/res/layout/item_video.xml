@@ -20,9 +20,11 @@
 
     <ImageView
         android:id="@+id/imvCheckbox"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         android:elevation="5dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="6dp"
         android:src="@drawable/icon_check_box"
         app:layout_constraintEnd_toEndOf="@+id/imvVideo"
         app:layout_constraintTop_toTopOf="@+id/imvVideo" />

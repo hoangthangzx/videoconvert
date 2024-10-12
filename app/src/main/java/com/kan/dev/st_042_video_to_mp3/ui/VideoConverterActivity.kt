@@ -37,7 +37,6 @@ import java.io.File
 
 class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(false) {
     override fun getFragmentID(): Int = 0
-
     override fun getLayoutId(): Int = R.layout.activity_video_converter
     lateinit var adapter: FileConvertAdapter
     var imvItems : List<LinearLayout> = listOf()
@@ -82,12 +81,16 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         }
         adapter.onClickListener(object : FileConvertAdapter.onClickItemListener{
             override fun onItemClick(position: Int) {
-                val pos = listVideoPick[position].pos
-                listVideo[pos].active = false
-                countVideo -= 1
-                countSizeVideo -= listVideo[pos].sizeInMB.toInt()
-                listVideoPick.removeAt(position)
-                adapter.notifyDataSetChanged()
+                if(listVideoPick.size == 1){
+                    Toast.makeText(this@VideoConverterActivity, getString(R.string.items_cannot_be_deleted_you_need_at_least_2_items_to_convert), Toast.LENGTH_SHORT).show()
+                }else {
+                    val pos = listVideoPick[position].pos
+                    listVideo[pos].active = false
+                    countVideo -= 1
+                    countSizeVideo -= listVideo[pos].sizeInMB.toInt()
+                    listVideoPick.removeAt(position)
+                    adapter.notifyDataSetChanged()
+                }
             }
         })
 
@@ -105,7 +108,6 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
             }
         }
     }
-
     private suspend fun convertAllVideoToSong() {
         withContext(Dispatchers.IO) { // Chạy trong IO context
             for (video in listVideoPick) {

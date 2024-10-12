@@ -855,7 +855,7 @@
                 android:id="@+id/lottieAnimationView"
                 style="@android:style/Widget.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="24dp"
+                android:layout_height="25dp"
                 android:layout_marginHorizontal="30dp"
                 android:max="100"
                 android:progress="10"

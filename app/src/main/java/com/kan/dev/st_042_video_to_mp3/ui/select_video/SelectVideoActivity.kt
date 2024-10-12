@@ -48,6 +48,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         initView()
         if(selectType.equals("VideoCutter")){
             initActionSpeed()
+            binding.imvTick.visibility = View.GONE
         }else if(selectType.equals("VideoConvert")){
             initActionConverter()
         }else{
@@ -135,6 +136,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                         positionVideoPlay = position
                         val pos = listVideoPick[0].pos
                         listVideo[pos].active = false
+                        countSizeVideo = listVideo[position].sizeInMB.toInt()
                         listVideo[position].active = true
                         listVideoPick.removeAt(0)
                         listVideoPick.add(0,listVideo[position])
@@ -142,18 +144,18 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                     }else{
                         positionVideoPlay = position
                         countVideo += 1
-                        countSizeVideo += listVideo[position].sizeInMB.toInt()
+                        countSizeVideo = listVideo[position].sizeInMB.toInt()
                         holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box_yes)
                         listVideoPick.add(0, listVideo[position])
                         listVideo[position].active = true
                     }
-
                 }else if(listVideo[position].active){
                     countVideo -= 1
+                    countSizeVideo = 0
                     holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box)
                     listVideo[position].active = false
                     listVideoPick.remove(listVideo[position])
-                    countSizeVideo -= listVideo[position].sizeInMB.toInt()
+//                    countSizeVideo -= listVideo[position].sizeInMB.toInt()
                 }
                 binding.tvSelected.text = "$countVideo Selected"
                 binding.tvSize.text = "/ $countSizeVideo MB"

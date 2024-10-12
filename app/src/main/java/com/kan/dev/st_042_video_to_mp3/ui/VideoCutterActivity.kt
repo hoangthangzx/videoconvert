@@ -8,6 +8,8 @@ import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
@@ -43,9 +45,10 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     var endTime = 0f
     var maxValueTime = 0f
     var timeCut = ""
+
     private lateinit var frames: Array<ImageView>
     override fun init() {
-//        initData()
+        initData()
         initView()
         initAction()
     }
@@ -56,7 +59,16 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         )
         binding.tvDone.applyGradient(this@VideoCutterActivity,colors)
     }
+
+    @OptIn(UnstableApi::class)
     private fun initAction() {
+        binding.exoVideo.setOnClickListener{
+            binding.playerControlView.show()
+        }
+        binding.playerControlView.setOnClickListener {
+            binding.playerControlView.hide()
+        }
+
         binding.imvBack.onSingleClick {
             finish()
         }
@@ -89,7 +101,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
             binding.tvTimeCut.text = timeCut
         }
-
         binding.btnPlusEnd.setOnClickListener {
             val currentTime = binding.edtEndTime.text.toString()
             val parts = currentTime.split(":")
@@ -194,7 +205,9 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         Log.d("check_duration", "initAction: "+ listVideo[positionVideoPlay].duration)
         binding.tvDone.onSingleClick {
             val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
-            val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
+//            val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
+            val currentValueEnd = convertDurationToSeconds(binding.tvTimeCut.text.toString())
+
             val durationVideo = convertDurationToSeconds(listVideo[positionVideoPlay].duration)
             if(currentValueStart > currentValueEnd || currentValueStart > durationVideo || currentValueEnd > durationVideo || currentValueEnd <0 || currentValueStart < 0 ){
                 Toast.makeText(this@VideoCutterActivity, getString(R.string.you_must_choose_the_right_time), Toast.LENGTH_SHORT).show()
@@ -205,11 +218,13 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Movies/video")
                 val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp4"
                 if (videoPath != null) {
-                    cutVideo(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
+                    cutVideo(videoPath,outputPath,formatTime_1(currentValueStart.toInt()),formatTime_1(currentValueEnd.toInt()))
                 }
             }
         }
     }
+
+    @OptIn(UnstableApi::class)
     private fun initData() {
         maxValueTime = (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())
         startTime = (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())*(1f/3f)
@@ -226,9 +241,13 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         }
         exoPlayer = ExoPlayer.Builder(this).build()
         binding.exoVideo.player = exoPlayer
+        binding.playerControlView.player = exoPlayer
+        binding.playerControlView.showTimeoutMs = 3000
+
         val mediaItem = MediaItem.fromUri(videoUri!!)
         exoPlayer!!.setMediaItem(mediaItem)
         exoPlayer!!.prepare()
+//        exoPlayer!!.play()
         exoPlayer!!.playWhenReady = true
         frames = arrayOf(
             findViewById(R.id.imvFrame1),
@@ -240,7 +259,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             findViewById(R.id.imvFrame7),
             findViewById(R.id.imvFrame8),
         )
-
         val retriever = MediaMetadataRetriever()
         retriever.setDataSource(this, videoUri)
         val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0L
@@ -269,7 +287,12 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
 
     fun cutVideo(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         Log.d("check_audio_speed", ""+ startTime + "    " + endTime)
-        val command = "-i \"$inputFilePath\" -ss $startTime -to $endTime -c copy $outputFilePath"
+//        val command = "-i \"$inputFilePath\" -ss \"$startTime\" -to \"$endTime\" -c copy \"$outputFilePath\""
+//        val command = "-ss \"$startTime\" -i \"$inputFilePath\" -to \"$endTime\" -c copy \"$outputFilePath\""
+//        val command = "-i $inputFilePath -ss $startTime -t $endTime -c copy $outputFilePath"
+        val command = "-i $inputFilePath -ss $startTime -c copy -t $endTime $outputFilePath"
+
+        Log.d("check_audio_speed", ""+ startTime + "    " + endTime + "     " + command)
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
             videoUri = Uri.parse(outputFilePath)
@@ -295,8 +318,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         return path
     }
 
-
-
     fun convertDurationToSeconds(duration: String): Int {
         val parts = duration.split(":").map { it.toInt() }
         return parts.fold(0) { acc, part -> acc * 60 + part }
@@ -314,9 +335,16 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         val remainingSeconds = seconds % 60
         return String.format("%02d:%02d", minutes, remainingSeconds)
     }
+
+    fun formatTime_1(seconds: Int): String {
+        val hours = seconds / 3600
+        val minutes = (seconds % 3600) / 60
+        val remainingSeconds = seconds % 60
+        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+    }
+
     override fun onResume() {
         super.onResume()
-        hideLoadingOverlay()
         initData()
         Log.d("check_type_fr", "onResume: " + selectType)
 //        initData()
@@ -324,6 +352,7 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     override fun onStop() {
         super.onStop()
         exoPlayer?.release()
+        hideLoadingOverlay()
     }
 
 }

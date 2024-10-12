@@ -380,26 +380,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="30dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
 
                 <LinearLayout
                     android:id="@+id/lnRingtone"
-                    android:layout_width="130dp"
+                    android:layout_width="0dp"
                     android:layout_height="60dp"
+                    app:layout_constraintWidth_percent=".4"
                     android:background="@drawable/bg_btn_saved_1"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="22dp"
@@ -417,12 +418,16 @@
 
                 <LinearLayout
                     android:id="@+id/lnConvert"
-                    android:layout_width="130dp"
+                    android:layout_width="0dp"
                     android:layout_height="60dp"
-                    android:visibility="gone"
+                    app:layout_constraintWidth_percent=".4"
                     android:background="@drawable/bg_btn_saved_1"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="26dp"
@@ -435,17 +440,21 @@
                         android:text="@string/convert_to_mp3"
                         android:textColor="@color/white"
                         android:textSize="13sp" />
-
                 </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/lnMerger"
-                    android:layout_width="130dp"
+                    android:layout_width="0dp"
                     android:layout_height="60dp"
-                    android:visibility="gone"
                     android:background="@drawable/bg_btn_saved_1"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent=".4">
 
                     <ImageView
                         android:layout_width="22dp"
@@ -461,21 +470,18 @@
 
                 </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
 
                 <LinearLayout
                     android:id="@+id/lnShare"
-                    android:layout_width="130dp"
+                    android:layout_width="0dp"
                     android:layout_height="60dp"
+                    app:layout_constraintWidth_percent=".4"
                     android:background="@drawable/bg_btn_saved_2"
                     android:gravity="center"
                     android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/lnRingtone">
-
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="22dp"
@@ -489,15 +495,10 @@
                         android:textColor="@color/white"
                         android:textSize="13sp" />
 
-
                 </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

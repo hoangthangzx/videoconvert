@@ -16,8 +16,8 @@
 
     <ImageView
         android:id="@+id/imv_tick"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         android:src="@drawable/icon_check_box"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,14 +44,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imv_tick"
             app:layout_constraintTop_toTopOf="parent" />
-
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:text="@string/compressed"
         android:textColor="@color/white"
         android:textSize="14sp"

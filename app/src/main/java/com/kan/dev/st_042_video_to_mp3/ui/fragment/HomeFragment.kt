@@ -27,6 +27,7 @@ import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.DialogRateBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.FragmentHomeBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
+import com.kan.dev.st_042_video_to_mp3.ui.ActivityAboutUs
 import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioActivity
 import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
@@ -131,6 +132,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun initAction() {
+        binding.imvAboutUs.onSingleClick {
+            startActivity(Intent(requireContext(),ActivityAboutUs::class.java))
+        }
+
+
         binding.lnAudioMerger.onSingleClick {
             selectTypeAudio = "AudioMerger"
             countAudio = 0
