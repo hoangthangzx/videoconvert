@@ -104,7 +104,7 @@ class VideoSpeedActivity : AbsBaseActivity<ActivityVideoSpeedBinding>(false) {
         }
 
         binding.tvDone.onSingleClick {
-            binding.ctlProgress.visibility = View.VISIBLE
+//            binding.ctlProgress.visibility = View.VISIBLE
             val videoPath = getRealPathFromURI(this,videoUri!!)
             val timestamp = System.currentTimeMillis()
             val musicDir = File(Environment.getExternalStorageDirectory(), "Movies/video")
@@ -127,7 +127,7 @@ class VideoSpeedActivity : AbsBaseActivity<ActivityVideoSpeedBinding>(false) {
                             0
                         )
                         startActivity(Intent(this@VideoSpeedActivity, SavedActivity::class.java))
-                        binding.ctlProgress.visibility = View.GONE // Ẩn progress sau khi hoàn tất
+//                        binding.ctlProgress.visibility = View.GONE // Ẩn progress sau khi hoàn tất
                     }
                 }
             }
