@@ -11,6 +11,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -22,17 +23,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityAudioMergerBinding
-import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
-import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioMerger
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
@@ -45,7 +44,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.util.Collections
+import java.util.concurrent.TimeUnit
 
 class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
     override fun getFragmentID(): Int  = 0
@@ -53,12 +54,16 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
     lateinit var  adapter: MergerAudioAdapter
     lateinit var mediaPlayer: MediaPlayer
     var outputPath =""
+    private val handler = android.os.Handler()
+    var checkMerger = true
+    var MergerUri = ""
+    private var isPlaying: Boolean = false
     var audioFilePaths : List<String> = listOf()
     override fun init() {
-
     }
 
     private fun initData() {
+        mediaPlayer = MediaPlayer()
         if(listAudioMerger.size >= 1){
             listAudioPick = listAudioMerger
             Log.d("check_list_data", "initData: "+ listAudioMerger)
@@ -141,9 +146,103 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
             }
         })
 
-        binding.imvPlay.onSingleClick {
-
+        binding.imvPause.onSingleClick {
+            binding.imvPause.visibility = View.GONE
+            binding.imvPlay.visibility = View.VISIBLE
+            pausePlaying()
         }
+
+        binding.imvPlay.onSingleClick {
+            if(checkMerger == true) {
+                binding.progress.visibility = View.VISIBLE
+                MergerUri = "${cacheDir.path}/merger.mp3"
+                Log.d("check_click", "initAction: thanhhhh anjanah")
+                    CoroutineScope(Dispatchers.Main).launch{
+                        Log.d("check_audio_link", "initData3: "+ listAudioPick)
+                        val isMergedSuccessfully = mergeAudioFilesTemp(this@MergerAudioActivity, MergerUri)
+                        if (isMergedSuccessfully) {
+                            Log.d("check_click", "cutAudio: "+ MergerUri)
+                            binding.progress.visibility = View.GONE
+                            createMediaPlayer()
+                            binding.seekBarAudio.max = mediaPlayer!!.duration
+                            startPlaying()
+                            updateTimeAndSeekBar()
+                            binding.imvPause.visibility = View.VISIBLE
+                            binding.imvPlay.visibility = View.GONE
+                            val mergerPath = File(MergerUri)
+                            mergerPath.delete()
+                            checkMerger = false
+                            runOnUiThread(object : Runnable {
+                                override fun run() {
+                                    if (mediaPlayer!!.isPlaying) {
+                                        val currentPosition = mediaPlayer!!.currentPosition
+                                        binding.seekBarAudio.progress = currentPosition
+                                    }
+                                    handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
+                                }
+                            })
+
+
+//                            var audioInfoConverter = FileInfo.getFileInfoFromPath(MergerUri.toString())
+//                            audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+////                            startActivity(Intent(this@MergerAudioActivity,SavedActivity::class.java))
+                            binding.tvDuration.text = "/ ${formatTimeToHoursMinutes(mediaPlayer!!.duration)}"
+
+                            mediaPlayer!!.setOnCompletionListener {
+                                binding.tvTimeStart.text = formatTimeToHoursMinutes(mediaPlayer.duration)
+                                handler.postDelayed({
+                                    binding.seekBarAudio.progress = 0
+                                    mediaPlayer!!.seekTo(0)
+                                    binding.tvTimeStart.text = "00:00"
+                                    isPlaying = false
+                                    binding.imvPause.visibility = View.GONE
+                                    binding.imvPlay.visibility = View.VISIBLE
+                                    handler.removeCallbacksAndMessages(null)
+                                },1000)
+
+                            }
+                        }
+                    }
+                }else{
+                binding.imvPause.visibility = View.VISIBLE
+                binding.imvPlay.visibility = View.GONE
+                updateTimeAndSeekBar()
+                startPlaying()
+            }
+        }
+
+        binding.imv15Left.setOnClickListener {
+            rewindAudio(15000) // Tua về 15 giây
+        }
+        // Thiết lập sự kiện cho nút tua tới 15 giây
+        binding.imv15Right.setOnClickListener {
+            forwardAudio(15000) // Tua tới 15 giây
+        }
+
+        binding.seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            @SuppressLint("DefaultLocale")
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    mediaPlayer!!.seekTo(progress)
+                    val waveformProgress = (progress * 100 / mediaPlayer!!.duration).toFloat()
+                    val elapsedTime = String.format(
+                        "%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(progress.toLong()),
+                        TimeUnit.MILLISECONDS.toSeconds(progress.toLong()) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(progress.toLong()))
+                    )
+                    binding.tvTimeStart.text = "${elapsedTime}"
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                handler.removeCallbacksAndMessages(null)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                updateTimeAndSeekBar()
+            }
+        })
 
         binding.imvBack.onSingleClick {
             finish()
@@ -172,6 +271,62 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
         }
     }
 
+    private fun rewindAudio(milliseconds: Int) {
+        mediaPlayer?.let {
+            val newPosition = it.currentPosition - milliseconds
+            if (newPosition >= 0) {
+                it.seekTo(newPosition)
+            } else {
+                it.seekTo(0)
+            }
+        }
+    }
+    private fun forwardAudio(milliseconds: Int) {
+        mediaPlayer?.let {
+            val newPosition = it.currentPosition + milliseconds
+            if (newPosition <= it.duration) {
+                it.seekTo(newPosition)
+            } else {
+                it.seekTo(it.duration) // Nếu tua tới sau khi bài hát kết thúc, đặt về cuối bài hát
+            }
+        }
+    }
+
+    private fun formatTimeToHoursMinutes(duration: Int): String {
+        val minutes = (duration / 1000) / 60
+        val seconds = (duration / 1000) % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun updateTimeAndSeekBar() {
+        val mediaPlayer = mediaPlayer ?: return
+        val currentPosition = mediaPlayer.currentPosition
+        binding.seekBarAudio.progress = currentPosition
+        val elapsedTime = String.format(
+            "%02d:%02d",
+            TimeUnit.MILLISECONDS.toMinutes(currentPosition.toLong()),
+            TimeUnit.MILLISECONDS.toSeconds(currentPosition.toLong()) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition.toLong()))
+        )
+        binding.tvTimeStart.text = "${elapsedTime}"
+        handler.postDelayed({ updateTimeAndSeekBar() }, 1000)
+    }
+
+
+    private fun createMediaPlayer() {
+        mediaPlayer = MediaPlayer().apply {
+            try {
+                setDataSource(MergerUri) // Không cần ?. vì đã kiểm tra tồn tại
+                prepare()
+                Log.d("AudioPlay", "Playback started")
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Log.e("AudioPlay", "Failed to prepare media player: ${e.message}")
+            }
+        }
+    }
+
     private fun initRec() {
         adapter = MergerAudioAdapter(this)
         adapter.getData(listAudioPick)
@@ -189,10 +344,12 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                     val to = target.adapterPosition
                     if (from < to) {
                         for (i in from until to) {
+                            checkMerger = true
                             Collections.swap(listAudioPick, i, i + 1)
                         }
                     } else {
                         for (i in from downTo to + 1) {
+                            checkMerger = true
                             Collections.swap(listAudioPick, i, i - 1)
                         }
                     }
@@ -222,6 +379,20 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
 
     private fun hideLoadingOverlay() {
         binding.loadingOverlay.visibility = View.GONE
+    }
+
+    private fun startPlaying() {
+        if (!isPlaying) {
+            mediaPlayer?.start()
+            isPlaying = true
+        }
+    }
+
+    private fun pausePlaying() {
+        if (isPlaying) {
+            mediaPlayer?.pause()
+            isPlaying = false
+        }
     }
 
     fun getPathFromUri(uri: Uri, context: Context): String? {
@@ -254,5 +425,10 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
     override fun onStop() {
         super.onStop()
         hideLoadingOverlay()
+        if (mediaPlayer!= null){
+            mediaPlayer.release()
+        }
+        handler.removeCallbacksAndMessages(null)
     }
+
 }

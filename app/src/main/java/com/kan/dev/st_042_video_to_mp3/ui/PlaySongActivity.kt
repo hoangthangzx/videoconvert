@@ -53,7 +53,6 @@ import java.util.concurrent.TimeUnit
 
 class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
     override fun getFragmentID(): Int  = 0
-
     override fun getLayoutId(): Int = R.layout.activity_play_audio
     private val handler = android.os.Handler()
     private val handlerPro = Handler(Looper.getMainLooper())
@@ -128,7 +127,7 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             binding.imvPause.visibility = View.GONE
             binding.imvPlay.visibility = View.VISIBLE
             pausePlaying()
-            handler.removeCallbacksAndMessages(null)
+//            handler.removeCallbacksAndMessages(null)
         }
 
         binding.imv15Left.setOnClickListener {

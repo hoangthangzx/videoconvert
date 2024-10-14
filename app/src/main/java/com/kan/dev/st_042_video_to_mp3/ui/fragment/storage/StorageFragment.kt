@@ -137,7 +137,7 @@ class StorageFragment : Fragment() {
                         countVideo += 1
                         countSizeVideo += listVideoStorage[position].sizeInMB.toInt()
                         holder.binding.imvTickBox.setImageResource(R.drawable.icon_check_box_yes)
-                        listVideoPick.add(0, listVideoStorage[position])
+                        listVideoPick.add( listVideoStorage[position])
                         listVideoStorage[position].active = true
                     }else if(listVideoStorage[position].active){
                         countVideo -= 1
@@ -158,6 +158,7 @@ class StorageFragment : Fragment() {
                 }else{
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
                     positionAudioPlay = position
+                    videoInfo = listVideoStorage[position]
                     startActivity(Intent(requireContext(), PlayVideoActivity::class.java))
                 }
             }
@@ -194,7 +195,7 @@ class StorageFragment : Fragment() {
                         countAudio += 1
                         countSize += listAudioStorage[position].sizeInMB.toInt()
                         holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
-                        listAudioPick.add(0, listAudioStorage[position])
+                        listAudioPick.add( listAudioStorage[position])
                         listAudioStorage[position].active = true
                     }else if(listAudioStorage[position].active){
                         countAudio -= 1
@@ -228,7 +229,7 @@ class StorageFragment : Fragment() {
                 isTouchEventHandled = true
                 Const.positionAudioPlay = position
                 listAudioStorage[position].active = true
-                listAudioPick.add(0, listAudioStorage[position])
+                listAudioPick.add(listAudioStorage[position])
                 countAudio += 1
                 countSize += listAudioStorage[position].sizeInMB.toInt()
                 binding.ctlStorage.visibility = View.INVISIBLE
@@ -356,15 +357,24 @@ class StorageFragment : Fragment() {
                 binding.tvSelectedItem.text = "$countVideo Selected"
                 binding.size.text = "$countSizeVideo KB"
             }else{
-                for (i in 0..listAudioPick.size-1){
-                    var pos = listAudioPick[i].pos
-                    if(listAudioStorage[pos].active){
-                        listAudioStorage.removeAll { it.pos == pos }
+                for (i in listAudioPick.size - 1 downTo 0) {
+                    val pos = listAudioPick[i].pos
+                    if (listAudioStorage[pos].active) {
+                        listAudioStorage.removeAt(pos) // Xóa phần tử tại vị trí pos
                         adapterFr.notifyItemRemoved(pos)
+                        Log.d("check_logd_size", "showDialogDelete: ${listAudioStorage.size}")
                     }
                 }
-                val deleted = deleteAudioFiles(listAudioPick)
                 listAudioPick.clear()
+//                for (i in 0..listAudioPick.size-1){
+//                    var pos = listAudioPick[i].pos
+//                    if(listAudioStorage[pos].active){
+//                        listAudioStorage.removeAll { it.pos == pos }
+//                        adapterFr.notifyItemRemoved(pos)
+//                        Log.d("check_logd_size", "showDialogDelete: "+ listAudioStorage.size)
+//                    }
+//                }
+                val deleted = deleteAudioFiles(listAudioPick)
                 if(listAudioStorage.size == 0){
                     binding.lnNoItem.visibility = View.VISIBLE
                     binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_audio_now)
@@ -450,7 +460,7 @@ class StorageFragment : Fragment() {
         }else {
             binding.lnNoItem.visibility = View.GONE
         }
-        Log.d("check_list_video", "initData: "+ listAudio)
+        Log.d("check_list_video", "initData: "+ listAudioStorage)
         if(typefr.equals("vd")){
             binding.imvRename.visibility = View.GONE
         }

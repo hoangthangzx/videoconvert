@@ -34,6 +34,10 @@ import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
@@ -259,18 +263,43 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             findViewById(R.id.imvFrame7),
             findViewById(R.id.imvFrame8),
         )
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(this, videoUri)
-        val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0L
-        val numberOfFrames = 8
-        val interval = duration / numberOfFrames
-        for (i in 0 until numberOfFrames) {
-            val frame: Bitmap? = retriever.getFrameAtTime(i * interval * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-            if (frame != null) {
-                frames[i].setImageBitmap(frame)
+//        val retriever = MediaMetadataRetriever()
+//        retriever.setDataSource(this, videoUri)
+//        val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0L
+//        val numberOfFrames = 8
+//        val interval = duration / numberOfFrames
+//        for (i in 0 until numberOfFrames) {
+//            val frame: Bitmap? = retriever.getFrameAtTime(i * interval * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+//            if (frame != null) {
+//                frames[i].setImageBitmap(frame)
+//            }
+//        }
+//        retriever.release()
+        GlobalScope.launch(Dispatchers.IO) {
+            val retriever = MediaMetadataRetriever()
+            try {
+                // Thiết lập nguồn video
+                retriever.setDataSource(this@VideoCutterActivity, videoUri)
+                val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0L
+                val numberOfFrames = 8
+                val interval = duration / numberOfFrames
+
+                // Lấy từng khung hình và hiển thị
+                for (i in 0 until numberOfFrames) {
+                    val frame: Bitmap? = retriever.getFrameAtTime(i * interval * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                    // Chuyển về luồng chính để cập nhật giao diện người dùng
+                    withContext(Dispatchers.Main) {
+                        if (frame != null) {
+                            frames[i].setImageBitmap(frame) // Cập nhật từng ImageView
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                retriever.release() // Giải phóng tài nguyên
             }
         }
-        retriever.release()
     }
 
 

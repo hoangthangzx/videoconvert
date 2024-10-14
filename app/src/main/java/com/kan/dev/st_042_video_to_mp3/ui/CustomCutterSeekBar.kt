@@ -1,5 +1,6 @@
 package com.kan.dev.st_042_video_to_mp3.ui
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -23,7 +24,7 @@ class CustomCutterSeekBar @JvmOverloads constructor(
     private var maxValue = 100
     private var selectedMinValue = 0f
     private var selectedMaxValue = 0f
-    private val thumbWidth = 10f // Chiều dài thumb
+    private val thumbWidth = 5f // Chiều dài thumb
     private val thumbHeight = 20f
     private val thumbPadding = 60f// Chiều cao thumb
 
@@ -63,6 +64,18 @@ class CustomCutterSeekBar @JvmOverloads constructor(
 
     private var isDraggingStartThumb = false
     private var isDraggingEndThumb = false
+    private var isDarkInsideThumbs = true // Cờ điều khiển màu nền giữa hai thumb
+
+    // Phương thức đổi màu nền
+    fun changeBackgroundColor() {
+        isDarkInsideThumbs = !isDarkInsideThumbs // Đổi trạng thái của cờ
+        invalidate() // Vẽ lại view để cập nhật
+    }
+
+    fun resetBackgroundColorToDefault() {
+        isDarkInsideThumbs = true // Đặt cờ lại về nền trong sáng, ngoài tối
+        invalidate() // Vẽ lại view
+    }
 
     init {
         setupDefaultValues()
@@ -72,99 +85,53 @@ class CustomCutterSeekBar @JvmOverloads constructor(
         selectedMaxValue = (minValue + 2 * (maxValue - minValue) / 3).toFloat() // Vị trí 2/3
     }
 
-    fun startWhiteBarAnimation() {
-        if (isAnimating) return // Để tránh chạy nhiều lần cùng lúc
-        val totalDistance = selectedMaxValue - selectedMinValue
-        val totalDuration = (totalDistance * 1000).toLong()
-        whiteBarPosition = selectedMinValue
-        // Tạo ValueAnimator để di chuyển thanh từ vị trí thumbStart đến thumbEnd
-        animator = ValueAnimator.ofFloat(selectedMinValue, selectedMaxValue)
-        animator!!.duration = totalDuration // Thời gian chạy là 1 giây
-        animator!!.addUpdateListener { animation ->
-            whiteBarPosition = animation.animatedValue as Float
-            invalidate() // Vẽ lại view mỗi khi giá trị thay đổi
-        }
-        animator!!.doOnStart {
-            isAnimating = true // Đánh dấu bắt đầu hoạt ảnh
-        }
-        animator!!.doOnEnd {
-            isAnimating = false // Hoạt ảnh kết thúc
-        }
-        animator!!.start()
-    }
 
-    fun pauseWhiteBarAnimation() {
-        animator?.pause()
-        isState = true
-    }
-
-    fun resumeWhiteBarAnimation() {
-        animator?.resume() // Tiếp tục hoạt ảnh nếu đã tạm dừng
-    }
-
-    fun resetWhiteBarPosition() {
-        // Đặt lại vị trí của thanh trắng về giá trị mặc định
-        whiteBarPosition = selectedMinValue
-        invalidate() // Vẽ lại view để cập nhật
-    }
-
+    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val width = width.toFloat()
         val height = height.toFloat()
 
-        // Vẽ nền tối toàn bộ
         canvas.drawRect(0f, 0f, width, height, darkBackgroundPaint)
 
-        // Tính toán vị trí của thumb
         val minX = (width * (selectedMinValue - minValue) / (maxValue - minValue)) - thumbWidth / 2
         val maxX = (width * (selectedMaxValue - minValue) / (maxValue - minValue)) - thumbWidth / 2
 
-        val pinkBackgroundRect = RectF(
-            (minX + thumbWidth / 2).toFloat(),
-            0f,
-            (maxX + thumbWidth / 2).toFloat(),
-            height
-        )
-        canvas.drawRect(pinkBackgroundRect, pinkBackgroundPaint)
-
-
         if (isAnimating) {
             val whiteX = (width * (whiteBarPosition - minValue) / (maxValue - minValue)) - thumbWidth / 2
-
             canvas.drawRect(
-                whiteX, 0f, // Điểm bắt đầu thanh trắng
-                whiteX + thumbWidth, height, // Điểm kết thúc thanh trắng
+                whiteX, 0f,
+                whiteX + thumbWidth, height,
                 whiteBarPaint
             )
         }
 
-        // Vẽ nền hồng giữa hai thumb
-
-
-        // Vẽ nền tối bên ngoài hai thanh kéoa (thumb)
-        val leftBackgroundRect = RectF(0f, 0f, (minX + thumbWidth / 2).toFloat(), height)
-        val rightBackgroundRect = RectF(maxX + thumbWidth / 2, 0f, width, height)
-        canvas.drawRect(leftBackgroundRect, backgroundPaint)
-        canvas.drawRect(rightBackgroundRect, backgroundPaint)
-
-        // Bỏ vẽ màu nền sáng giữa hai thumb
-        // Không vẽ viền hồng (bỏ canvas.drawRoundRect(backgroundRect, 0f, 0f, borderPaint))
-
-        // Vẽ hai thanh kéo (thumb)
+        if (isDarkInsideThumbs) {
+            // Vẽ nền tối bên ngoài hai thumb và nền sáng giữa hai thumb
+            val leftBackgroundRect = RectF(0f, 0f, (minX + thumbWidth / 2).toFloat(), height)
+            val rightBackgroundRect = RectF(maxX + thumbWidth / 2, 0f, width, height)
+            canvas.drawRect(leftBackgroundRect, backgroundPaint)
+            canvas.drawRect(rightBackgroundRect, backgroundPaint)
+        } else {
+            // Vẽ nền sáng bên ngoài hai thumb và nền tối giữa hai thumb
+            val darkBackgroundRect = RectF(
+                (minX + thumbWidth / 2).toFloat(),
+                0f,
+                (maxX + thumbWidth / 2).toFloat(),
+                height
+            )
+            canvas.drawRect(darkBackgroundRect, backgroundPaint)
+        }
         canvas.drawRect(
             minX, 0f, // Điểm bắt đầu từ trên cùng
             (minX + thumbWidth), height, // Điểm kết thúc ở dưới cùng
             thumbPaint
         )
-
         canvas.drawRect(
             maxX, 0f, // Điểm bắt đầu từ trên cùng
             maxX + thumbWidth, height, // Điểm kết thúc ở dưới cùng
             thumbPaint
         )
-
-
     }
 
     interface OnRangeSeekBarChangeListener {
@@ -245,3 +212,42 @@ class CustomCutterSeekBar @JvmOverloads constructor(
         invalidate() // Vẽ lại view
     }
 }
+
+//
+//
+//fun startWhiteBarAnimation() {
+//    if (isAnimating) return // Để tránh chạy nhiều lần cùng lúc
+//    val totalDistance = selectedMaxValue - selectedMinValue
+//    val totalDuration = (totalDistance * 1000).toLong()
+//    whiteBarPosition = selectedMinValue
+//    // Tạo ValueAnimator để di chuyển thanh từ vị trí thumbStart đến thumbEnd
+//    animator = ValueAnimator.ofFloat(selectedMinValue, selectedMaxValue)
+//    animator!!.duration = totalDuration // Thời gian chạy là 1 giây
+//    animator!!.addUpdateListener { animation ->
+//        whiteBarPosition = animation.animatedValue as Float
+//        invalidate() // Vẽ lại view mỗi khi giá trị thay đổi
+//    }
+//    animator!!.doOnStart {
+//        isAnimating = true // Đánh dấu bắt đầu hoạt ảnh
+//    }
+//    animator!!.doOnEnd {
+//        isAnimating = false // Hoạt ảnh kết thúc
+//    }
+//    animator!!.start()
+//}
+
+
+//fun pauseWhiteBarAnimation() {
+//    animator?.pause()
+//    isState = true
+//}
+//
+//fun resumeWhiteBarAnimation() {
+//    animator?.resume() // Tiếp tục hoạt ảnh nếu đã tạm dừng
+//}
+//
+//fun resetWhiteBarPosition() {
+//    // Đặt lại vị trí của thanh trắng về giá trị mặc định
+//    whiteBarPosition = selectedMinValue
+//    invalidate() // Vẽ lại view để cập nhật
+//}

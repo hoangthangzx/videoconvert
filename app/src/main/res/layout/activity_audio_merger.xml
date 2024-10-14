@@ -105,7 +105,7 @@
                 android:max="10"
                 android:paddingTop="9dp"
                 android:paddingBottom="9dp"
-                android:progress="6"
+                android:progress="0"
                 android:layout_marginTop="5dp"
                 android:progressDrawable="@drawable/custom_progress"
                 android:splitTrack="false"
@@ -261,6 +261,19 @@
             <!--                app:lottie_repeatMode="restart" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="170dp"
+            android:visibility="gone"
+            android:progressDrawable="@color/white"
+            android:background="@color/gray_70"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -11,6 +11,7 @@ import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityPlayVideoBinding
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.videoInfo
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 
@@ -31,26 +32,21 @@ class PlayVideoActivity : AbsBaseActivity<ActivityPlayVideoBinding>(false) {
         binding.imvBack.onSingleClick {
             finish()
         }
-
-
         playerView = findViewById(R.id.player_view)
-
         // Khởi tạo ExoPlayer
         exoPlayer = ExoPlayer.Builder(this).build()
         playerView.player = exoPlayer // Liên kết PlayerView với ExoPlayer
 
         // Tạo media item từ URL video
-        val mediaItem = MediaItem.fromUri(listVideo[positionVideoPlay].uri)
+        val mediaItem = MediaItem.fromUri(videoInfo!!.uri)
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare() // Chuẩn bị phát video
 
-        // Liên kết với PlayerControlView
         exoPlayer.playWhenReady = true //
     }
 
     override fun onStop() {
         super.onStop()
-        // Giải phóng ExoPlayer khi Activity dừng
         exoPlayer.release()
     }
 
