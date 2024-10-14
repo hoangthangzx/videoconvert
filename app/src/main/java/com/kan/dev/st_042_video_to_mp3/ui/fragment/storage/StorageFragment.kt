@@ -27,6 +27,7 @@ import com.kan.dev.st_042_video_to_mp3.databinding.FragmentStorageBinding
 import com.kan.dev.st_042_video_to_mp3.interface_bottom.BottomNavVisibilityListener
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
+import com.kan.dev.st_042_video_to_mp3.ui.ActivityAboutUs
 import com.kan.dev.st_042_video_to_mp3.ui.PlaySongActivity
 import com.kan.dev.st_042_video_to_mp3.ui.PlayVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
@@ -56,6 +57,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
+import com.metaldetector.golddetector.finder.SharedPreferenceUtils
 import java.io.File
 
 class StorageFragment : Fragment() {
@@ -68,10 +70,13 @@ class StorageFragment : Fragment() {
     }
     private val viewModel: SharedViewModel by activityViewModels()
     private var listener: BottomNavVisibilityListener? = null
+    lateinit var shareData : SharedPreferenceUtils
     override fun onStart() {
         super.onStart()
         checkType = true
     }
+    var storageMusic = ""
+    var storageVideo = ""
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is BottomNavVisibilityListener) {
@@ -128,6 +133,10 @@ class StorageFragment : Fragment() {
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
 
+        binding.imvAboutUs.onSingleClick {
+            startActivity(Intent(requireContext(), ActivityAboutUs::class.java))
+        }
+
         adapterVdFr.onClickListener(object : VideoAdapterFr.onClickItemListener{
             @OptIn(UnstableApi::class)
             override fun onClickItem(position: Int, holder: VideoAdapterFr.ViewHolder) {
@@ -175,7 +184,6 @@ class StorageFragment : Fragment() {
                 binding.ctlItem.visibility = View.VISIBLE
                 listener?.onBottomNavVisibilityChanged(false)
                 if(countVideo > 1){
-
                     binding.imvRename.visibility = View.GONE
 
                 }else{
@@ -284,32 +292,16 @@ class StorageFragment : Fragment() {
         dialogBinding.lnOk.onSingleClick{
             if(typefr.equals("vd")){
                 val nameFile = dialogBinding.edtRename.text
-//            lis[positionAudioPlay].name = nameFile.toString()
-                val result = AudioUtils.renameFile(requireContext(),
-                    listVideoStorage[positionVideoPlay].uri.toString(),
-                    nameFile.toString()
-                )
+
+                VideoUtils.renameVideoFile(requireContext(), listVideoStorage[positionVideoPlay].uri,
+                    nameFile.toString())
                 adapterVdFr.notifyDataSetChanged()
-                Log.d("check_rename", "showDialogRename: tc"+ result)
-                if(result){
-                    Log.d("check_rename", "showDialogRename: tc")
-                }else{
-                    Log.d("check_rename", "showDialogRename: tb")
-                }
             }else{
                 val nameFile = dialogBinding.edtRename.text
-//            lis[positionAudioPlay].name = nameFile.toString()
-                val result = AudioUtils.renameFile(requireContext(),
-                    listAudioStorage[positionAudioPlay].uri.toString(),
-                    nameFile.toString()
-                )
+                AudioUtils.renameAudioFile(requireContext(),listAudioStorage[positionAudioPlay].uri,
+                   nameFile.toString())
+                listAudioStorage[positionAudioPlay].name = nameFile.toString()
                 adapterFr.notifyDataSetChanged()
-                Log.d("check_rename", "showDialogRename: tc"+ result)
-                if(result){
-                    Log.d("check_rename", "showDialogRename: tc")
-                }else{
-                    Log.d("check_rename", "showDialogRename: tb")
-                }
             }
             dialog.dismiss()
         }
@@ -330,15 +322,10 @@ class StorageFragment : Fragment() {
         dialogBinding.tvYes.onSingleClick{
             if(typefr.equals("vd")){
                 for (i in 0..listVideoPick.size-1){
-                    var pos = listVideoPick[i].pos
-                    Log.d("check_pos", "showDialogDelete: "+ pos)
-                    if(listVideoStorage[pos].active){
-                        Log.d("check_pos", "showDialogDelete: okeeee"+ pos)
-                        listVideoStorage.removeAll { it.pos == pos }
-                        adapterVdFr.notifyItemRemoved(pos)
-                    }
+                    listVideoStorage.remove(listVideoPick[i])
+                    adapterVdFr.notifyDataSetChanged()
                 }
-                val deleted = deleteVideos(listVideoPick)
+                deleteVideoList(listVideoPick)
                 listVideoPick.clear()
                 if(listVideoStorage.size == 0){
                     binding.lnNoItem.visibility = View.VISIBLE
@@ -346,54 +333,37 @@ class StorageFragment : Fragment() {
                 }else{
                     binding.lnNoItem.visibility = View.GONE
                 }
-                if (deleted) {
-                    Log.d("DeleteVideos", "All videos deleted successfully.")
-                } else {
-                    Log.e("DeleteVideos", "Some videos could not be deleted.")
-                }
+
                 adapterVdFr.notifyDataSetChanged()
                 countVideo = 0
                 countSizeVideo = 0
                 binding.tvSelectedItem.text = "$countVideo Selected"
                 binding.size.text = "$countSizeVideo KB"
             }else{
-                for (i in listAudioPick.size - 1 downTo 0) {
-                    val pos = listAudioPick[i].pos
-                    if (listAudioStorage[pos].active) {
-                        listAudioStorage.removeAt(pos) // Xóa phần tử tại vị trí pos
-                        adapterFr.notifyItemRemoved(pos)
-                        Log.d("check_logd_size", "showDialogDelete: ${listAudioStorage.size}")
-                    }
-                }
-                listAudioPick.clear()
-//                for (i in 0..listAudioPick.size-1){
-//                    var pos = listAudioPick[i].pos
-//                    if(listAudioStorage[pos].active){
-//                        listAudioStorage.removeAll { it.pos == pos }
-//                        adapterFr.notifyItemRemoved(pos)
-//                        Log.d("check_logd_size", "showDialogDelete: "+ listAudioStorage.size)
+                for (i in listAudioPick.size-1  downTo 0) {
+                    listAudioStorage.remove(listAudioPick[i])
+                    adapterFr.notifyDataSetChanged()
+//                    val pos = listAudioPick[i].pos
+//                    if (listAudioStorage[pos].active) {
+//
+//                        Log.d("check_logd_size", "showDialogDelete: ${listAudioStorage.size}")
 //                    }
-//                }
-                val deleted = deleteAudioFiles(listAudioPick)
+                }
+                deleteAudioList(listAudioPick)
+                listAudioPick.clear()
+                adapterFr.notifyDataSetChanged()
                 if(listAudioStorage.size == 0){
                     binding.lnNoItem.visibility = View.VISIBLE
                     binding.tvType.text = getString(R.string.you_don_t_have_any_content_yet_create_a_new_audio_now)
                 }else{
                     binding.lnNoItem.visibility = View.GONE
                 }
-                if (deleted) {
-                    Log.d("DeleteAudios", "All videos deleted successfully.")
-                } else {
-                    Log.e("DeleteAudios", "Some videos could not be deleted.")
-                }
                 Log.d("check_pos", "showDialogDelete: "+ listAudioPick)
-                adapterFr.notifyDataSetChanged()
                 countAudio = 0
                 countSize = 0
                 binding.tvSelectedItem.text = "$countAudio Selected"
                 binding.size.text = "$countSize KB"
             }
-
             dialog.dismiss()
         }
         dialogBinding.tvNo.onSingleClick {
@@ -405,6 +375,46 @@ class StorageFragment : Fragment() {
         adapterFr.getData(listAudioStorage)
         binding.recyclerViewTab2.adapter = adapterFr
 
+    }
+
+    fun deleteAudioList(audioList: List<AudioInfo>) {
+        val contentResolver = context?.contentResolver
+        audioList.forEach { audioInfo ->
+            Log.d("DeleteFile", "File '${audioInfo.uri}' deleted successfully.")
+            try {
+                val rowsDeleted = contentResolver?.delete(audioInfo.uri, null, null)
+                if (rowsDeleted != null) {
+                    if (rowsDeleted > 0) {
+                        Log.d("DeleteFile", "File '${audioInfo.name}' deleted successfully.")
+                    } else {
+                        Log.e("DeleteFile", "File '${audioInfo.name}' not found or could not be deleted.")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("DeleteFile", "Error deleting file '${audioInfo.name}': ${e.message}")
+            }
+        }
+    }
+
+    fun deleteVideoList(videoList: List<VideoInfo>) {
+        val contentResolver = context?.contentResolver
+        videoList.forEach { videoInfo ->
+            Log.d("DeleteFile", "File '${videoInfo.uri}' deleted successfully.")
+            try {
+                val rowsDeleted = contentResolver?.delete(videoInfo.uri, null, null)
+                if (rowsDeleted != null) {
+                    if (rowsDeleted > 0) {
+                        Log.d("DeleteFile", "File '${videoInfo.name}' deleted successfully.")
+                    } else {
+                        Log.e("DeleteFile", "File '${videoInfo.name}' not found or could not be deleted.")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("DeleteFile", "Error deleting file '${videoInfo.name}': ${e.message}")
+            }
+        }
     }
 
     fun deleteVideos(videoInfos: List<VideoInfo>): Boolean {
@@ -464,6 +474,9 @@ class StorageFragment : Fragment() {
         if(typefr.equals("vd")){
             binding.imvRename.visibility = View.GONE
         }
+        shareData = SharedPreferenceUtils.getInstance(requireContext())
+        storageMusic = shareData.getStringValue("musicStorage").toString()
+        storageVideo = shareData.getStringValue("videoStorage").toString()
     }
 
     fun renameAudioFile(context: Context, audioUri: Uri, newFileName: String): Boolean {

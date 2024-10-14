@@ -480,7 +480,9 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             if(selectType.equals("Video")){
                 binding.tvTimeStart.text = listVideo[positionVideoPlay].duration
             }else{
-                binding.tvTimeStart.text = Const.videoCutter!!.duration
+                if(videoCutter!= null){
+                    binding.tvTimeStart.text = Const.videoCutter!!.duration
+                }
             }
             handler.postDelayed({
                 binding.seekBar.progress = 0

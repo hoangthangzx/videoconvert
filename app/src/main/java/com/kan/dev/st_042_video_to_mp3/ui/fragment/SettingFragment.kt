@@ -24,6 +24,7 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.DialogRateBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.FragmentSettingBinding
+import com.kan.dev.st_042_video_to_mp3.ui.ActivityAboutUs
 import com.kan.dev.st_042_video_to_mp3.ui.language.LanguageActivity
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
@@ -59,6 +60,10 @@ class SettingFragment : Fragment() {
         binding.lnLanguage.onSingleClick {
             val intent = Intent(requireContext(), LanguageActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.imvAboutUs.onSingleClick {
+            startActivity(Intent(requireContext(), ActivityAboutUs::class.java))
         }
 
 //        binding.lnRate.onSingleClick {

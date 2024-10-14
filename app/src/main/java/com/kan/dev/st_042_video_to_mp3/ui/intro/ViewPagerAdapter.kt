@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.kan.dev.st_042_video_to_mp3.databinding.ItemIntroBinding
 import com.metaldetector.golddetector.finder.model.TutorialModel
@@ -19,12 +20,18 @@ class ViewPagerAdapter() : RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>() {
         @SuppressLint("SuspiciousIndentation")
         fun bind(position: Int){
             binding.imvIntro.setImageResource(data[position].bg)
-            val lp = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                lp.setMargins(0, 0, 0, 0)
-                binding.imvIntro.setLayoutParams(lp)
+            val bottomMarginPx = if (position != 0) {
+                (10 * binding.root.context.resources.displayMetrics.density).toInt() // -10dp for first item
+            } else {
+                0 // No margin for other items
+            }
+
+            val lp = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+            lp.setMargins(0, 0, 0, bottomMarginPx)
+            binding.imvIntro.setLayoutParams(lp)
 
         }
     }

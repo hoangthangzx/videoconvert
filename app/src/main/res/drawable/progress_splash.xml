@@ -11,7 +11,11 @@
 
     <!-- Gradient màu hồng tới xanh lam -->
     <item>
-        <!-- Thu nhỏ layer 2 bằng cách inset 4dp -->
+        <inset
+            android:insetLeft="0.5dp"
+            android:insetTop="0.5dp"
+            android:insetRight="0.5dp"
+            android:insetBottom="0.5dp">
             <clip>
                 <shape android:shape="rectangle">
                     <corners android:radius="16dp" />  <!-- Bo tròn các góc nhỏ hơn một chút -->
@@ -22,6 +26,6 @@
                         android:angle="0"/>
                 </shape>
             </clip>
-
+        </inset>
     </item>
 </layer-list>

@@ -13,6 +13,12 @@
     <color name="color_text_convert">#7A7A7A</color>
     <color name="color_1">#4A93EB</color>
     <color name="color_2">#FE8BEC</color>
+    <color name="color_per">#D8A4FC</color>
+    <color name="color_per1">#EFB1F0</color>
+    <color name="color_per2">#FFAEFC</color>
+    <color name="color_per3">#FF83EC</color>
+    <color name="color_per4">#F184FF</color>
+    <color name="color_per5">#909DFF</color>
     <color name="color_duration_speed">#A0A0A0</color>
     <color name="gray_70">#B05D5D5D</color>
     <color name="color_time_audio">#BCBCBC</color>

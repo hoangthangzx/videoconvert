@@ -70,7 +70,7 @@
     <string name="ac3">AC3</string>
     <string name="ogg">OGG</string>
     <string name="done">Done</string>
-    <string name="set_as">Set As</string>
+    <string name="set_as">Set as</string>
     <string name="share">Share</string>
     <string name="_19_jan_2024">19 Jan 2024</string>
     <string name="duration_00_23_01">Duration: 00:23.01</string>
@@ -138,4 +138,5 @@
     <string name="about_us">About Us</string>
     <string name="version_1_0_0">Version: 1.0.0</string>
     <string name="items_cannot_be_deleted_you_need_at_least_2_items_to_convert">Items cannot be deleted, you need at least 2 items to convert</string>
+    <string name="items_cannot_be_deleted_you_need_at_least_1_items_to_convert">Items cannot be deleted, you need at least 1 items to convert</string>
 </resources>

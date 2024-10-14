@@ -9,8 +9,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:padding="2.5dp"
+        android:layout_marginHorizontal="15dp"
+        android:paddingHorizontal="10dp"
         android:background="@drawable/imv_bg_dialog">
 
         <TextView
@@ -28,12 +28,12 @@
 
         <RadioGroup
             android:id="@+id/rdGroup"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:checkedButton="@+id/phoneRingtone"
             android:orientation="vertical"
-            android:layout_marginHorizontal="25dp"
+            android:layout_marginHorizontal="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle">
@@ -42,11 +42,11 @@
                 android:id="@+id/phoneRingtone"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
+                android:background="@drawable/bg_ringtone_item"
                 android:button="@null"
-                android:paddingHorizontal="10dp"
-                android:background="@drawable/bg_ring_tone"
+                android:gravity="center"
                 android:drawableStart="@drawable/custom_icon"
-                android:drawablePadding="80dp"
+                android:paddingHorizontal="10dp"
                 android:text="@string/ringtone"
                 android:textColor="#A2A2A2"
                 android:textSize="14sp" />
@@ -55,12 +55,12 @@
                 android:id="@+id/smsRingtone"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="5dp"
                 android:button="@null"
+                android:gravity="center"
                 android:paddingHorizontal="10dp"
-                android:background="@drawable/bg_ring_tone"
+                android:background="@drawable/bg_ringtone_item"
                 android:drawableStart="@drawable/custom_icon"
-                android:drawablePadding="80dp"
                 android:text="@string/notification"
                 android:textColor="#A2A2A2"
                 android:textSize="14sp" />
@@ -69,12 +69,12 @@
                 android:id="@+id/alarmRingtone"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="5dp"
                 android:button="@null"
                 android:paddingHorizontal="10dp"
-                android:background="@drawable/bg_ring_tone"
+                android:background="@drawable/bg_ringtone_item"
                 android:drawableStart="@drawable/custom_icon"
-                android:drawablePadding="80dp"
+                android:gravity="center"
                 android:text="@string/alarm"
                 android:textColor="#A2A2A2"
                 android:textSize="14sp" />
@@ -83,12 +83,11 @@
 
         <LinearLayout
             android:id="@+id/lnSave"
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="32dp"
-            android:layout_marginEnd="23dp"
+            android:layout_marginEnd="40dp"
             android:layout_marginBottom="24dp"
             android:gravity="center"
-            android:background="@drawable/bg_ok"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -102,10 +101,11 @@
                 android:gravity="center"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:paddingStart="2dp"
+                android:textColor="@color/color_language"
                 android:paddingEnd="2dp"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="@string/save"
+                android:text="@string/ok"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imvSave"
@@ -113,21 +113,19 @@
                 app:layout_constraintStart_toStartOf="@+id/imvSave"
                 app:layout_constraintTop_toTopOf="@+id/imvSave" />
 
-
         </LinearLayout>
 
 
         <LinearLayout
             android:id="@+id/lnCancel"
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="32dp"
+            android:layout_marginEnd="40dp"
             android:layout_marginTop="19dp"
-            android:layout_marginStart="23dp"
             android:layout_marginBottom="24dp"
             android:gravity="center"
-            android:background="@drawable/bg_cancel"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/lnSave"
             app:layout_constraintTop_toBottomOf="@+id/rdGroup">
 
 
@@ -144,7 +142,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="@string/cancel"
-                android:textColor="@color/white"
+                android:textColor="#C2C2C2"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imvCancel"

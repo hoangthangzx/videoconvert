@@ -136,7 +136,6 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireContext(),ActivityAboutUs::class.java))
         }
 
-
         binding.lnAudioMerger.onSingleClick {
             selectTypeAudio = "AudioMerger"
             countAudio = 0
@@ -225,12 +224,10 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if(listVideoStorage.isEmpty()){
-            VideoUtils.getAllVideosFromSpecificDirectory(storageVideo)
-        }
-        if(listAudioStorage.isEmpty()){
-            AudioUtils.getAllAudiosFromSpecificDirectory(storageMusic)
-        }
+        listVideoStorage.clear()
+        listAudioStorage.clear()
+        VideoUtils.getAllVideosFromSpecificDirectory(requireContext(),storageVideo)
+        AudioUtils.getAllAudiosFromSpecificDirectory(requireContext(),storageMusic)
         audioCutter = null
         videoCutter = null
         countPos = 0
@@ -247,7 +244,7 @@ class HomeFragment : Fragment() {
         listAudioSaved.clear()
         listConvertMp3.clear()
         audioInfo  = null
-        Log.d("check_data", "onResume: "+ listVideoStorage  + "    " + storageVideo)
+        Log.d("check_data", "onResume: "+ listAudioStorage  + "    " + storageMusic)
     }
 
 }

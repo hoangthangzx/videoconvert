@@ -26,8 +26,8 @@
 
     <LinearLayout
         android:id="@+id/lnBtn"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_marginStart="10dp"
         android:orientation="horizontal"
         android:gravity="center"
@@ -35,12 +35,13 @@
         app:layout_constraintStart_toEndOf="@+id/imv_tick"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imvPlayVideo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/imv_play_audio"
             android:visibility="visible"
+            app:shapeAppearance="@style/ShapeAppearanceOverlay.App.CornerSize50Percents_15"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imv_tick"
             app:layout_constraintTop_toTopOf="parent" />
@@ -50,9 +51,9 @@
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
         android:text="@string/compressed"
         android:textColor="@color/white"
+        android:layout_marginStart="6dp"
         android:textSize="14sp"
         android:layout_marginEnd="15dp"
         android:ellipsize="marquee"
@@ -75,6 +76,7 @@
         android:text="@string/_00_01"
         android:textSize="11sp"
         android:layout_marginTop="5dp"
+        android:layout_marginStart="2dp"
         android:textColor="#B6B6B6"
         app:layout_constraintStart_toStartOf="@+id/tvTitle"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"/>

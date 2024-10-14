@@ -174,15 +174,13 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                             checkMerger = false
                             runOnUiThread(object : Runnable {
                                 override fun run() {
-                                    if (mediaPlayer!!.isPlaying) {
+                                    if (mediaPlayer.isPlaying!!) {
                                         val currentPosition = mediaPlayer!!.currentPosition
                                         binding.seekBarAudio.progress = currentPosition
                                     }
                                     handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
                                 }
                             })
-
-
 //                            var audioInfoConverter = FileInfo.getFileInfoFromPath(MergerUri.toString())
 //                            audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
 ////                            startActivity(Intent(this@MergerAudioActivity,SavedActivity::class.java))
@@ -197,7 +195,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                                     isPlaying = false
                                     binding.imvPause.visibility = View.GONE
                                     binding.imvPlay.visibility = View.VISIBLE
-                                    handler.removeCallbacksAndMessages(null)
+//                                    handler.removeCallbacksAndMessages(null)
                                 },1000)
 
                             }
@@ -249,6 +247,13 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
         }
 
         binding.tvDone.onSingleClick {
+            handler.removeCallbacksAndMessages(null)
+            mediaPlayer?.let {
+                if (it.isPlaying) {
+                    it.stop() // Dừng phát nếu đang phát
+                }
+                it.release() // Giải phóng MediaPlayer
+            }
             Log.d("check_audio_link", "initData1: "+ listAudioPick)
             if(listAudioPick.size ==1 ){
                 Toast.makeText(this, getString(R.string.you_must_choose_2_or_more_items), Toast.LENGTH_SHORT).show()

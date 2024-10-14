@@ -55,8 +55,10 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     var timeSum = 0f
     var cutterUri = ""
     override fun init() {
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Trim sides"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Trim middle"))
         initView()
-//        initData()
+        initData()
         initAction()
     }
 
@@ -330,18 +332,24 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
         binding.tvDone.onSingleClick {
             checkCut = false
+            mediaPlayer?.let {
+                if (it.isPlaying) {
+                    it.stop() // Dừng phát nếu đang phát
+                }
+                it.release() // Giải phóng MediaPlayer
+            }
             val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
             val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
             val durationVideo = convertDurationToSeconds(listAudio[positionAudioPlay].duration)
             if(currentValueStart > currentValueEnd || currentValueStart > durationVideo || currentValueEnd > durationVideo || currentValueEnd <0 || currentValueStart < 0 ){
                 Toast.makeText(this@ActivityAudioCutter, getString(R.string.you_must_choose_the_right_time), Toast.LENGTH_SHORT).show()
             }else{
+
                 showLoadingOverlay()
                 val videoPath = getRealPathFromURI(this, listAudio[positionAudioPlay].uri)
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
                 Log.d("checkType", "initAction: "+ checkType+ "   "  + videoPath)
-
                 val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp3"
                 if (videoPath != null) {
                     if (checkType == true){
@@ -357,8 +365,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     @SuppressLint("ClickableViewAccessibility")
     private fun initData() {
         mediaPlayer = MediaPlayer()
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Trim sides"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Trim middle"))
         binding.waveformSeekBar.setSampleFrom(listAudio[positionAudioPlay].uri)
         maxValueTime = (convertDurationToSeconds(listAudio[positionAudioPlay].duration).toFloat())
         startTime = (convertDurationToSeconds(listAudio[positionAudioPlay].duration).toFloat())*(1f/3f)
@@ -445,18 +451,19 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     override fun onDestroy() {
         super.onDestroy()
-        if(mediaPlayer!!.isPlaying){
-            mediaPlayer!!.release()
+        mediaPlayer?.let {
+            if (it.isPlaying) {
+                it.stop() // Dừng phát nếu đang phát
+            }
+            it.release() // Giải phóng MediaPlayer
         }
     }
 
     fun cutAndMergeAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         // Cắt đoạn từ đầu đến startTime
         val firstPartPath = "${cacheDir.path}/first_part.mp3"
-
         val firstPartCommand = "-i \"$inputFilePath\" -to $startTime -c copy $firstPartPath"
         val firstPartResult = FFmpeg.execute(firstPartCommand)
-
         // Cắt đoạn từ endTime đến cuối file
         val secondPartPath = "${cacheDir.path}/second_part.mp3"
         val secondPartCommand = "-i \"$inputFilePath\" -ss $endTime -c copy $secondPartPath"
@@ -502,9 +509,10 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     fun cutAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         Log.d("check_audio_speed", "$startTime    $endTime")
-        val command = "-i \"$inputFilePath\" -ss $startTime -to $endTime -c copy $outputFilePath"
+        val command = "-i \"$inputFilePath\" -ss $startTime -to $endTime -c copy \"$outputFilePath\""
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
+            Log.d("checkType", "cutAudio: "+ checkCut)
             if(checkCut == true){
                 Log.d("check_click", "cutAudio: "+ cutterUri)
                 binding.progress.visibility = View.GONE

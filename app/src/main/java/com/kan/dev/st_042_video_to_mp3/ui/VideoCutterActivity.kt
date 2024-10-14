@@ -84,83 +84,94 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-            minutes += 1
-            if (minutes >= 60) {
-                minutes = 0
-                hours += 1
-            }
-            if (hours > 23) {
-                hours = 0
-            }
-            startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
-            binding.customRangeSeekBar.setSelectedMinValue(startTime + 1f)
-            if(binding.customRangeSeekBar.getSelectedMinValue() > 1f){
-                binding.btnMinus.isClickable = true
-            }
-            if(binding.customRangeSeekBar.getSelectedMinValue() >= binding.customRangeSeekBar.getSelectedMaxValue() -1f){
+            Log.d("check_tiome", "initAction: "+ currentTime + " ==== "+ binding.edtEndTime.text.toString())
+            if(convertTimeToSeconds(currentTime) == convertTimeToSeconds(binding.edtEndTime.text.toString()) - 1){
                 binding.btnPlus.isClickable = false
+            }else{
+                minutes += 1
+                if (minutes >= 60) {
+                    minutes = 0
+                    hours += 1
+                }
+                if (hours > 23) {
+                    hours = 0
+                }
+                startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
+                binding.customRangeSeekBar.setSelectedMinValue(startTime + 1f)
+//                if(binding.customRangeSeekBar.getSelectedMinValue() > 1f){
+//                    binding.btnMinus.isClickable = true
+//                }
+//                if(binding.customRangeSeekBar.getSelectedMinValue() >= binding.customRangeSeekBar.getSelectedMaxValue() -1f){
+//                    binding.btnPlus.isClickable = false
+//                }
+                binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
+                binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
+                timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
+                binding.tvTimeCut.text = timeCut
             }
-            binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
-            binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
-            timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
-            binding.tvTimeCut.text = timeCut
+
         }
         binding.btnPlusEnd.setOnClickListener {
             val currentTime = binding.edtEndTime.text.toString()
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-            minutes += 1
-            if (minutes >= 60) {
-                minutes = 0
-                hours += 1
-            }
-            if (hours > 23) {
-                hours = 0
-            }
-            endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
-            binding.customRangeSeekBar.setSelectedMaxValue(endTime + 1f)
-            Log.d("check_value", "initActionMinus: "+ startTime)
-            binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-            if(binding.customRangeSeekBar.getSelectedMaxValue() >= maxValueTime){
+            Log.d("check_max_value", "initAction: "+ convertTimeToSeconds(currentTime)  +"  ===== "    + binding.customRangeSeekBar.getMaxValue())
+            if(convertTimeToSeconds(currentTime) >= binding.customRangeSeekBar.getMaxValue()){
                 binding.btnPlusEnd.isClickable = false
                 Toast.makeText(this, getString(R.string.time_reaches_its_maximum_value), Toast.LENGTH_SHORT).show()
-            }
-            if(binding.customRangeSeekBar.getSelectedMaxValue() > binding.customRangeSeekBar.getSelectedMinValue() + 1f){
+            }else{
                 binding.btnMinusEnd.isClickable = true
-            }
-            binding.edtEndTime.setSelection(binding.edtEndTime.text.length)
-            timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
-            binding.tvTimeCut.text = timeCut
-        }
+                minutes += 1
+                if (minutes >= 60) {
+                    minutes = 0
+                    hours += 1
+                }
+                if (hours > 23) {
+                    hours = 0
+                }
 
+                endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
+                binding.customRangeSeekBar.setSelectedMaxValue(endTime + 1f)
+                Log.d("check_value", "initActionMinus: "+ startTime)
+                binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
+                binding.edtEndTime.setSelection(binding.edtEndTime.text.length)
+                timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
+                binding.tvTimeCut.text = timeCut
+            }
+
+        }
         binding.btnMinusEnd.setOnClickListener {
             val currentTime = binding.edtEndTime.text.toString()
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-            minutes -= 1
-
-            if (minutes < 0) {
-                minutes = 59
-                hours -= 1
-            }
-
-            if (hours < 0) {
-                hours = 23
-            }
-            endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
-            binding.customRangeSeekBar.setSelectedMaxValue(endTime - 1f)
-            binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-            if(binding.customRangeSeekBar.getSelectedMaxValue() < maxValueTime){
-                binding.btnPlusEnd.isClickable = true
-            }
-            if(binding.customRangeSeekBar.getSelectedMaxValue() <= binding.customRangeSeekBar.getSelectedMinValue() + 1f){
+            if(convertTimeToSeconds(currentTime) == convertTimeToSeconds(binding.edtStartTime.text.toString()) + 1){
                 binding.btnMinusEnd.isClickable = false
+            }else{
+                minutes -= 1
+                if (minutes < 0) {
+                    minutes = 59
+                    hours -= 1
+                }
+
+                if (hours < 0) {
+                    hours = 23
+                }
+                endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
+                binding.customRangeSeekBar.setSelectedMaxValue(endTime - 1f)
+                binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
+//            if(binding.customRangeSeekBar.getSelectedMaxValue() < maxValueTime){
+//                binding.btnPlusEnd.isClickable = true
+//            }
+//            if(binding.customRangeSeekBar.getSelectedMaxValue() <= binding.customRangeSeekBar.getSelectedMinValue() + 1f){
+//                binding.btnMinusEnd.isClickable = false
+//            }
+                binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
+                timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
+                binding.tvTimeCut.text = timeCut
             }
-            binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
-            timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
-            binding.tvTimeCut.text = timeCut
+
         }
 
         binding.btnMinus.setOnClickListener {
@@ -168,29 +179,34 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-            minutes -= 1
-            if (minutes < 0) {
-                minutes = 59
-                hours -= 1
-            }
-
-            if (hours < 0) {
-                hours = 23
-            }
-            startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
-            binding.customRangeSeekBar.setSelectedMinValue(startTime - 1f)
-            if(binding.customRangeSeekBar.getSelectedMinValue() < 1f){
-                binding.btnMinus.isClickable = false
-                Toast.makeText(this, getString(R.string.time_to_reach_minimum_value), Toast.LENGTH_SHORT).show()
-            }
-
-            if(binding.customRangeSeekBar.getSelectedMinValue() < binding.customRangeSeekBar.getSelectedMaxValue() ){
+            if(convertTimeToSeconds(currentTime) <= 0){
+                binding.btnMinusEnd.isClickable = false
+                Toast.makeText(this, getString(R.string.time_reaches_its_maximum_value), Toast.LENGTH_SHORT).show()
+            }else{
                 binding.btnPlus.isClickable = true
+                minutes -= 1
+                if (minutes < 0) {
+                    minutes = 59
+                    hours -= 1
+                }
+                if (hours < 0) {
+                    hours = 23
+                }
+                startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
+                binding.customRangeSeekBar.setSelectedMinValue(startTime - 1f)
+//                if(binding.customRangeSeekBar.getSelectedMinValue() < 1f){
+//                    binding.btnMinus.isClickable = false
+//                    Toast.makeText(this, getString(R.string.time_to_reach_minimum_value), Toast.LENGTH_SHORT).show()
+//                }
+//                if(binding.customRangeSeekBar.getSelectedMinValue() < binding.customRangeSeekBar.getSelectedMaxValue() ){
+//                    binding.btnPlus.isClickable = true
+//                }
+                binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
+                binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
+                timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
+                binding.tvTimeCut.text = timeCut
             }
-            binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
-            binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
-            timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
-            binding.tvTimeCut.text = timeCut
+
         }
 
 //        binding.edtStartTime.isClickable = false
@@ -200,6 +216,10 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 startTime = minValue
                 endTime = maxValue
                 timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
+                binding.btnPlusEnd.isClickable = true
+                binding.btnMinusEnd.isClickable = true
+                binding.btnPlus.isClickable = true
+                binding.btnMinus.isClickable = true
                 binding.tvTimeCut.text = timeCut
                 binding.edtStartTime.setText(convertSecondsToDuration(startTime.toInt()))
                 binding.edtEndTime.setText(convertSecondsToDuration(endTime.toInt()))
@@ -372,9 +392,18 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
     }
 
+    fun convertTimeToSeconds(time: String): Int {
+        val timeParts = time.split(":")  // Tách chuỗi thành phút và giây
+        val minutes = timeParts[0].toInt()  // Chuyển đổi phần phút thành số nguyên
+        val seconds = timeParts[1].toInt()  // Chuyển đổi phần giây thành số nguyên
+
+        return minutes * 60 + seconds  // Tính tổng số giây
+    }
+
     override fun onResume() {
         super.onResume()
         initData()
+        selectType = "VideoCutter"
         Log.d("check_type_fr", "onResume: " + selectType)
 //        initData()
     }

@@ -42,6 +42,7 @@
                 android:layout_weight="1" />
 
             <ImageView
+                android:id="@+id/imvAboutUs"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/icon_note" />

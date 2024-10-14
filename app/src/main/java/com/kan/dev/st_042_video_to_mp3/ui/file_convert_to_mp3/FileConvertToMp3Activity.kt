@@ -96,7 +96,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         adapter.onClickListener(object : FileConvertAdapter.onClickItemListener{
             override fun onItemClick(position: Int) {
                 Log.d("check_data_size", "onItemClick: "+ listVideoPick.size)
-                if(listVideoPick.size == 1){
+                if(listVideoPick.size == 2){
                     Toast.makeText(this@FileConvertToMp3Activity, getString(R.string.items_cannot_be_deleted_you_need_at_least_2_items_to_convert), Toast.LENGTH_SHORT).show()
                 }else{
                     val pos = listVideoPick[position].pos

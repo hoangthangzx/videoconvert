@@ -24,6 +24,8 @@ object Const {
     var listVideo = mutableListOf<VideoInfo>()
     var listVideoStorage = mutableListOf<VideoInfo>()
     var listAudioStorage = mutableListOf<AudioInfo>()
+//    var listAudioStorage_1 = mutableListOf<AudioInfo>()
+//    var listAudioStorage_2 = mutableListOf<AudioInfo>()
     var listAudio = mutableListOf<AudioInfo>()
     var listAudioPick = mutableListOf<AudioInfo>()
     var listAudioMerger = mutableListOf<AudioInfo>()

@@ -109,12 +109,13 @@
                 <LinearLayout
                     android:id="@+id/lnVideoCutter"
                     android:layout_width="0dp"
-                    app:layout_constraintWidth_percent=".45"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
                     android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent=".45">
 
                     <ImageView
                         android:layout_width="32dp"
@@ -141,13 +142,13 @@
                 <LinearLayout
                     android:id="@+id/lnVideoConvertToMp3"
                     android:layout_width="0dp"
-                    app:layout_constraintWidth_percent=".45"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_home"
                     android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent=".45">
 
                     <ImageView
                         android:layout_width="32dp"

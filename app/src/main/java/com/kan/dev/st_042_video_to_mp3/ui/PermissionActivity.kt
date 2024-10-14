@@ -49,8 +49,12 @@ class PermissionActivity : AbsBaseActivity<ActivityPermissionBinding>(false) {
             binding.lnNotification.visibility = View.GONE
         }
         val colors = intArrayOf(
-            ContextCompat.getColor(this@PermissionActivity, R.color.color_1),
-            ContextCompat.getColor(this@PermissionActivity, R.color.color_2)
+            ContextCompat.getColor(this@PermissionActivity, R.color.color_per),
+            ContextCompat.getColor(this@PermissionActivity, R.color.color_per1),
+            ContextCompat.getColor(this@PermissionActivity, R.color.color_per2),
+            ContextCompat.getColor(this@PermissionActivity, R.color.color_per3),
+            ContextCompat.getColor(this@PermissionActivity, R.color.color_per4),
+            ContextCompat.getColor(this@PermissionActivity, R.color.color_per5),
         )
         binding.tvContinue.applyGradientWidth(this@PermissionActivity,colors)
     }
@@ -68,7 +72,7 @@ class PermissionActivity : AbsBaseActivity<ActivityPermissionBinding>(false) {
     }
     private fun checkPermissions(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-           val storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+           val storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO)
             val notyPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
             return  (notyPermission == PackageManager.PERMISSION_GRANTED && storagePermission == PackageManager.PERMISSION_GRANTED )
         }else{

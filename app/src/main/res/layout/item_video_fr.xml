@@ -30,7 +30,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:ellipsize="marquee"
         android:focusable="true"
@@ -45,8 +45,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/imvVideoFile"
         app:layout_constraintEnd_toStartOf="@+id/tvTime"
         app:layout_constraintStart_toEndOf="@+id/imvVideoFile"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".4" />
+        app:layout_constraintTop_toTopOf="@+id/imvVideoFile"
+        app:layout_constraintVertical_bias=".2" />
 
     <TextView
         android:id="@+id/tvDurationVideo"

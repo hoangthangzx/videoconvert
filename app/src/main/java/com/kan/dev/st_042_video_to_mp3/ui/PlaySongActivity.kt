@@ -28,9 +28,11 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityPlayAudioBinding
+import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRenameBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomeDialogDeleteBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
@@ -39,7 +41,10 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.currentRingtone
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.typefr
 import com.kan.dev.st_042_video_to_mp3.utils.Const.uriPlay
 import com.kan.dev.st_042_video_to_mp3.utils.RingtoneUtils
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
@@ -102,6 +107,10 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             showDialogDelete()
         }
 
+        binding.lnDelete.onSingleClick {
+            showDialogRename()
+        }
+
         binding.imvTick.onSingleClick {
             binding.lnMenu.visibility = View.GONE
             binding.lnMenu.visibility = View.VISIBLE
@@ -137,6 +146,25 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         binding.imv15Right.setOnClickListener {
             forwardAudio(15000) // Tua tới 15 giây
         }
+    }
+
+    private fun showDialogRename() {
+        SystemUtils.setLocale(this)
+        val dialogBinding  = CustomDialogRenameBinding.inflate(LayoutInflater.from(this))
+        val dialog = Dialog(this)
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setContentView(dialogBinding.root)
+        dialog.setCancelable(false)
+        dialogBinding.lnOk.onSingleClick{
+
+
+            dialog.dismiss()
+        }
+        dialogBinding.lnCancel.onSingleClick {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun showDialogDelete() {

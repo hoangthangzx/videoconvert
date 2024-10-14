@@ -6,11 +6,9 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
 
     <application
         android:allowBackup="true"
@@ -45,9 +43,9 @@
             android:screenOrientation="portrait"
             android:exported="false"/>
 
-        <activity android:name=".ui.ChooseItemStorageActivity"
-            android:screenOrientation="portrait"
-            android:exported="false"/>
+<!--        <activity android:name=".ui.ChooseItemStorageActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:exported="false"/>-->
 
         <activity android:name=".ui.VideoCutterActivity"
             android:screenOrientation="portrait"

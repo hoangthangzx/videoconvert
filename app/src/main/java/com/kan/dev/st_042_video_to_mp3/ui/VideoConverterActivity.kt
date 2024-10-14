@@ -31,6 +31,8 @@ import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -42,6 +44,8 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
     var imvItems : List<LinearLayout> = listOf()
     var audioType  = ""
     var checkItem = false
+    private var job: Job? = null // Khai báo Job
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob()) // CoroutineScope chính
     private var isConverting = false
     override fun init() {
         initDataMulti()
@@ -62,7 +66,7 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
                 imvItem.setBackgroundResource(R.drawable.bg_item_convert_pick)
                 Log.d("check_style", "initAction: ")
                 when(index){
-                    0 -> audioType ="3gp"
+                    0 -> audioType ="3gpp"
                     1 -> audioType ="mp4"
                     2 -> audioType ="mov"
                     3 -> audioType ="flv"
@@ -82,7 +86,7 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         adapter.onClickListener(object : FileConvertAdapter.onClickItemListener{
             override fun onItemClick(position: Int) {
                 if(listVideoPick.size == 1){
-                    Toast.makeText(this@VideoConverterActivity, getString(R.string.items_cannot_be_deleted_you_need_at_least_2_items_to_convert), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@VideoConverterActivity, getString(R.string.items_cannot_be_deleted_you_need_at_least_1_items_to_convert), Toast.LENGTH_SHORT).show()
                 }else {
                     val pos = listVideoPick[position].pos
                     listVideo[pos].active = false
@@ -93,15 +97,14 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
                 }
             }
         })
-
         binding.tvDone.onSingleClick {
             if(checkItem== false || listVideoPick.size == 0){
                 Toast.makeText(this@VideoConverterActivity, getString(R.string.there_are_no_items_to_convert), Toast.LENGTH_SHORT).show()
             }else{
                 showLoadingOverlay()
                 if (!isConverting) {
-                    isConverting = true
-                    CoroutineScope(Dispatchers.Main).launch {
+                    job = CoroutineScope(Dispatchers.Main).launch {
+                        isConverting = true
                         convertAllVideoToSong()
                     }
                 }
@@ -109,8 +112,9 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         }
     }
     private suspend fun convertAllVideoToSong() {
+        val currentVideoList = listVideoPick.toList()
         withContext(Dispatchers.IO) { // Chạy trong IO context
-            for (video in listVideoPick) {
+            for (video in currentVideoList) {
                 val videoPath = getRealPathFromURI(this@VideoConverterActivity, video.uri!!)
                 val timestamp = System.currentTimeMillis()
                 val originalFileName = File(videoPath).name
@@ -134,7 +138,6 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         } else {
             "$fixedOutputPath.$audioType"
         }
-
         val command = "-i \"$fixedInputPath\" \"$outputFileName"
         Log.d("check_video", "Chuyển đổi video : $command")
         val resultCode = FFmpeg.execute(command)
@@ -197,7 +200,13 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        hideLoadingOverlay()
+        job?.cancel()
+        if(binding.loadingOverlay.visibility == View.VISIBLE){
+            hideLoadingOverlay()
+        }else{
+            finish()
+        }
+
     }
 
     override fun onStop() {
