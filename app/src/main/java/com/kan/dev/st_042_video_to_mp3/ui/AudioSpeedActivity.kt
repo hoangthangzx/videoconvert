@@ -29,6 +29,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.mp3Uri
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
@@ -40,13 +41,16 @@ import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.masoudss.lib.SeekBarOnProgressChanged
 import com.masoudss.lib.WaveformSeekBar
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
+@Suppress("UNUSED_EXPRESSION")
 class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     override fun getFragmentID(): Int = 0
     override fun getLayoutId(): Int = R.layout.activity_audio_speed
@@ -57,8 +61,11 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     var mediaPlayer: MediaPlayer? = null
     var valueSpeed = 1f
     var duration = 0
+
+    var checkSpeedPlay = true
     var checkSpeed = false
-    private var isPlaying: Boolean = true
+    var speedUri = ""
+    private var isPlaying: Boolean = false
     private val handler = android.os.Handler()
     private val handlerPro = Handler(Looper.getMainLooper())
     private val updateProgress = object : Runnable {
@@ -93,27 +100,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         )
         binding.tvDone.applyGradient(this@AudioSpeedActivity,colors)
         binding.waveformSeekBar.setSampleFrom(audioUri!!)
-        val handler = Handler(Looper.getMainLooper())
-        val updateProgress = object : Runnable {
-            override fun run() {
-                if (mediaPlayer != null) {
-                    try {
-                        if (mediaPlayer!!.isPlaying ) {
-                            binding.waveformSeekBar.progress = (mediaPlayer!!.currentPosition * 100 / mediaPlayer!!.duration).toFloat()
-                            binding.seekBarAudio.progress = mediaPlayer!!.currentPosition
-                        }
-                        handler.postDelayed(this, 100)
 
-                    } catch (e: IllegalStateException) {
-                        Log.e("MediaPlayerError", "MediaPlayer is in an illegal state", e)
-                    }
-                }
-            }
-        }
-        mediaPlayer!!.setOnPreparedListener {
-            mediaPlayer!!.start()
-            handler.post(updateProgress)
-        }
 
         binding.waveformSeekBar.onProgressChanged = object :
             SeekBarOnProgressChanged {
@@ -133,8 +120,8 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
         binding.waveformSeekBar.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                isUserSeeking = false  // Đánh dấu người dùng đã dừng kéo SeekBar
-                handler.post(updateProgress)  // Tiếp tục cập nhật sau khi dừng kéo
+                isUserSeeking = false
+                handler.post(updateProgress)
             }
             false
         }
@@ -142,7 +129,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     }
     fun startPlaying() {
         if (!isPlaying) {
-            mediaPlayer?.playbackParams = mediaPlayer?.playbackParams?.setSpeed(valueSpeed) ?: return
             mediaPlayer?.start()
             isPlaying = true
         }
@@ -159,9 +145,12 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         mediaPlayer?.let {
             val newPosition = it.currentPosition - milliseconds
             if (newPosition >= 0) {
+                Log.d("check_new_pos", "rewindAudio: "+ newPosition)
                 it.seekTo(newPosition)
+                binding.waveformSeekBar.progress = (newPosition * 100 / mediaPlayer!!.duration).toFloat()
             } else {
-                it.seekTo(0) // Nếu tua về trước 0, đặt về 0
+                it.seekTo(0)
+                binding.waveformSeekBar.progress = 0f
             }
         }
     }
@@ -171,9 +160,12 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         mediaPlayer?.let {
             val newPosition = it.currentPosition + milliseconds
             if (newPosition <= it.duration) {
+                Log.d("check_new_pos", "forwardAudio: "+ newPosition)
                 it.seekTo(newPosition)
+                binding.waveformSeekBar.progress = (newPosition * 100 / mediaPlayer!!.duration).toFloat()
             } else {
-                it.seekTo(it.duration) // Nếu tua tới sau khi bài hát kết thúc, đặt về cuối bài hát
+                it.seekTo(it.duration)
+                binding.waveformSeekBar.progress = (it.duration * 100 / mediaPlayer!!.duration).toFloat()
             }
         }
     }
@@ -189,6 +181,18 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                 checkSpeed = true
                 updateView(progress)
                 updateSpeed(progress)
+                Log.d("check_value_speed", "initAction: "+ valueSpeed)
+
+                if(checkSpeedPlay == false){
+                    mediaPlayer!!.pause()
+                    mediaPlayer!!.seekTo(0)
+                }
+                checkSpeedPlay = true
+                binding.seekBarAudio.progress = 0
+                binding.tvTimeStart.text = "00:00"
+                binding.tvDuration.text = "/ 00:00"
+                binding.imvPause.visibility = View.GONE
+                binding.imvPlay.visibility = View.VISIBLE
                 Log.d("check_size", "onProgressChanged: "+ progress)
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -198,18 +202,101 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         })
 
         binding.imvPlay.onSingleClick {
-            binding.imvPause.visibility = View.VISIBLE
-            binding.imvPlay.visibility = View.GONE
-            startPlaying()
-            handlerPro.post(updateProgress)
-            updateTimeAndSeekBar()
+            Log.d("check_value_speed", "initAction: "+ valueSpeed)
+            if(checkSpeedPlay == true){
+                speedUri = "${cacheDir.path}/speed.mp3"
+                    val audioPath = audioString
+                    if (audioPath != null){
+                        binding.progress.visibility = View.VISIBLE
+                        CoroutineScope(Dispatchers.Main).launch{
+                            val checkValue = changeAudioSpeed(audioPath, speedUri, valueSpeed)
+                            Log.d("check_value_speed", "chchchchchchchc: "+ valueSpeed)
+                            if (checkValue){
+                                Log.d("check_audio_speed", "dang play")
+                                binding.progress.visibility = View.GONE
+                                createMediaPlayerSpeed()
+                                startPlaying()
+                                Log.d("check_audio_speed", "fvgrnrohegjegmbvkermkbhtrnh")
+                                val cutPath = File(speedUri)
+                                cutPath.delete()
+                                checkSpeedPlay = false
+                                binding.progress.visibility = View.GONE
+                                binding.seekBarAudio.max = mediaPlayer!!.duration
+                                updateTimeAndSeekBar()
+                                val handler = Handler(Looper.getMainLooper())
+                                val updateProgress = object : Runnable {
+                                    override fun run() {
+                                        if (mediaPlayer != null) {
+                                            try {
+                                                if (mediaPlayer?.isPlaying == true) {
+                                                    binding.waveformSeekBar.progress = (mediaPlayer!!.currentPosition * 100 / mediaPlayer!!.duration).toFloat()
+                                                    binding.seekBarAudio.progress = mediaPlayer!!.currentPosition
+                                                }
+                                                handler.postDelayed(this, 100)
+
+                                            } catch (e: IllegalStateException) {
+                                                Log.e("MediaPlayerError", "MediaPlayer is in an illegal state", e)
+                                            }
+                                        }
+                                    }
+                                }
+                                mediaPlayer!!.setOnPreparedListener {
+                                    mediaPlayer!!.start()
+                                    handler.post(updateProgress)
+                                }
+
+                                binding.imvPause.visibility = View.VISIBLE
+                                binding.imvPlay.visibility = View.GONE
+                                runOnUiThread(object : Runnable {
+                                    override fun run() {
+                                        if (mediaPlayer?.isPlaying == true) {
+                                            val currentPosition = mediaPlayer!!.currentPosition
+                                            binding.seekBarAudio.progress = currentPosition
+                                        }
+                                        handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
+                                    }
+                                })
+
+                                binding.tvDuration.text = "/ ${binding.tvNewDuration.text}"
+                                mediaPlayer!!.setOnCompletionListener {
+                                    binding.tvTimeStart.text = formatTimeToHoursMinutes(mediaPlayer!!.duration)
+                                    handler.postDelayed({
+                                        binding.seekBarAudio.progress = 0
+                                        binding.waveformSeekBar.progress = 0f
+                                        mediaPlayer!!.seekTo(0)
+                                        binding.tvTimeStart.text = "00:00"
+                                        isPlaying = false
+                                        binding.imvPause.visibility = View.GONE
+                                        binding.imvPlay.visibility = View.VISIBLE
+//                                    handler.removeCallbacksAndMessages(null)
+                                    },1000)
+
+                                }
+                            }
+                        }
+
+                }
+                binding.imvPause.visibility = View.VISIBLE
+                binding.imvPlay.visibility = View.GONE
+
+            }else{
+                binding.imvPause.visibility = View.VISIBLE
+                binding.imvPlay.visibility = View.GONE
+                updateTimeAndSeekBar()
+                startPlaying()
+
+            }
+        }
+
+        binding.tvCancel.onSingleClick {
+            finish()
         }
 
         binding.imvPause.onSingleClick {
             binding.imvPause.visibility = View.GONE
             binding.imvPlay.visibility = View.VISIBLE
             pausePlaying()
-            handler.removeCallbacksAndMessages(null)
+//            handler.removeCallbacksAndMessages(null)
         }
 
         binding.imv15Left.setOnClickListener {
@@ -224,6 +311,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                 mediaPlayer!!.pause()
             }
             showLoadingOverlay()
+            checkSpeedPlay = false
             val audioPath = audioString
             val timestamp = System.currentTimeMillis()
             val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
@@ -231,21 +319,28 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             val outputPath = "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".") }_${timestamp}_speed.mp3"
             if (audioPath != null) {
                 Log.d("check_mp3", "initData: "+ audioPath)
-                lifecycleScope.launch(Dispatchers.IO) {
-                    withContext(Dispatchers.IO) {
-                        changeAudioSpeed(audioPath, outputPath, valueSpeed)
-                    }
-                        withContext(Dispatchers.Main) {
+                CoroutineScope(Dispatchers.Main).launch{
+                    val isSpeed = changeAudioSpeed(audioPath,outputPath,valueSpeed)
+                    Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thành công"+ isSpeed)
+                    if(isSpeed == true && checkSpeedPlay == false){
+                        var audioInfoSpeed = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+                        audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoSpeed!!.duration.toString(),audioInfoSpeed.fileSize,audioInfoSpeed.fileName.toString())
+                        startActivity(Intent(this@AudioSpeedActivity, SavedActivity::class.java))
                     }
                 }
             }
         }
     }
 
+    private fun formatTimeToHoursMinutes(duration: Int): String {
+        val minutes = (duration / 1000) / 60
+        val seconds = (duration / 1000) % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
     @SuppressLint("SetTextI18n")
     private fun initData() {
-        binding.imvPause.visibility = View.VISIBLE
-        binding.imvPlay.visibility = View.GONE
+
         itemImvs = listOf(binding.imv1,binding.imv2,binding.imv3,binding.imv4,binding.imv5,binding.imv6,binding.imv7,binding.imv8,binding.imv9,
             binding.imv10,binding.imv11,binding.imv12,binding.imv13,binding.imv14,binding.imv15,binding.imv16,binding.imv17,binding.imv18,
             binding.imv19,binding.imv20,binding.imv21,binding.imv22,binding.imv23,binding.imv24,binding.imv25,binding.imv26,binding.imv27,
@@ -253,22 +348,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         audioString = getRealPathFromURI(this@AudioSpeedActivity,listAudio[Const.positionAudioPlay].uri)
         audioUri = listAudio[Const.positionAudioPlay].uri
         Log.d("check_audio", "initData: "+ audioUri)
-//        mediaPlayer = MediaPlayer.create(this,audioUri)
-//        binding.waveformSeekBar.setSampleFrom(audioUri!!)
-        createMediaPlayer()
-        binding.seekBarAudio.max = mediaPlayer!!.duration
-        binding.tvDuration.text = "/ ${listAudio[positionAudioPlay].duration}"
-        runOnUiThread(object : Runnable {
-            override fun run() {
-                if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
-                    val currentPosition = mediaPlayer!!.currentPosition
-                    binding.seekBarAudio.progress = currentPosition
-                }
-                handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
-            }
-        })
-
-
 
         binding.seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             @SuppressLint("DefaultLocale")
@@ -299,28 +378,26 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             }
         })
 
-        mediaPlayer!!.setOnCompletionListener {
-            binding.tvTimeStart.text = listAudio[positionAudioPlay].duration
-            handler.postDelayed({
-                binding.seekBarAudio.progress = 0
-                binding.waveformSeekBar.progress = 0f
-                mediaPlayer!!.seekTo(0)
-                binding.tvTimeStart.text = "00:00"
-                isPlaying = false
-                binding.imvPause.visibility = View.GONE
-                binding.imvPlay.visibility = View.VISIBLE
-                handler.removeCallbacksAndMessages(null)
-            },1000)
-
-        }
-        mediaPlayer!!.start()
-        updateTimeAndSeekBar()
+//        mediaPlayer!!.setOnCompletionListener {
+//            binding.tvTimeStart.text = listAudio[positionAudioPlay].duration
+//            handler.postDelayed({
+//                binding.seekBarAudio.progress = 0
+//                binding.waveformSeekBar.progress = 0f
+//                mediaPlayer!!.seekTo(0)
+//                binding.tvTimeStart.text = "00:00"
+//                isPlaying = false
+//                binding.imvPause.visibility = View.GONE
+//                binding.imvPlay.visibility = View.VISIBLE
+//                handler.removeCallbacksAndMessages(null)
+//            },1000)
+//
+//        }
+//        mediaPlayer!!.start()
+//        updateTimeAndSeekBar()
     }
-
     @SuppressLint("DefaultLocale")
     private fun updateTimeAndSeekBar() {
         val mediaPlayer = mediaPlayer ?: return
-//        mediaPlayer?.playbackParams = mediaPlayer?.playbackParams?.setSpeed(valueSpeed) ?: return
         val currentPosition = mediaPlayer!!.currentPosition
         binding.seekBarAudio.progress = currentPosition
         val elapsedTime = String.format(
@@ -346,19 +423,33 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         }
     }
 
+    private fun createMediaPlayerSpeed() {
+        mediaPlayer = MediaPlayer().apply {
+            try {
+                setDataSource(speedUri) // Không cần ?. vì đã kiểm tra tồn tại
+                prepare()
+                Log.d("AudioPlay___", "Playback started"+ audioString)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Log.e("AudioPlay___", "Failed to prepare media player: ${e.message}")
+            }
+        }
+    }
+
     private fun updateSpeed(progress: Int) {
         valueSpeed = ((progress.toFloat()/10f).toFloat()+ 0.5).toFloat()
         Log.d("check_size", "onProgressChanged: "+(progress/10) + " NNNNN  " + valueSpeed)
-        val playbackParams = PlaybackParams()
-        playbackParams.speed = valueSpeed
-        if(mediaPlayer!!.isPlaying){
-            mediaPlayer!!.playbackParams = playbackParams
-        }
+//        val playbackParams = PlaybackParams()
+//        playbackParams.speed = valueSpeed
+//        if(mediaPlayer!!.isPlaying){
+//            mediaPlayer!!.playbackParams = playbackParams
+//        }
         duration = convertTimeToSeconds(listAudio[positionVideoPlay].duration)
         if (valueSpeed == 1f){
             binding.tvNewDuration.text = listAudio[positionAudioPlay].duration
             binding.tvDuration.text = "/ ${listAudio[positionAudioPlay].duration}"
         }else{
+            Log.d("check_time___", "updateSpeed: "+ duration + "    " + valueSpeed + "     " + duration/valueSpeed)
             binding.tvNewDuration.text = convertSecondsToTime((duration/valueSpeed).toDouble())
             binding.tvDuration.text = "/ ${convertSecondsToTime((duration/valueSpeed).toDouble())}"
         }
@@ -391,20 +482,22 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             }
         }
     }
-    fun changeAudioSpeed(audioUri: String, outputPath: String, speed: Float) {
-//        val command = "-i $audioUri -filter:a \"atempo=$speed\" $outputPath"
-        val command = "-i \"$audioUri\" -filter:a \"atempo=$speed\" \"$outputPath\""
-        val resultCode = FFmpeg.execute(command)
-        if (resultCode == 0) {
-            var audioInfoSpeed = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-            audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoSpeed!!.duration.toString(),audioInfoSpeed.fileSize,audioInfoSpeed.fileName.toString())
-//            audioInfo = AudioInfo(Uri.parse(outputPath), convertSecondsToTime((duration/valueSpeed).toDouble()), listAudio[positionAudioPlay].sizeInMB,
-//                listAudio[positionAudioPlay].name, listAudio[positionAudioPlay].date, false, listAudio[positionAudioPlay].mimeType,0)
-            Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thành công")
-            startActivity(Intent(this@AudioSpeedActivity, SavedActivity::class.java))
-        } else {
-            Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thất bại. Mã lỗi: $resultCode")
+    suspend fun changeAudioSpeed(audioUri: String, outputPath: String, speed: Float) : Boolean {
+        return withContext(Dispatchers.IO){
+            val command = "-i \"$audioUri\" -filter:a \"atempo=$speed\" \"$outputPath\""
+            Log.d("check_command", "changeAudioSpeed: "+ command)
+            val resultCode = FFmpeg.execute(command)
+            if (resultCode == 0) {
+
+                    Log.d("check_command", "changeAudioSpeed: ytyhth")
+                    true
+
+            }else{
+                Log.d("check_command", "changeAudioSpeed: tbbbbb")
+                false
+            }
         }
+
     }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
@@ -455,5 +548,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     override fun onStop() {
         super.onStop()
         hideLoadingOverlay()
+        handler.removeCallbacksAndMessages(null)
     }
 }

@@ -19,6 +19,7 @@ import android.widget.RadioButton
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.kan.dev.st_042_video_to_mp3.R
@@ -54,6 +55,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.videoInfo
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -277,7 +279,12 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         // Chuyển đổi danh sách String thành danh sách Uri
         val uriList: ArrayList<Uri> = ArrayList()
         for (audio in listAudio) {
-            uriList.add(Uri.parse(audio)) // Chuyển đổi chuỗi thành Uri
+            val uri = FileProvider.getUriForFile(
+                this,
+                "${this.packageName}.provider",  // Package của ứng dụng bạn
+                File(audio)
+            )
+            uriList.add(uri) // Chuyển đổi chuỗi thành Uri
         }
 
         // Tạo Intent để chia sẻ danh sách Uri
@@ -293,13 +300,16 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     }
 
     fun shareAudioUrisCv(context: Context, listAudio: MutableList<AudioSpeedModel>) {
-        // Chuyển đổi danh sách String thành danh sách Uri
         val uriList: ArrayList<Uri> = ArrayList()
         for (audio in listAudio) {
-            uriList.add(Uri.parse(audio.uri.toString())) // Chuyển đổi chuỗi thành Uri
+            val uri = FileProvider.getUriForFile(
+                this,
+                "${this.packageName}.provider",  // Package của ứng dụng bạn
+                File(audio.uri.toString())
+            )
+            uriList.add(uri) // Chuyển đổi chuỗi thành Uri
         }
 
-        // Tạo Intent để chia sẻ danh sách Uri
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND_MULTIPLE // Chia sẻ nhiều tệp
             putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList) // Gửi danh sách Uri
@@ -419,9 +429,14 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     }
 
     fun shareMp3File(context: Context, mp3Uri: Uri) {
+        val uri = FileProvider.getUriForFile(
+            this,
+            "${this.packageName}.provider",  // Package của ứng dụng bạn
+            File(mp3Uri.toString())
+        )
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "audio/mpeg"  // MIME type cho tệp MP3
-            putExtra(Intent.EXTRA_STREAM, mp3Uri)
+            putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)  // Cấp quyền đọc URI cho ứng dụng chia sẻ
         }
 

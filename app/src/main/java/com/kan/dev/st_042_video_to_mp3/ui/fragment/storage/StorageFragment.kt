@@ -66,6 +66,10 @@ import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class StorageFragment : Fragment() {
@@ -76,6 +80,7 @@ class StorageFragment : Fragment() {
     val adapterVdFr by lazy {
         VideoAdapterFr(requireContext())
     }
+    var isClick = false
     private val viewModel: SharedViewModel by activityViewModels()
     private var listener: BottomNavVisibilityListener? = null
     lateinit var shareData : SharedPreferenceUtils
@@ -113,6 +118,7 @@ class StorageFragment : Fragment() {
                     0 -> {
                         typefr = "vd"
                         adapterVdFr.getData(listVideoStorage)
+                        isClick = false
                         binding.recyclerViewTab1.adapter = adapterVdFr
                         binding.recyclerViewTab1.visibility = View.VISIBLE
                         binding.recyclerViewTab2.visibility = View.GONE
@@ -126,6 +132,7 @@ class StorageFragment : Fragment() {
                     1 -> {
                         typefr ="ad"
                         initRec()
+                        isClick = false
                         binding.recyclerViewTab1.visibility = View.GONE
                         binding.recyclerViewTab2.visibility = View.VISIBLE
                         if(listAudioStorage.isEmpty()){
@@ -148,7 +155,7 @@ class StorageFragment : Fragment() {
         adapterVdFr.onClickListener(object : VideoAdapterFr.onClickItemListener{
             @OptIn(UnstableApi::class)
             override fun onClickItem(position: Int, holder: VideoAdapterFr.ViewHolder) {
-                if (isTouchEventHandled) {
+                if (isTouchEventHandled  && isClick == true) {
                     if(!listVideoStorage[position].active){
                         positionVideoPlay = position
                         countVideo += 1
@@ -174,12 +181,14 @@ class StorageFragment : Fragment() {
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
                     positionAudioPlay = position
                     videoInfo = listVideoStorage[position]
+                    uriPlay = videoInfo!!.uri
                     startActivity(Intent(requireContext(), PlayVideoActivity::class.java))
                 }
             }
             override fun onTouchEven(position: Int) {
                 if(!isTouchEventHandled){
                     isTouchEventHandled = true
+                    isClick = true
                     binding.imvRingtone.visibility = View.GONE
                     checkType = false
                     Const.positionVideoPlay = position
@@ -221,6 +230,7 @@ class StorageFragment : Fragment() {
                 }else{
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
                     Const.positionAudioPlay = position
+                    isClick = true
                     uriPlay = listAudioStorage[position].uri
                     audioInformation = listAudioStorage[position]
                     Log.d("check_data", "onClickItem: "+ audioInformation)
@@ -231,6 +241,7 @@ class StorageFragment : Fragment() {
                 if(!isTouchEventHandled){
                     Log.d("check_logg", "onTouchEven:  ojkeeeee")
                     checkType = false
+                    isClick = true
                     isTouchEventHandled = true
                     Const.positionAudioPlay = position
                     binding.ctlStorage.visibility = View.INVISIBLE
@@ -263,9 +274,12 @@ class StorageFragment : Fragment() {
         }
 
         binding.imvDelete.onSingleClick {
-            if( countAudio == 0){
+            if(countAudio == 0){
                 Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
-            }else if (countVideo == 0 ){
+            }else {
+                showDialogDelete()
+            }
+            if (countVideo == 0 ){
                 Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
             }
             else{
@@ -277,7 +291,11 @@ class StorageFragment : Fragment() {
         binding.imvRingtone.onSingleClick {
             if( countAudio == 0){
                 Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
-            }else if (countVideo == 0 ){
+            }else {
+                showDialogRingtone()
+            }
+
+            if (countVideo == 0 ){
                 Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
             }
             else{
@@ -289,7 +307,11 @@ class StorageFragment : Fragment() {
         binding.imvRename.onSingleClick {
             if( countAudio == 0){
                 Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
-            }else if(countVideo == 0){
+            }else {
+                showDialogRename()
+            }
+
+            if(countVideo == 0){
                 Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
             }
             else {
@@ -544,6 +566,7 @@ class StorageFragment : Fragment() {
     }
 
     private fun initData() {
+
         adapterVdFr.getData(listVideoStorage)
         binding.recyclerViewTab1.adapter = adapterVdFr
         binding.recyclerViewTab1.visibility = View.VISIBLE
@@ -598,7 +621,9 @@ class StorageFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         adapterFr.notifyDataSetChanged()
+        adapterVdFr.notifyDataSetChanged()
         isTouchEventHandled = false
+        isClick = true
     }
 
 }

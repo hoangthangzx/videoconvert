@@ -26,6 +26,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityPlayAudioBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRenameBinding
@@ -53,6 +54,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.masoudss.lib.SeekBarOnProgressChanged
 import com.masoudss.lib.WaveformSeekBar
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -101,13 +103,16 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
 
         binding.lnShare.onSingleClick {
             shareAudioFile(this@PlaySongActivity, audioInformation!!.uri)
+            mediaPlayer!!.pause()
+            binding.imvPause.visibility = View.GONE
+            binding.imvPlay.visibility = View.VISIBLE
         }
 
         binding.lnDelete.onSingleClick {
             showDialogDelete()
         }
 
-        binding.lnDelete.onSingleClick {
+        binding.lnRename.onSingleClick {
             showDialogRename()
         }
 
@@ -124,6 +129,7 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
                 false
             }
         }
+
         binding.imvPlay.onSingleClick {
             binding.imvPause.visibility = View.VISIBLE
             binding.imvPlay.visibility = View.GONE
@@ -248,6 +254,14 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
     }
 
     fun shareAudioFile(context: Context, uri: Uri) {
+        val filePath = uri.toString().replace("file://", "")
+        val file = File(filePath)
+        val uri = FileProvider.getUriForFile(
+            this,
+            "${this.packageName}.provider",  // Package của ứng dụng bạn
+            file
+        )
+
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "audio/*"
             putExtra(Intent.EXTRA_STREAM, uri)

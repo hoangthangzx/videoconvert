@@ -50,7 +50,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         initView()
         if(selectType.equals("VideoCutter")){
             initActionSpeed()
-            binding.imvTick.visibility = View.GONE
+            binding.imvTick.visibility = View.INVISIBLE
         }else if(selectType.equals("VideoConvert")){
             initActionConverter()
         }else{
@@ -63,23 +63,23 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             finish()
         }
 
-        binding.imvTick.onSingleClick {
-            binding.imvTickTrue.visibility = View.VISIBLE
-            binding.imvTick.visibility = View.GONE
-            listVideo = listVideoT
-            listVideoPick = listVideo
-            adapter.updateData(listVideo)
-            adapter.notifyDataSetChanged()
-        }
-
-        binding.imvTickTrue.onSingleClick {
-            binding.imvTickTrue.visibility = View.GONE
-            binding.imvTick.visibility = View.VISIBLE
-            listVideo = listVideoF
-            listVideoPick.clear()
-            adapter.updateData(listVideo)
-            adapter.notifyDataSetChanged()
-        }
+//        binding.imvTick.onSingleClick {
+//            binding.imvTickTrue.visibility = View.VISIBLE
+//            binding.imvTick.visibility = View.GONE
+//            listVideo = listVideoT
+//            listVideoPick = listVideo
+//            adapter.updateData(listVideo)
+//            adapter.notifyDataSetChanged()
+//        }
+//
+//        binding.imvTickTrue.onSingleClick {
+//            binding.imvTickTrue.visibility = View.GONE
+//            binding.imvTick.visibility = View.VISIBLE
+//            listVideo = listVideoF
+//            listVideoPick.clear()
+//            adapter.updateData(listVideo)
+//            adapter.notifyDataSetChanged()
+//        }
 
         binding.lnContinue.onSingleClick {
             if(listVideoPick.size > 0){
@@ -207,8 +207,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             }
         }
 
-
-
         adapter.onClickListener(object : SelectVideoAdapter.onClickItemListener{
             override fun onItemClick(position: Int, holder: SelectVideoAdapter.ViewHolder) {
                 if(!listVideo[position].active){
@@ -241,12 +239,9 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     }
 
     private fun initData() {
-        if (!checkData){
-            VideoUtils.getAllVideos(contentResolver)
-            Log.d("check_list_video", "initData: "+ listVideo)
-            checkData = true
-        }
-        listVideo = listVideoF
+//        if (!checkData){
+//
+//        }
         adapter = SelectVideoAdapter(this@SelectVideoActivity)
         adapter.getData(listVideo)
         binding.recVideo.adapter = adapter
@@ -260,7 +255,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
 
     override fun onResume() {
         super.onResume()
-        listVideo = listVideoF
 //        adapter = SelectVideoAdapter(this@SelectVideoActivity)
 //        adapter.getData(listVideo)
 //        binding.recVideo.adapter = adapter

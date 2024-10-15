@@ -46,7 +46,7 @@
             android:layout_marginTop="15dp"
             android:background="@drawable/bg_edt_rename"
             android:paddingHorizontal="10dp"
-            android:text="@string/enter_name"
+            android:hint="@string/enter_name"
             android:singleLine="true"
             android:scrollHorizontally="true"
             android:textColor="@color/text_dialog"

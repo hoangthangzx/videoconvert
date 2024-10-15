@@ -269,7 +269,7 @@ object VideoUtils {
                 val sizeInMB = size / (1024 * 1024)
                 val videoName = cursor.getString(nameColumn) // Lấy giá trị tên video
                 val formattedDate = formatDate(dateAdded)
-                listVideoF.add(
+                listVideo.add(
                     VideoInfo(
                         videoUri,
                         formatTimeToHoursMinutes(duration),
@@ -280,18 +280,18 @@ object VideoUtils {
                         countVd
                     )
                 )
-
-                listVideoT.add(
-                    VideoInfo(
-                        videoUri,
-                        formatTimeToHoursMinutes(duration),
-                        sizeInMB,
-                        videoName,
-                        formattedDate,
-                        true,
-                        countVd
-                    )
-                )
+//
+//                listVideoT.add(
+//                    VideoInfo(
+//                        videoUri,
+//                        formatTimeToHoursMinutes(duration),
+//                        sizeInMB,
+//                        videoName,
+//                        formattedDate,
+//                        true,
+//                        countVd
+//                    )
+//                )
                 countVd += 1
             }
         }

@@ -37,6 +37,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.countPos
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.checkData
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
@@ -60,14 +61,17 @@ import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils.countVd
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.system.exitProcess
 
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
     lateinit var shareData : SharedPreferenceUtils
-//    lateinit var providerSharedPreference : SharedPreferenceUtils
-//    private lateinit var onBackPressedCallback: OnBackPressedCallback
+
     var storageMusic = ""
     var storageVideo = ""
     override fun onCreateView(
@@ -108,8 +112,6 @@ class HomeFragment : Fragment() {
         if (!isDirectoryCreated) {
             musicStorage = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "music")
             videoStorage = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "video")
-//            videoStorage = File(Environment.getExternalStorageDirectory(), "MyMusic")
-//            musicStorage = File(Environment.getExternalStorageDirectory(), "MyVideo")
             shareData.putStringValue("musicStorage", musicStorage.toString())
             shareData.putStringValue("videoStorage", videoStorage.toString())
             if (!musicStorage!!.exists() ) {
@@ -230,9 +232,12 @@ class HomeFragment : Fragment() {
         super.onResume()
         listVideoStorage.clear()
         listAudioStorage.clear()
-        VideoUtils.getAllVideosFromSpecificDirectory(storageVideo)
-        AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
-
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.IO) {
+                VideoUtils.getAllVideosFromSpecificDirectory(storageVideo)
+                AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+            }
+        }
         audioCutter = null
         videoCutter = null
         countPos = 0
@@ -243,8 +248,10 @@ class HomeFragment : Fragment() {
         selectType = ""
         selectTypeAudio = ""
         listVideo.clear()
+        VideoUtils.getAllVideos(requireContext().contentResolver)
         listVideoPick.clear()
         listAudio.clear()
+        AudioUtils.getAllAudios(requireContext().contentResolver)
         listAudioPick.clear()
         listAudioSaved.clear()
         listConvertMp3.clear()
@@ -253,25 +260,5 @@ class HomeFragment : Fragment() {
     }
 
 
-    fun getContentUriFromFileUri(context: Context, fileUri: Uri): Uri? {
-        val filePath = fileUri.path
-        val projection = arrayOf(MediaStore.Video.Media._ID)
-        val selection = "${MediaStore.Video.Media.DATA} = ?"
-        val selectionArgs = arrayOf(filePath)
-
-        context.contentResolver.query(
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            selection,
-            selectionArgs,
-            null
-        )?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID))
-                return Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id.toString())
-            }
-        }
-        return null // Trả về null nếu không tìm thấy
-    }
 
 }

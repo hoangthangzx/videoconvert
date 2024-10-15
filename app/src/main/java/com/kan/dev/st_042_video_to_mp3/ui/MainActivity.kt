@@ -21,6 +21,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
@@ -33,17 +34,23 @@ import com.kan.dev.st_042_video_to_mp3.databinding.ActivityMainBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.DialogRateBinding
 import com.kan.dev.st_042_video_to_mp3.interface_bottom.BottomNavVisibilityListener
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
+import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
 import com.kan.dev.st_042_video_to_mp3.ui.fragment.HomeFragment
 import com.kan.dev.st_042_video_to_mp3.ui.fragment.SettingFragment
 import com.kan.dev.st_042_video_to_mp3.ui.fragment.storage.StorageFragment
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.typefr
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.utils.showSystemUI
 import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
+import java.io.File
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
@@ -63,7 +70,16 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
 
     private fun initAction() {
         binding.lnShare.onSingleClick {
-            shareAudioUris(this@MainActivity,Const.listAudioPick)
+            Log.d("list_audio_pick", "initAction: "+ listAudioPick)
+            if(typefr.equals("ad")){
+                shareAudioFilesFromPaths(listAudioPick)
+            }else{
+                shareVideoFilesFromPaths(listVideoPick)
+            }
+            Const.isTouchEventHandled = false
+            viewModel.triggerEvent()
+            binding.btShare.visibility = View.GONE
+            binding.bottomNavigationView.visibility = View.VISIBLE
         }
 
         binding.homeFragment.onSingleClick {
@@ -104,6 +120,8 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             binding.btShare.visibility = View.GONE
             binding.bottomNavigationView.visibility = View.VISIBLE
         }
+
+
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -112,20 +130,73 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             .commit()
     }
 
+    fun shareAudioFilesFromPaths(audioInfoList: List<AudioInfo>) {
+        val uriList = ArrayList<Uri>()
 
-    fun shareAudioUris(context: Context, listAudio: MutableList<AudioInfo>) {
-        val uriList: ArrayList<Uri> = ArrayList()
-        for (audio in listAudio) {
-            uriList.add(audio.uri)
+        audioInfoList.forEach { audioInfo ->
+            val filePath = audioInfo.uri.toString().replace("file://", "")
+            val file = File(filePath)
+            val uri = FileProvider.getUriForFile(
+                this,
+                "${this.packageName}.provider",  // Package của ứng dụng bạn
+                file
+            )
+            uriList.add(uri)
         }
-        val shareIntent = Intent().apply {
-            action = Intent.ACTION_SEND_MULTIPLE
-            putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+        // Intent chia sẻ nhiều tệp
+        val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
             type = "audio/*"
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)  // Cấp quyền đọc URI
         }
-        context.startActivity(Intent.createChooser(shareIntent, "Share Audio Files"))
+        this@MainActivity.startActivity(Intent.createChooser(intent, "Share Audio Files"))
     }
+
+    fun shareVideoFilesFromPaths(audioInfoList: List<VideoInfo>) {
+        val uriList = ArrayList<Uri>()
+
+        audioInfoList.forEach { videoInfo ->
+            val filePath = videoInfo.uri.toString().replace("file://", "")
+            val file = File(filePath)
+            // Kiểm tra xem tệp có tồn tại không
+            if (file.exists()) {
+                val uri = FileProvider.getUriForFile(
+                    this,
+                    "${this.packageName}.provider",  // Package của ứng dụng bạn
+                    file
+                )
+                uriList.add(uri)
+            } else {
+                Log.e("ShareVideo", "File not found: $filePath")
+            }
+        }
+
+        if (uriList.isNotEmpty()) {
+            // Intent chia sẻ nhiều tệp
+            val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                type = "video/*"  // Đặt kiểu MIME cho video
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)  // Cấp quyền đọc URI
+            }
+            this@MainActivity.startActivity(Intent.createChooser(intent, "Share Video Files"))
+        } else {
+            Log.e("ShareVideo", "No valid video files to share.")
+        }
+    }
+
+//    fun shareAudioUris(context: Context, listAudio: MutableList<AudioInfo>) {
+//        val uriList: ArrayList<Uri> = ArrayList()
+//        for (audio in listAudio) {
+//            uriList.add(audio.uri)
+//        }
+//        val shareIntent = Intent().apply {
+//            action = Intent.ACTION_SEND_MULTIPLE
+//            putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+//            type = "audio/*"
+//            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//        }
+//        context.startActivity(Intent.createChooser(shareIntent, "Share Audio Files"))
+//    }
 
     private fun initData() {
         providerSharedPreference = SharedPreferenceUtils.getInstance(this)
@@ -142,10 +213,10 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
     override fun onBackPressed() {
         when (currentDestination) {
             0-> {
-                Const.listVideoStorage.clear()
-                Const.listVideoPick.clear()
-                Const.listAudioPick.clear()
-                Const.listAudioStorage.clear()
+//                Const.listVideoStorage.clear()
+//                Const.listVideoPick.clear()
+//                Const.listAudioPick.clear()
+//                Const.listAudioStorage.clear()
                 var inAppCount = providerSharedPreference.getNumberRate("RateNumber")
                 inAppCount ++
                 providerSharedPreference.putNumber("RateNumber",inAppCount)

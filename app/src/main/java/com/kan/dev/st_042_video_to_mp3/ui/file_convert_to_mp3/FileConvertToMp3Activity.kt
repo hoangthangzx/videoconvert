@@ -89,7 +89,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         exoPlayer!!.setMediaItem(mediaItem)
         exoPlayer!!.prepare()
 //        exoPlayer!!.play()
-        exoPlayer!!.playWhenReady = true
+        exoPlayer!!.playWhenReady = false
     }
 
     private fun initActionMulti() {

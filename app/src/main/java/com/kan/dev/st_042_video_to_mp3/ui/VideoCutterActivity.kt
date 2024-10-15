@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -47,6 +48,8 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     private var exoPlayer: ExoPlayer? = null
     var startTime = 0f
     var endTime = 0f
+    var cutterUri = ""
+    var checkCutter = false
     var maxValueTime = 0f
     var timeCut = ""
 
@@ -80,6 +83,11 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             finish()
         }
         binding.btnPlus.setOnClickListener {
+            val cutPath = File(cutterUri)
+            if (cutPath.exists()){
+                cutPath.delete()
+            }
+
             val currentTime = binding.edtStartTime.text.toString()
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
@@ -88,6 +96,7 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             if(convertTimeToSeconds(currentTime) == convertTimeToSeconds(binding.edtEndTime.text.toString()) - 1){
                 binding.btnPlus.isClickable = false
             }else{
+                checkCutter = true
                 minutes += 1
                 if (minutes >= 60) {
                     minutes = 0
@@ -108,6 +117,14 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
                 timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
                 binding.tvTimeCut.text = timeCut
+                val videoPath = getRealPathFromURI(this,videoUri!!)
+                val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
+                val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
+//                val currentValueEnd = convertDurationToSeconds(binding.tvTimeCut.text.toString())
+                if (videoPath != null) {
+                    cutVideo(videoPath,cutterUri,currentValueStart.toString(), currentValueEnd.toString())
+                    Log.d("check_listener", "initAction: okeeeee")
+                }
             }
 
         }
@@ -183,6 +200,7 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 binding.btnMinusEnd.isClickable = false
                 Toast.makeText(this, getString(R.string.time_reaches_its_maximum_value), Toast.LENGTH_SHORT).show()
             }else{
+
                 binding.btnPlus.isClickable = true
                 minutes -= 1
                 if (minutes < 0) {
@@ -229,7 +247,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         Log.d("check_duration", "initAction: "+ listVideo[positionVideoPlay].duration)
         binding.tvDone.onSingleClick {
             val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
-//            val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
             val currentValueEnd = convertDurationToSeconds(binding.tvTimeCut.text.toString())
 
             val durationVideo = convertDurationToSeconds(listVideo[positionVideoPlay].duration)
@@ -250,6 +267,7 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
 
     @OptIn(UnstableApi::class)
     private fun initData() {
+        cutterUri = "${cacheDir.path}/video_cutter_00.mp4"
         maxValueTime = (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())
         startTime = (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())*(1f/3f)
         endTime =  (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())*(2f/3f)
@@ -263,16 +281,27 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         if (listVideo.size > 0) {
             videoUri = Uri.parse(listVideo[positionVideoPlay].uri.toString())
         }
-        exoPlayer = ExoPlayer.Builder(this).build()
-        binding.exoVideo.player = exoPlayer
-        binding.playerControlView.player = exoPlayer
-        binding.playerControlView.showTimeoutMs = 3000
+//        exoPlayer = ExoPlayer.Builder(this).build()
+//        binding.exoVideo.player = exoPlayer
+//        binding.playerControlView.player = exoPlayer
+//        binding.playerControlView.showTimeoutMs = 3000
+//
+//        val mediaItem = MediaItem.fromUri(videoUri!!)
+//        exoPlayer!!.setMediaItem(mediaItem)
+//        exoPlayer!!.prepare()
+////        exoPlayer!!.play()
+//        exoPlayer!!.playWhenReady = true
+        exoPlayer = ExoPlayer.Builder(this).build().apply {
+            binding.exoVideo.player = this
+            binding.playerControlView.player = this
+            binding.playerControlView.showTimeoutMs = 3000
+            val mediaItem = MediaItem.fromUri(videoUri!!)
+            setMediaItem(mediaItem)
+            prepare()
+            playWhenReady = false// Bắt đầu phát video
+//            exoPlayer!!.play()
+        }
 
-        val mediaItem = MediaItem.fromUri(videoUri!!)
-        exoPlayer!!.setMediaItem(mediaItem)
-        exoPlayer!!.prepare()
-//        exoPlayer!!.play()
-        exoPlayer!!.playWhenReady = true
         frames = arrayOf(
             findViewById(R.id.imvFrame1),
             findViewById(R.id.imvFrame2),
@@ -334,21 +363,33 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         binding.loadingOverlay.visibility = View.GONE
     }
 
+    @OptIn(UnstableApi::class)
     fun cutVideo(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         Log.d("check_audio_speed", ""+ startTime + "    " + endTime)
-//        val command = "-i \"$inputFilePath\" -ss \"$startTime\" -to \"$endTime\" -c copy \"$outputFilePath\""
-//        val command = "-ss \"$startTime\" -i \"$inputFilePath\" -to \"$endTime\" -c copy \"$outputFilePath\""
-//        val command = "-i $inputFilePath -ss $startTime -t $endTime -c copy $outputFilePath"
-        val command = "-i $inputFilePath -ss $startTime -c copy -t $endTime $outputFilePath"
-
+        val command = "-i \"$inputFilePath\" -ss \"$startTime\" -c copy -t \"$endTime\" \"$outputFilePath\""
         Log.d("check_audio_speed", ""+ startTime + "    " + endTime + "     " + command)
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
-            videoUri = Uri.parse(outputFilePath)
-            val infoFile = FileInfo.getFileInfoFromPath(videoUri!!.toString())
-            Const.videoCutter = VideoCutterModel(videoUri!!,timeCut,infoFile!!.fileSize,infoFile.fileName.toString() )
-            startActivity(Intent(this@VideoCutterActivity, SavedActivity::class.java))
-            Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thất bạihh" + videoUri)
+            Log.d("check_listener", "initAction: cut thanh cong")
+            if(checkCutter == true){
+                Log.d("check_listener", "initAction: videoeoeoeoe")
+                checkCutter = false
+                exoPlayer = ExoPlayer.Builder(this).build().apply {
+                    binding.exoVideo.player = this
+                    binding.playerControlView.player = this
+                    binding.playerControlView.showTimeoutMs = 3000
+                    val mediaItem = MediaItem.fromUri(cutterUri)
+                    setMediaItem(mediaItem)
+                    prepare()
+                    playWhenReady = false
+                }
+            }else{
+                videoUri = Uri.parse(outputFilePath)
+                val infoFile = FileInfo.getFileInfoFromPath(videoUri!!.toString())
+                Const.videoCutter = VideoCutterModel(videoUri!!,timeCut,infoFile!!.fileSize,infoFile.fileName.toString() )
+                startActivity(Intent(this@VideoCutterActivity, SavedActivity::class.java))
+            }
+            Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh cong" + videoUri)
         } else {
             Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thất bại. Mã lỗi: $resultCode")
         }

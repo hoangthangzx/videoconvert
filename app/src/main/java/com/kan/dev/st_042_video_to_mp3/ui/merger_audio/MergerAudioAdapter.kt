@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ItemAudioMergerBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.ItemConvertFileBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
@@ -23,6 +24,7 @@ class MergerAudioAdapter ( var context: Context) : RecyclerView.Adapter<MergerAu
 
     interface onClickItemListener {
         fun onItemClick(position: Int)
+        fun onClickPlay(position: Int, holder: ViewHolder)
     }
 
     fun onClickListener (onClickItemListener: onClickItemListener){
@@ -36,8 +38,37 @@ class MergerAudioAdapter ( var context: Context) : RecyclerView.Adapter<MergerAu
             binding.tvDuration.text = data[position].duration
             binding.tvTitle.text = data[position].name
             binding.tvTitle.isSelected = true
+            if(!data[position].activePl){
+                if(position % 5 == 0){
+                    binding.imvVideoFile.setImageResource(R.drawable.icon_play_1)
+                }else if (position % 5 == 1){
+                    binding.imvVideoFile.setImageResource(R.drawable.icon_play_2)
+                }else if (position % 5 == 2){
+                    binding.imvVideoFile.setImageResource(R.drawable.icon_play_3)
+                }else if (position % 5 == 3){
+                    binding.imvVideoFile.setImageResource(R.drawable.icon_play_4)
+                }else if (position % 5 == 4){
+                    binding.imvVideoFile.setImageResource(R.drawable.icon_play_5)
+                }
+            }else{
+                if(position % 5 == 0){
+                    binding.imvVideoFile.setImageResource(R.drawable.imv_pause_1)
+                }else if (position % 5 == 1){
+                    binding.imvVideoFile.setImageResource(R.drawable.imv_pause_2)
+                }else if (position % 5 == 2){
+                    binding.imvVideoFile.setImageResource(R.drawable.imv_pause_3)
+                }else if (position % 5 == 3){
+                    binding.imvVideoFile.setImageResource(R.drawable.imv_pause_4)
+                }else if (position % 5 == 4){
+                    binding.imvVideoFile.setImageResource(R.drawable.imv_pause_5)
+                }
+            }
+
             binding.imvDelete.onSingleClick {
                 mListener.onItemClick(position)
+            }
+            binding.imvVideoFile.onSingleClick {
+                mListener.onClickPlay(position, holder)
             }
         }
     }
@@ -48,7 +79,6 @@ class MergerAudioAdapter ( var context: Context) : RecyclerView.Adapter<MergerAu
         val binding = ItemAudioMergerBinding.inflate(LayoutInflater.from(parent.context),parent,false)
         return ViewHolder(binding)
     }
-
     override fun onBindViewHolder(holder: MergerAudioAdapter.ViewHolder, position: Int) {
         holder.bind(position,holder,mListener)
     }

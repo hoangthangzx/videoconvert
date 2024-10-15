@@ -308,15 +308,12 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                     }else{
                         cutAndMergeAudio(videoPath,cutterUri,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
                     }
-
                 }
-
                 binding.imvPause.visibility = View.VISIBLE
                 binding.imvPlay.visibility = View.GONE
 //                createMediaPlayer()
             }else{
                 Log.d("check_click", "initAction: huefuyhehgehghwttghtanah")
-
                 binding.imvPause.visibility = View.VISIBLE
                 binding.imvPlay.visibility = View.GONE
                 startPlaying()
@@ -344,7 +341,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             if(currentValueStart > currentValueEnd || currentValueStart > durationVideo || currentValueEnd > durationVideo || currentValueEnd <0 || currentValueStart < 0 ){
                 Toast.makeText(this@ActivityAudioCutter, getString(R.string.you_must_choose_the_right_time), Toast.LENGTH_SHORT).show()
             }else{
-
                 showLoadingOverlay()
                 val videoPath = getRealPathFromURI(this, listAudio[positionAudioPlay].uri)
                 val timestamp = System.currentTimeMillis()

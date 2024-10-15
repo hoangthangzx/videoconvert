@@ -106,7 +106,31 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             }
 
             override fun onClickPlayAudio(position: Int, holder: SelectAudioAdapter.ViewHolder) {
+                val previouslySelectedIndex = listAudio.indexOfFirst { it.activePl }
+                if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
+                    listAudio[previouslySelectedIndex].activePl = false
+                    adapter.notifyItemChanged(previouslySelectedIndex)
 
+                    // Release media cho item trước đó
+                    mediaPlayer?.release()
+                    mediaPlayer = null
+                }
+
+                // Nếu item hiện tại chưa phát, bắt đầu phát
+                if (!listAudio[position].activePl) {
+                    holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_pause_audio)
+                    listAudio[position].activePl = true
+                    if(mediaPlayer == null){
+                        mediaPlayer = setupMediaPlayer(this@SelectAudioActivity, listAudio[position].uri)
+                    }
+                    mediaPlayer?.start()
+                } else {
+                    // Nếu item hiện tại đang phát, tạm dừng
+                    holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_play_audio)
+                    listAudio[position].activePl = false
+                    mediaPlayer?.pause()
+                }
+                adapter.notifyItemChanged(position)
             }
         })
 
@@ -144,18 +168,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
         binding.imvBack.onSingleClick {
             finish()
-            countAudio = 0
-            countSize = 0
-            checkType = true
-            selectType = ""
-            selectTypeAudio = ""
-            listVideo.clear()
-            listVideoPick.clear()
-            listAudio.clear()
-            listAudioPick.clear()
-            listAudioSaved.clear()
-            listConvertMp3.clear()
-            audioInfo  = null
         }
     }
 
@@ -220,18 +232,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
         binding.imvBack.onSingleClick {
             finish()
-            countAudio = 0
-            countSize = 0
-            checkType = true
-            selectType = ""
-            selectTypeAudio = ""
-            listVideo.clear()
-            listVideoPick.clear()
-            listAudio.clear()
-            listAudioPick.clear()
-            listAudioSaved.clear()
-            listConvertMp3.clear()
-            audioInfo  = null
         }
 
         binding.lnContinue.onSingleClick {
@@ -267,23 +267,36 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             }
 
             override fun onClickPlayAudio(position: Int, holder: SelectAudioAdapter.ViewHolder) {
+                val previouslySelectedIndex = listAudio.indexOfFirst { it.activePl }
+                if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
+                    listAudio[previouslySelectedIndex].activePl = false
+                    adapter.notifyItemChanged(previouslySelectedIndex)
+
+                    // Release media cho item trước đó
+                    mediaPlayer?.release()
+                    mediaPlayer = null
+                }
+
+                // Nếu item hiện tại chưa phát, bắt đầu phát
+                if (!listAudio[position].activePl) {
+                    holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_pause_audio)
+                    listAudio[position].activePl = true
+                    if(mediaPlayer == null){
+                        mediaPlayer = setupMediaPlayer(this@SelectAudioActivity, listAudio[position].uri)
+                    }
+                    mediaPlayer?.start()
+                } else {
+                    // Nếu item hiện tại đang phát, tạm dừng
+                    holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_play_audio)
+                    listAudio[position].activePl = false
+                    mediaPlayer?.pause()
+                }
+                adapter.notifyItemChanged(position)
             }
         })
 
         binding.imvBack.onSingleClick {
             finish()
-            countAudio = 0
-            countSize = 0
-            checkType = true
-            selectType = ""
-            selectTypeAudio = ""
-            listVideo.clear()
-            listVideoPick.clear()
-            listAudio.clear()
-            listAudioPick.clear()
-            listAudioSaved.clear()
-            listConvertMp3.clear()
-            audioInfo  = null
         }
 
         binding.lnContinue.onSingleClick {

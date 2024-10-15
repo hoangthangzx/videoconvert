@@ -6,7 +6,6 @@
         android:layout_height="match_parent"
         android:background="@color/black">
 
-
         <LinearLayout
             android:id="@+id/lnStatus_2"
             android:layout_width="match_parent"
@@ -17,9 +16,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-            
-            
-
 
             <ImageView
                 android:id="@+id/imvBack"
@@ -378,9 +374,6 @@
                 android:layout_marginBottom="5dp"/>
 
         </LinearLayout>
-
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

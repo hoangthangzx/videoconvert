@@ -22,7 +22,6 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
         data = mData
         notifyDataSetChanged()
     }
-
     interface onClickItemListener {
         fun onClickItem (position: Int, holder: ViewHolder)
         fun onClickPlayAudio (position: Int, holder: ViewHolder)
