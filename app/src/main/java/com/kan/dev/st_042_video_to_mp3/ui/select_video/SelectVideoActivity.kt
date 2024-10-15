@@ -30,7 +30,9 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoF
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoT
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
@@ -61,8 +63,30 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             finish()
         }
 
+        binding.imvTick.onSingleClick {
+            binding.imvTickTrue.visibility = View.VISIBLE
+            binding.imvTick.visibility = View.GONE
+            listVideo = listVideoT
+            listVideoPick = listVideo
+            adapter.updateData(listVideo)
+            adapter.notifyDataSetChanged()
+        }
+
+        binding.imvTickTrue.onSingleClick {
+            binding.imvTickTrue.visibility = View.GONE
+            binding.imvTick.visibility = View.VISIBLE
+            listVideo = listVideoF
+            listVideoPick.clear()
+            adapter.updateData(listVideo)
+            adapter.notifyDataSetChanged()
+        }
+
         binding.lnContinue.onSingleClick {
-            startActivity(Intent(this@SelectVideoActivity, VideoConverterActivity::class.java))
+            if(listVideoPick.size > 0){
+                startActivity(Intent(this@SelectVideoActivity, VideoConverterActivity::class.java))
+            }else{
+                Toast.makeText(this@SelectVideoActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
+            }
         }
 
         adapter.onClickListener(object : SelectVideoAdapter.onClickItemListener{
@@ -182,6 +206,9 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                 Toast.makeText(this@SelectVideoActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
             }
         }
+
+
+
         adapter.onClickListener(object : SelectVideoAdapter.onClickItemListener{
             override fun onItemClick(position: Int, holder: SelectVideoAdapter.ViewHolder) {
                 if(!listVideo[position].active){
@@ -210,9 +237,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         )
         binding.tvContinue.applyGradient(this@SelectVideoActivity,colors)
         binding.tvSelected.text = "$countVideo Selected"
-        adapter = SelectVideoAdapter(this@SelectVideoActivity)
-        adapter.getData(listVideo)
-        binding.recVideo.adapter = adapter
+
     }
 
     private fun initData() {
@@ -221,6 +246,10 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             Log.d("check_list_video", "initData: "+ listVideo)
             checkData = true
         }
+        listVideo = listVideoF
+        adapter = SelectVideoAdapter(this@SelectVideoActivity)
+        adapter.getData(listVideo)
+        binding.recVideo.adapter = adapter
     }
 
     fun formatTimeToHoursMinutes(duration: Long): String {
@@ -231,9 +260,12 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
 
     override fun onResume() {
         super.onResume()
+        listVideo = listVideoF
+//        adapter = SelectVideoAdapter(this@SelectVideoActivity)
+//        adapter.getData(listVideo)
+//        binding.recVideo.adapter = adapter
         binding.tvSelected.text = "$countVideo Selected"
         binding.tvSize.text = "/ $countSizeVideo MB"
-        adapter.notifyDataSetChanged()
     }
 
 

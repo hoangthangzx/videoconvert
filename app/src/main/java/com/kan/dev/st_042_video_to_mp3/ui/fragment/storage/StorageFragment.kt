@@ -6,15 +6,21 @@ import android.content.Intent
 import android.database.Cursor
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.util.UnstableApi
@@ -22,6 +28,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRenameBinding
+import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomeDialogDeleteBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.FragmentStorageBinding
 import com.kan.dev.st_042_video_to_mp3.interface_bottom.BottomNavVisibilityListener
@@ -41,6 +48,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.currentRingtone
 import com.kan.dev.st_042_video_to_mp3.utils.Const.isTouchEventHandled
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
@@ -155,12 +163,10 @@ class StorageFragment : Fragment() {
                         listVideoPick.remove(listVideoStorage[position])
                         countSizeVideo -= listVideoStorage[position].sizeInMB.toInt()
                     }
-                    if(countVideo > 1){
-                        binding.imvRename.visibility = View.GONE
-                        binding.imvRingtone.visibility = View.GONE
-                    }else{
+                    if(countVideo <= 1){
                         binding.imvRename.visibility = View.VISIBLE
-                        binding.imvRingtone.visibility = View.VISIBLE
+                    }else{
+                        binding.imvRename.visibility = View.GONE
                     }
                     binding.tvSelectedItem.text = "$countVideo Selected"
                     binding.size.text = "$countSizeVideo KB"
@@ -172,27 +178,17 @@ class StorageFragment : Fragment() {
                 }
             }
             override fun onTouchEven(position: Int) {
-                binding.imvRingtone.visibility = View.GONE
-                checkType = false
-                isTouchEventHandled = true
-                Const.positionVideoPlay = position
-                listVideoStorage[position].active = true
-                listVideoPick.add(0, listVideoStorage[position])
-                countVideo += 1
-                countSizeVideo += listVideoStorage[position].sizeInMB.toInt()
-                binding.ctlStorage.visibility = View.INVISIBLE
-                binding.ctlItem.visibility = View.VISIBLE
-                listener?.onBottomNavVisibilityChanged(false)
-                if(countVideo > 1){
-                    binding.imvRename.visibility = View.GONE
-
-                }else{
+                if(!isTouchEventHandled){
+                    isTouchEventHandled = true
                     binding.imvRingtone.visibility = View.GONE
-                    binding.imvRename.visibility = View.VISIBLE
+                    checkType = false
+                    Const.positionVideoPlay = position
+                    binding.ctlStorage.visibility = View.INVISIBLE
+                    binding.ctlItem.visibility = View.VISIBLE
+                    listener?.onBottomNavVisibilityChanged(false)
+                    adapterVdFr.notifyDataSetChanged()
                 }
-                binding.tvSelectedItem.text = "$countVideo Selected"
-                binding.size.text = "$countSizeVideo KB"
-                adapterVdFr.notifyDataSetChanged()
+
             }
         })
         adapterFr.onClickListener(object : AudioAdapterFr.onClickItemListener{
@@ -212,12 +208,12 @@ class StorageFragment : Fragment() {
                         listAudioPick.remove(listAudioStorage[position])
                         countSize -= listAudioStorage[position].sizeInMB.toInt()
                     }
-                    if(countAudio > 1){
-                        binding.imvRename.visibility = View.GONE
-                        binding.imvRingtone.visibility = View.GONE
-                    }else{
+                    if(countAudio <= 1){
                         binding.imvRename.visibility = View.VISIBLE
                         binding.imvRingtone.visibility = View.VISIBLE
+                    }else{
+                        binding.imvRename.visibility = View.GONE
+                        binding.imvRingtone.visibility = View.GONE
                     }
 
                     binding.tvSelectedItem.text = "$countAudio Selected"
@@ -232,32 +228,22 @@ class StorageFragment : Fragment() {
                 }
             }
             override fun onTouchEven(position: Int) {
-                Log.d("check_logg", "onTouchEven:  ojkeeeee")
-                checkType = false
-                isTouchEventHandled = true
-                Const.positionAudioPlay = position
-                listAudioStorage[position].active = true
-                listAudioPick.add(listAudioStorage[position])
-                countAudio += 1
-                countSize += listAudioStorage[position].sizeInMB.toInt()
-                binding.ctlStorage.visibility = View.INVISIBLE
-                binding.ctlItem.visibility = View.VISIBLE
-                listener?.onBottomNavVisibilityChanged(false)
-                if(countAudio > 1){
-                    binding.imvRename.visibility = View.GONE
-                    binding.imvRingtone.visibility = View.GONE
-                }else{
-                    binding.imvRename.visibility = View.VISIBLE
-                    binding.imvRingtone.visibility = View.VISIBLE
+                if(!isTouchEventHandled){
+                    Log.d("check_logg", "onTouchEven:  ojkeeeee")
+                    checkType = false
+                    isTouchEventHandled = true
+                    Const.positionAudioPlay = position
+                    binding.ctlStorage.visibility = View.INVISIBLE
+                    binding.ctlItem.visibility = View.VISIBLE
+                    listener?.onBottomNavVisibilityChanged(false)
+                    adapterFr.notifyDataSetChanged()
                 }
-                binding.tvSelectedItem.text = "$countAudio Selected"
-                binding.size.text = "$countSize KB"
-                adapterFr.notifyDataSetChanged()
             }
         })
 
         viewModel.eventTriggered.observe(viewLifecycleOwner) { triggered ->
             if (triggered) {
+                isTouchEventHandled = false
                 checkType = true
                 countAudio = 0
                 countSize = 0
@@ -266,6 +252,10 @@ class StorageFragment : Fragment() {
                 checkType = true
                 adapterVdFr.notifyDataSetChanged()
                 adapterFr.notifyDataSetChanged()
+                listVideoStorage.clear()
+                listAudioStorage.clear()
+                VideoUtils.getAllVideosFromSpecificDirectory(storageVideo)
+                AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
                 viewModel.resetEvent()
                 binding.ctlStorage.visibility = View.VISIBLE
                 binding.ctlItem.visibility = View.GONE
@@ -273,12 +263,109 @@ class StorageFragment : Fragment() {
         }
 
         binding.imvDelete.onSingleClick {
-            showDialogDelete()
+            if( countAudio == 0){
+                Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
+            }else if (countVideo == 0 ){
+                Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
+            }
+            else{
+                showDialogDelete()
+            }
+
+        }
+
+        binding.imvRingtone.onSingleClick {
+            if( countAudio == 0){
+                Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
+            }else if (countVideo == 0 ){
+                Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
+            }
+            else{
+                showDialogRingtone()
+            }
+
         }
 
         binding.imvRename.onSingleClick {
-            showDialogRename()
+            if( countAudio == 0){
+                Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
+            }else if(countVideo == 0){
+                Toast.makeText(requireContext(),getString(R.string.you_must_choose_1_file) , Toast.LENGTH_SHORT).show()
+            }
+            else {
+                showDialogRename()
+            }
         }
+    }
+
+    private fun showDialogRingtone() {
+        SystemUtils.setLocale(requireContext())
+        val dialogBinding  = CustomDialogRingtoneBinding.inflate(LayoutInflater.from(requireContext()))
+        val dialog = Dialog(requireContext())
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setContentView(dialogBinding.root)
+        var position = 0
+        dialog.setCancelable(false)
+        dialogBinding.rdGroup.setOnCheckedChangeListener { radioGroup, checkedId ->
+            for (i in 0 until radioGroup.childCount) {
+                val radioButton = radioGroup.getChildAt(i) as? RadioButton
+                if (radioButton?.id == checkedId) {
+                    position = i
+                    break
+                }
+            }
+        }
+        dialogBinding.lnSave.onSingleClick{
+            when(position){
+                0 -> handleWriteSettingsPermission(0)
+                1 -> handleWriteSettingsPermission(1)
+                2 -> handleWriteSettingsPermission(2)
+            }
+            currentRingtone = position
+            dialog.dismiss()
+        }
+        dialogBinding.lnCancel.onSingleClick {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun handleWriteSettingsPermission(type: Int) {
+        val permission: Boolean = Settings.System.canWrite(requireContext())
+        if (permission) {
+            setRingtone(type)
+        } else {
+            openAndroidPermissionsMenu()
+        }
+    }
+
+    private fun setRingtone(type: Int) {
+        val customRingtoneUri = Uri.parse(listAudioStorage[positionAudioPlay].uri.toString())
+        when (type) {
+            0       -> {
+                RingtoneManager.setActualDefaultRingtoneUri(requireContext(), RingtoneManager.TYPE_RINGTONE, customRingtoneUri)
+            }
+
+            1 -> {
+                RingtoneManager.setActualDefaultRingtoneUri(requireContext(), RingtoneManager.TYPE_NOTIFICATION, customRingtoneUri)
+            }
+
+            2-> {
+                RingtoneManager.setActualDefaultRingtoneUri(requireContext(), RingtoneManager.TYPE_ALARM, customRingtoneUri)
+            }
+
+            else                                                   -> {}
+        }
+        Toast.makeText(requireContext(), R.string.set_ringtone_successfully, Toast.LENGTH_SHORT).show()
+    }
+
+
+    private fun openAndroidPermissionsMenu() {
+        val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+        intent.setData(Uri.parse("package:" + requireContext().packageName))
+        startActivity(intent)
     }
 
     private fun showDialogRename() {
@@ -292,7 +379,6 @@ class StorageFragment : Fragment() {
         dialogBinding.lnOk.onSingleClick{
             if(typefr.equals("vd")){
                 val nameFile = dialogBinding.edtRename.text
-
                 VideoUtils.renameVideoFile(requireContext(), listVideoStorage[positionVideoPlay].uri,
                     nameFile.toString())
                 adapterVdFr.notifyDataSetChanged()
@@ -374,7 +460,6 @@ class StorageFragment : Fragment() {
     private fun initRec() {
         adapterFr.getData(listAudioStorage)
         binding.recyclerViewTab2.adapter = adapterFr
-
     }
 
     fun deleteAudioList(audioList: List<AudioInfo>) {
@@ -510,10 +595,10 @@ class StorageFragment : Fragment() {
         }
         return path
     }
-
     override fun onResume() {
         super.onResume()
         adapterFr.notifyDataSetChanged()
+        isTouchEventHandled = false
     }
 
 }

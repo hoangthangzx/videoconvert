@@ -7,8 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -106,6 +108,8 @@ class HomeFragment : Fragment() {
         if (!isDirectoryCreated) {
             musicStorage = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "music")
             videoStorage = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "video")
+//            videoStorage = File(Environment.getExternalStorageDirectory(), "MyMusic")
+//            musicStorage = File(Environment.getExternalStorageDirectory(), "MyVideo")
             shareData.putStringValue("musicStorage", musicStorage.toString())
             shareData.putStringValue("videoStorage", videoStorage.toString())
             if (!musicStorage!!.exists() ) {
@@ -226,8 +230,9 @@ class HomeFragment : Fragment() {
         super.onResume()
         listVideoStorage.clear()
         listAudioStorage.clear()
-        VideoUtils.getAllVideosFromSpecificDirectory(requireContext(),storageVideo)
-        AudioUtils.getAllAudiosFromSpecificDirectory(requireContext(),storageMusic)
+        VideoUtils.getAllVideosFromSpecificDirectory(storageVideo)
+        AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+
         audioCutter = null
         videoCutter = null
         countPos = 0
@@ -244,7 +249,29 @@ class HomeFragment : Fragment() {
         listAudioSaved.clear()
         listConvertMp3.clear()
         audioInfo  = null
-        Log.d("check_data", "onResume: "+ listAudioStorage  + "    " + storageMusic)
+        Log.d("check_data", "onResume: "+  storageVideo  + "    " + listVideoStorage)
+    }
+
+
+    fun getContentUriFromFileUri(context: Context, fileUri: Uri): Uri? {
+        val filePath = fileUri.path
+        val projection = arrayOf(MediaStore.Video.Media._ID)
+        val selection = "${MediaStore.Video.Media.DATA} = ?"
+        val selectionArgs = arrayOf(filePath)
+
+        context.contentResolver.query(
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID))
+                return Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id.toString())
+            }
+        }
+        return null // Trả về null nếu không tìm thấy
     }
 
 }

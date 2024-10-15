@@ -13,6 +13,13 @@ import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
 class SelectVideoAdapter (var context: Context): RecyclerView.Adapter<SelectVideoAdapter.ViewHolder>() {
     lateinit var mListener : onClickItemListener
     var data = listOf<VideoInfo>()
+
+    fun updateData(newData: List<VideoInfo>) {
+        data = newData
+        notifyDataSetChanged() // Thông báo cho RecyclerView cập nhật lại giao diện
+    }
+
+
     fun getData(maData : List<VideoInfo>){
         data = maData
     }

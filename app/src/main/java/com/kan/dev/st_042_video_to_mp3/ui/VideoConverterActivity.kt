@@ -2,6 +2,7 @@ package com.kan.dev.st_042_video_to_mp3.ui
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -26,6 +27,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
+import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
@@ -142,6 +144,7 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         Log.d("check_video", "Chuyển đổi video : $command")
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
+            VideoUtils.saveVideoToMediaStore(this,outputFileName,audioType)
             val videoInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
             val videoInfo = AudioSpeedModel(Uri.parse(outputPath), videoInfoConverter!!.duration.toString(), videoInfoConverter.fileSize, videoInfoConverter.fileName.toString())
             listAudioSaved.add(videoInfo)

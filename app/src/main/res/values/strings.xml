@@ -139,4 +139,5 @@
     <string name="version_1_0_0">Version: 1.0.0</string>
     <string name="items_cannot_be_deleted_you_need_at_least_2_items_to_convert">Items cannot be deleted, you need at least 2 items to convert</string>
     <string name="items_cannot_be_deleted_you_need_at_least_1_items_to_convert">Items cannot be deleted, you need at least 1 items to convert</string>
+    <string name="_0_kb">0 KB</string>
 </resources>

@@ -24,25 +24,25 @@ import java.util.Locale
 
 object AudioUtils {
     var countPos = 0
-//    fun getAllAudiosFromSpecificDirectory(directoryPath: String) {
-//        val directory = File(directoryPath)
-//        if (directory.exists() && directory.isDirectory) {
-//            val audioExtensions = listOf("mp3", "wav", "aac", "ogg", "flac")
-//            directory.listFiles()?.forEachIndexed { index, file ->
-//                if (file.isFile && audioExtensions.any { file.name.endsWith(it, ignoreCase = true) }) {
-//                    val audioUri = Uri.fromFile(file) // Tạo URI từ tệp
-//                    val duration = getAudioDuration(file) // Gọi hàm lấy thời gian
-//                    val sizeInMB = file.length() / (1024 * 1024) // Kích thước tệp tính bằng MB
-//                    val name = file.name
-//                    val mimeType = file.extension
-//                    val date = formatDate(file.lastModified()) // Định dạng ngày
-//                    listAudioStorage.add(AudioInfo(audioUri, duration, sizeInMB, name, date, false,mimeType, index, false))
-//                }
-//            }
-//        } else {
-//            Log.e("GetAudios", "Directory does not exist or is not a directory.")
-//        }
-//    }
+    fun getAllAudiosFromSpecificDirectory_1(directoryPath: String) {
+        val directory = File(directoryPath)
+        if (directory.exists() && directory.isDirectory) {
+            val audioExtensions = listOf("mp3", "wav", "aac", "ogg", "flac")
+            directory.listFiles()?.forEachIndexed { index, file ->
+                if (file.isFile && audioExtensions.any { file.name.endsWith(it, ignoreCase = true) }) {
+                    val audioUri = Uri.fromFile(file) // Tạo URI từ tệp
+                    val duration = getAudioDuration(file) // Gọi hàm lấy thời gian
+                    val sizeInMB = file.length() / (1024 * 1024) // Kích thước tệp tính bằng MB
+                    val name = file.name
+                    val mimeType = file.extension
+                    val date = formatDate(file.lastModified()) // Định dạng ngày
+                    listAudioStorage.add(AudioInfo(audioUri, duration, sizeInMB, name, date, false,mimeType, index, false))
+                }
+            }
+        } else {
+            Log.e("GetAudios", "Directory does not exist or is not a directory.")
+        }
+    }
 
     fun getAllAudiosFromSpecificDirectory(context: Context ,directoryPath: String) {
         val projection = arrayOf(

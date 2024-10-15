@@ -22,6 +22,8 @@ object Const {
     val STORAGE_PERMISSION_CODE = 1
     val REQUEST_CODE_NOTIFICATION_POLICY = 3
     var listVideo = mutableListOf<VideoInfo>()
+    var listVideoT = mutableListOf<VideoInfo>()
+    var listVideoF = mutableListOf<VideoInfo>()
     var listVideoStorage = mutableListOf<VideoInfo>()
     var listAudioStorage = mutableListOf<AudioInfo>()
 //    var listAudioStorage_1 = mutableListOf<AudioInfo>()
