@@ -65,7 +65,7 @@ dependencies {
     implementation "androidx.media3:media3-ui:1.4.1"
     implementation  'com.github.massoudss:waveformSeekBar:5.0.2'
     implementation 'com.github.lincollincol:amplituda:2.2.2'
-    implementation 'com.arthenica:mobile-ffmpeg-full:4.4.LTS'
+    implementation 'com.arthenica:mobile-ffmpeg-min-gpl:4.4.LTS'
 //    implementation 'com.arthenica:mobile-ffmpeg-video:4.4.LTS'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation libs.androidx.core.ktx

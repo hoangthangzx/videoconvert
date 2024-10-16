@@ -35,6 +35,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -47,6 +48,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     var audioType  = ""
     var checkItem = false
     var audioUri : Uri? = null
+    private var job: Job? = null
     private var isConverting = false
     override fun init() {
         initData()
@@ -89,7 +91,6 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                     it.setBackgroundResource(R.drawable.bg_item_convert)
                 }
                 imvItem.setBackgroundResource(R.drawable.bg_item_convert_pick)
-                Log.d("check_style", "initAction: ")
                 when(index){
                     0 -> audioType ="mp3"
                     1 -> audioType ="flac"
@@ -99,6 +100,9 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                     5 -> audioType ="wma"
                     6 -> audioType ="ac3"
                 }
+
+                Log.d("check_style", "initAction: "+ audioType)
+
             }
         }
 
@@ -111,7 +115,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                     if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
                         isConverting = true
                         // Gọi hàm chuyển đổi với Coroutine
-                        CoroutineScope(Dispatchers.Main).launch {
+                        job = CoroutineScope(Dispatchers.Main).launch {
                             convertAllSongsToMp3()
                         }
                     }
@@ -121,6 +125,8 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     }
     fun convertAudio(inputPath: String, outputPath: String, format: String) {
         val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
+//        val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k -codec:a libmp3lame \"$outputPath\""
+
         Log.d("check_mp3", "Chuyển đổi : $command")
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
@@ -128,12 +134,6 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                 audioInfo = AudioSpeedModel(Uri.parse("$outputPath"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                 listAudioSaved.add(audioInfo!!)
                 Log.d("check---------------", "convertAudio: "+ audioInfo)
-//                audioInformation = audioInfoConverter!!.duration?.let {
-//                    AudioInfo(Uri.parse("$outputPath.$format"), it,audioInfoConverter.fileSize!!.toLong(),
-//                        audioInfoConverter!!.fileName,"00", false ,"00",0,false)
-//                }
-//                listAudioMerger.add(audioInformation!!)
-
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }
@@ -181,6 +181,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     override fun onStop() {
         super.onStop()
         hideLoadingOverlay()
+        job?.cancel()
     }
 
     private fun initData() {

@@ -301,7 +301,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             playWhenReady = false// Bắt đầu phát video
 //            exoPlayer!!.play()
         }
-
         frames = arrayOf(
             findViewById(R.id.imvFrame1),
             findViewById(R.id.imvFrame2),

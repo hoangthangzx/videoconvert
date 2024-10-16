@@ -46,7 +46,7 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
     var imvItems : List<LinearLayout> = listOf()
     var audioType  = ""
     var checkItem = false
-    private var job: Job? = null // Khai báo Job
+    private var job: Job? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob()) // CoroutineScope chính
     private var isConverting = false
     override fun init() {
