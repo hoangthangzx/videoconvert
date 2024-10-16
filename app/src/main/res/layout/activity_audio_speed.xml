@@ -186,6 +186,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <TextView
+                android:id="@+id/tvTimeDr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="00:00"
+                android:layout_marginStart="3dp"
+                android:textColor="@color/color_duration_speed"
+                android:textSize="15sp"
+                app:layout_constraintStart_toEndOf="@id/textView6"
+                app:layout_constraintTop_toTopOf="parent"/>
+
             <ImageView
                 android:id="@+id/imageView5"
                 android:layout_width="18dp"
@@ -193,7 +205,7 @@
                 android:layout_marginHorizontal="5dp"
                 android:src="@drawable/icon_right"
                 app:layout_constraintBottom_toBottomOf="@+id/textView6"
-                app:layout_constraintStart_toEndOf="@+id/textView6"
+                app:layout_constraintStart_toEndOf="@+id/tvTimeDr"
                 app:layout_constraintTop_toTopOf="@+id/textView6" />
 
             <TextView

@@ -70,7 +70,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ctlBottom"
             android:layout_width="match_parent"
-            android:layout_height="320dp"
+            android:layout_height="250dp"
             android:background="@drawable/imv_bottom_convert"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -100,7 +100,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView6">
 
                 <LinearLayout
-                    android:id="@+id/ln3Gp"
+                    android:id="@+id/lnM2ts"
                     android:layout_width="75dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_convert"
@@ -109,10 +109,25 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/_3gp"
+                        android:text="@string/m2ts"
                         android:textColor="@color/white" />
 
                 </LinearLayout>
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/ln3Gp"-->
+<!--                    android:layout_width="75dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@drawable/bg_item_convert"-->
+<!--                    android:gravity="center">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/_3gp"-->
+<!--                        android:textColor="@color/white" />-->
+
+<!--                </LinearLayout>-->
 
                 <View
                     android:layout_width="0dp"
@@ -228,7 +243,7 @@
                     android:layout_weight="1" />
 
                 <LinearLayout
-                    android:id="@+id/lnM4v"
+                    android:id="@+id/lnTs"
                     android:layout_width="75dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_item_convert"
@@ -237,10 +252,25 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/m4v"
+                        android:text="@string/ts"
                         android:textColor="@color/white" />
 
                 </LinearLayout>
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnM4V"-->
+<!--                    android:layout_width="75dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@drawable/bg_item_convert"-->
+<!--                    android:gravity="center">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/m4v"-->
+<!--                        android:textColor="@color/white" />-->
+
+<!--                </LinearLayout>-->
 
                 <View
                     android:layout_width="0dp"
@@ -264,94 +294,94 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/linearLayout10"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout9">
+<!--            <LinearLayout-->
+<!--                android:id="@+id/linearLayout10"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:layout_marginHorizontal="20dp"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/linearLayout9">-->
 
-                <LinearLayout
-                    android:id="@+id/lnM2ts"
-                    android:layout_width="75dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_item_convert"
-                    android:gravity="center">
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnM2ts"-->
+<!--                    android:layout_width="75dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@drawable/bg_item_convert"-->
+<!--                    android:gravity="center">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/m2ts"
-                        android:textColor="@color/white" />
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/m2ts"-->
+<!--                        android:textColor="@color/white" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
 
 
-                <LinearLayout
-                    android:id="@+id/lnTs"
-                    android:layout_width="75dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_item_convert"
-                    android:gravity="center">
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnTs"-->
+<!--                    android:layout_width="75dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@drawable/bg_item_convert"-->
+<!--                    android:gravity="center">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ts"
-                        android:textColor="@color/white" />
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/ts"-->
+<!--                        android:textColor="@color/white" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
 
-                <LinearLayout
-                    android:id="@+id/lnOgg"
-                    android:layout_width="75dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_item_convert"
-                    android:gravity="center"
-                    android:visibility="invisible">
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/lnOgg"-->
+<!--                    android:layout_width="75dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@drawable/bg_item_convert"-->
+<!--                    android:gravity="center"-->
+<!--                    android:visibility="invisible">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/m4v"
-                        android:textColor="@color/white" />
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/m4v"-->
+<!--                        android:textColor="@color/white" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+<!--                <View-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:layout_weight="1" />-->
 
-                <LinearLayout
-                    android:layout_width="75dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_item_convert"
-                    android:gravity="center"
-                    android:visibility="invisible">
+<!--                <LinearLayout-->
+<!--                    android:layout_width="75dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@drawable/bg_item_convert"-->
+<!--                    android:gravity="center"-->
+<!--                    android:visibility="invisible">-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/mts"
-                        android:textColor="@color/white" />
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/mts"-->
+<!--                        android:textColor="@color/white" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
             <TextView
                 android:id="@+id/tvCancel"
@@ -363,7 +393,7 @@
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout9"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout10" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout9" />
 
 
             <TextView

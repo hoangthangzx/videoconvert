@@ -28,6 +28,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoF
@@ -50,7 +51,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         initView()
         if(selectType.equals("VideoCutter")){
             initActionSpeed()
-            binding.imvTick.visibility = View.INVISIBLE
+//            binding.imvTick.visibility = View.INVISIBLE
         }else if(selectType.equals("VideoConvert")){
             initActionConverter()
         }else{
@@ -63,24 +64,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             finish()
         }
 
-//        binding.imvTick.onSingleClick {
-//            binding.imvTickTrue.visibility = View.VISIBLE
-//            binding.imvTick.visibility = View.GONE
-//            listVideo = listVideoT
-//            listVideoPick = listVideo
-//            adapter.updateData(listVideo)
-//            adapter.notifyDataSetChanged()
-//        }
-//
-//        binding.imvTickTrue.onSingleClick {
-//            binding.imvTickTrue.visibility = View.GONE
-//            binding.imvTick.visibility = View.VISIBLE
-//            listVideo = listVideoF
-//            listVideoPick.clear()
-//            adapter.updateData(listVideo)
-//            adapter.notifyDataSetChanged()
-//        }
-
         binding.lnContinue.onSingleClick {
             if(listVideoPick.size > 0){
                 startActivity(Intent(this@SelectVideoActivity, VideoConverterActivity::class.java))
@@ -88,6 +71,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                 Toast.makeText(this@SelectVideoActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
             }
         }
+
 
         adapter.onClickListener(object : SelectVideoAdapter.onClickItemListener{
             override fun onItemClick(position: Int, holder: SelectVideoAdapter.ViewHolder) {
@@ -109,6 +93,8 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                 binding.tvSize.text = "/ $countSizeVideo MB"
             }
         })
+
+
     }
 
     private fun initActionMerger() {
@@ -199,7 +185,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             finish()
         }
         binding.lnContinue.onSingleClick {
-            if(countVideo>0 && selectType.equals("Video")){
+            if(listVideoPick.size>0 && selectType.equals("Video")){
                 startActivity(Intent(this@SelectVideoActivity, FileConvertToMp3Activity::class.java))
             }
             else{
@@ -220,6 +206,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                     countVideo -= 1
                     holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box)
                     listVideo[position].active = false
+                    Log.d("chejjc-wd-d-e", "onItemClick: "+  listVideo[position])
                     listVideoPick.remove(listVideo[position])
                     countSizeVideo -= listVideo[position].sizeInMB.toInt()
                 }
@@ -227,6 +214,25 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                 binding.tvSize.text = "/ $countSizeVideo MB"
             }
         })
+
+        binding.imvTick.onSingleClick {
+            Log.d("check_visible", "initAction:eegfeger ")
+            binding.imvTickTrue.visibility = View.VISIBLE
+            binding.imvTick.visibility = View.GONE
+            listVideo.forEach { it.active = true }
+//            val totalSize = listVideo.sumBy { it.sizeInMB * it.quantity }
+            adapter.notifyDataSetChanged()
+            listVideoPick = listVideo.map { it.copy() }.toMutableList()
+        }
+
+        binding.imvTickTrue.onSingleClick {
+            binding.imvTickTrue.visibility = View.GONE
+            binding.imvTick.visibility = View.VISIBLE
+            listVideo.forEach { it.active = false }
+            Log.d("check_list_video", "initAction: "+ listVideo)
+            adapter.notifyDataSetChanged()
+            listVideoPick.clear()
+        }
     }
     private fun initView() {
         val colors = intArrayOf(
@@ -239,9 +245,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     }
 
     private fun initData() {
-//        if (!checkData){
-//
-//        }
         adapter = SelectVideoAdapter(this@SelectVideoActivity)
         adapter.getData(listVideo)
         binding.recVideo.adapter = adapter
@@ -255,11 +258,9 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
 
     override fun onResume() {
         super.onResume()
-//        adapter = SelectVideoAdapter(this@SelectVideoActivity)
-//        adapter.getData(listVideo)
-//        binding.recVideo.adapter = adapter
         binding.tvSelected.text = "$countVideo Selected"
         binding.tvSize.text = "/ $countSizeVideo MB"
+        adapter.notifyDataSetChanged()
     }
 
 

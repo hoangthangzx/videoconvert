@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ctlStorage"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="160dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,6 +23,7 @@
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="30dp"
             android:gravity="center"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -49,39 +50,52 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginHorizontal="19dp"
-            android:background="@drawable/tab_background"
-            app:layout_constraintBottom_toBottomOf="@+id/tab_layout"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lemonada_semi_bold"
+            android:gravity="center"
+            android:text="@string/audio"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tab_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/tab_background"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            app:tabBackground="@drawable/tab_background"
-            app:tabGravity="fill"
-            app:tabIndicator="@drawable/custom_tab_indicator"
-            app:tabMode="fixed"
-            app:tabSelectedTextColor="@color/white" />
+<!--        <ImageView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="44dp"-->
+<!--            android:layout_marginHorizontal="19dp"-->
+<!--            android:background="@drawable/tab_background"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/tab_layout"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/tab_layout" />-->
+
+<!--        <com.google.android.material.tabs.TabLayout-->
+<!--            android:id="@+id/tab_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="42dp"-->
+<!--            android:layout_marginHorizontal="20dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:background="@drawable/tab_background"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/linearLayout"-->
+<!--            app:tabBackground="@drawable/tab_background"-->
+<!--            app:tabGravity="fill"-->
+<!--            app:tabIndicator="@drawable/custom_tab_indicator"-->
+<!--            app:tabMode="fixed"-->
+<!--            app:tabSelectedTextColor="@color/white" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ctlItem"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -90,7 +104,7 @@
             android:id="@+id/tvSelectedItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="35dp"
             android:text="@string/select_items"
             android:textColor="@color/white"
             android:textSize="24sp"
@@ -103,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:textSize="14sp"
             android:text="@string/_0_kb"
             android:textColor="@color/color_language"
@@ -115,8 +129,8 @@
             android:layout_width="0dp"
             android:layout_height="62dp"
             android:gravity="center"
-            android:paddingEnd="15dp"
-            android:layout_marginTop="45dp"
+            android:paddingEnd="5dp"
+            android:layout_marginTop="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvSelectedItem">
@@ -126,13 +140,29 @@
                 android:layout_height="62dp"
                 android:layout_marginStart="10dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:orientation="vertical">
 
-                <ImageView
+                <LinearLayout
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/icon_check_all" />
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/imvAll"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/icon_check_all" />
+
+                    <ImageView
+                        android:id="@+id/imvAllTrue"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:visibility="gone"
+                        android:src="@drawable/icon_all_yes" />
+
+                </LinearLayout>
+
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -152,7 +182,7 @@
                 android:id="@+id/imvRename"
                 android:layout_width="48dp"
                 android:layout_height="44dp"
-                android:layout_marginHorizontal="5dp"
+                android:layout_marginHorizontal="2dp"
                 android:padding="10dp"
                 android:src="@drawable/icon_rename" />
 
@@ -167,7 +197,7 @@
                 android:id="@+id/imv_delete"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
-                android:layout_marginHorizontal="5dp"
+                android:layout_marginHorizontal="2dp"
                 android:padding="10dp"
                 android:src="@drawable/icon_delete_2" />
         </LinearLayout>
@@ -175,30 +205,18 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_tab1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:paddingHorizontal="20dp"
-        android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ctlStorage"
-        tools:listitem="@layout/item_audio"/>
-
-    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_tab2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:paddingHorizontal="10dp"
-        android:visibility="gone"
+        android:paddingEnd="20dp"
+        android:paddingStart="10dp"
+        android:visibility="visible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ctlStorage"
-        tools:listitem="@layout/item_convert_file" />
+        tools:listitem="@layout/item_video_fr" />
 
     <LinearLayout
         android:id="@+id/lnNoItem"

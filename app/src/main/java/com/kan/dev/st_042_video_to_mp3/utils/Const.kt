@@ -26,8 +26,6 @@ object Const {
     var listVideoF = mutableListOf<VideoInfo>()
     var listVideoStorage = mutableListOf<VideoInfo>()
     var listAudioStorage = mutableListOf<AudioInfo>()
-//    var listAudioStorage_1 = mutableListOf<AudioInfo>()
-//    var listAudioStorage_2 = mutableListOf<AudioInfo>()
     var listAudio = mutableListOf<AudioInfo>()
     var listAudioPick = mutableListOf<AudioInfo>()
     var listAudioMerger = mutableListOf<AudioInfo>()
@@ -42,6 +40,7 @@ object Const {
     var VideoUriSpeed : Uri? = null
     var countAudio = 0
     var countSize = 0
+    var clickItem = false
     var countVideo = 0
     var countSizeVideo = 0
     var isTouchEventHandled = false
@@ -58,9 +57,6 @@ object Const {
     var musicStorage : File? = null
     var videoStorage : File? = null
     var checkType : Boolean = false
-    var typefr = "vd"
-    var playState = 0
-    var checkPlay = false
     var listLanguage = mutableListOf<LanguageModel>(
         LanguageModel("Spanish", "es", R.drawable.ic_flag_spanish),
         LanguageModel("French", "fr", R.drawable.ic_flag_french),

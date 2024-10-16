@@ -12,11 +12,9 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.google.android.material.tabs.TabLayout
 import com.kan.dev.st_042_video_to_mp3.R
@@ -25,18 +23,12 @@ import com.kan.dev.st_042_video_to_mp3.model.VideoCutterModel
 import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
-import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
-import com.kan.dev.st_042_video_to_mp3.utils.Const.typefr
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
-import com.masoudss.lib.SeekBarOnProgressChanged
-import com.masoudss.lib.WaveformSeekBar
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import kotlinx.coroutines.Job
 import java.io.File
 import java.io.IOException
 
@@ -53,6 +45,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     var checkCut = true
     var timeCut = ""
     var timeSum = 0f
+    private var job: Job? = null
     var cutterUri = ""
     override fun init() {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Trim sides"))
@@ -75,12 +68,16 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
                     0 -> {
-                       binding.customCutterSeekBar.resetBackgroundColorToDefault()
+                        timeCut = convertSecondsToDuration(endTime.toInt() - startTime.toInt())
+                        binding.tvTimeCut.text = timeCut
+                        binding.customCutterSeekBar.resetBackgroundColorToDefault()
                         checkType = true
                         if(checkCut == false){
-                            mediaPlayer!!.release()
+                            mediaPlayer?.pause()
+                            mediaPlayer?.seekTo(0)
                         }
                         checkCut = true
+                        isPlaying = false
                         binding.imvPlay.visibility = View.VISIBLE
                         binding.imvPause.visibility = View.GONE
                     }
@@ -89,8 +86,10 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                         binding.tvTimeCut.text = timeCut
                         binding.customCutterSeekBar.changeBackgroundColor()
                         checkType = false
+                        isPlaying = false
                         if(checkCut == false){
-                            mediaPlayer!!.release()
+                            mediaPlayer?.pause()
+                            mediaPlayer?.seekTo(0)
                         }
                         checkCut = true
                         binding.imvPlay.visibility = View.VISIBLE
@@ -104,182 +103,204 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
         binding.imvBack.onSingleClick {
             finish()
+            if(mediaPlayer?.isPlaying == true){
+                mediaPlayer!!.release()
+            }
         }
         binding.tvCancel.onSingleClick {
             finish()
-        }
-        binding.btnPlus.setOnClickListener {
-            isPlaying = false
-            if (checkCut == false){
+            if(mediaPlayer?.isPlaying == true){
                 mediaPlayer!!.release()
             }
-            checkCut = true
-            binding.imvPlay.visibility = View.VISIBLE
-            binding.imvPause.visibility = View.GONE
+        }
+        binding.btnPlus.setOnClickListener {
             val currentTime = binding.edtStartTime.text.toString()
-            val parts = currentTime.split(":")
-            var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
-            var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-            minutes += 1
-            if (minutes >= 60) {
-                minutes = 0
-                hours += 1
-            }
-            if (hours > 23) {
-                hours = 0
-            }
-            startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
-            binding.customCutterSeekBar.setSelectedMinValue(startTime + 1f)
-            if(binding.customCutterSeekBar.getSelectedMinValue() > 1f){
-                binding.btnMinus.isClickable = true
-            }
-            if(binding.customCutterSeekBar.getSelectedMinValue() >= binding.customCutterSeekBar.getSelectedMaxValue() -1f){
+            binding.btnMinus.isClickable = true
+            if(convertTimeToSeconds(currentTime) == convertTimeToSeconds(binding.edtEndTime.text.toString()) - 1){
                 binding.btnPlus.isClickable = false
-            }
-            binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
-            binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
-            if(checkType== true){
-                timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
             }else{
-                timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                val parts = currentTime.split(":")
+                var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
+                var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
+                minutes += 1
+                if (minutes >= 60) {
+                    minutes = 0
+                    hours += 1
+                }
+                if (hours > 23) {
+                    hours = 0
+                }
+                isPlaying = false
+                if (checkCut == false){
+                    mediaPlayer!!.release()
+                }
+                checkCut = true
+                binding.imvPlay.visibility = View.VISIBLE
+                binding.imvPause.visibility = View.GONE
+                startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
+                binding.customCutterSeekBar.setSelectedMinValue(startTime + 1f)
+//                if(binding.customCutterSeekBar.getSelectedMinValue() > 1f){
+//                    binding.btnMinus.isClickable = true
+//                }
+//                if(binding.customCutterSeekBar.getSelectedMinValue() >= binding.customCutterSeekBar.getSelectedMaxValue() -1f){
+//                    binding.btnPlus.isClickable = false
+//                }
+                binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
+                binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
+                if(checkType== true){
+                    timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                }else{
+                    timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                }
+                binding.tvTimeCut.text = timeCut
             }
-            binding.tvTimeCut.text = timeCut
         }
 
         binding.btnPlusEnd.setOnClickListener {
-            isPlaying = false
-            if ( checkCut == false){
-                mediaPlayer!!.release()
-            }
-            checkCut = true
-            binding.imvPlay.visibility = View.VISIBLE
-            binding.imvPause.visibility = View.GONE
             val currentTime = binding.edtEndTime.text.toString()
+            binding.btnMinusEnd.isClickable = true
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-            minutes += 1
-            if (minutes >= 60) {
-                minutes = 0
-                hours += 1
-            }
-            if (hours > 23) {
-                hours = 0
-            }
-            endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
-            binding.customCutterSeekBar.setSelectedMaxValue(endTime + 1f)
-            Log.d("check_value", "initActionMinus: "+ startTime)
-            binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-            if(binding.customCutterSeekBar.getSelectedMaxValue() >= maxValueTime){
+            if(convertTimeToSeconds(currentTime) >= binding.customCutterSeekBar.getMaxValue()){
                 binding.btnPlusEnd.isClickable = false
                 Toast.makeText(this, getString(R.string.time_reaches_its_maximum_value), Toast.LENGTH_SHORT).show()
-            }
-            if(binding.customCutterSeekBar.getSelectedMaxValue() > binding.customCutterSeekBar.getSelectedMinValue() + 1f){
-                binding.btnMinusEnd.isClickable = true
-            }
-            binding.edtEndTime.setSelection(binding.edtEndTime.text.length)
-
-            if(checkType== true){
-                timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
             }else{
-                timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                minutes += 1
+                if (minutes >= 60) {
+                    minutes = 0
+                    hours += 1
+                }
+                if (hours > 23) {
+                    hours = 0
+                }
+                isPlaying = false
+                if ( checkCut == false){
+                    mediaPlayer!!.release()
+                }
+                checkCut = true
+                binding.imvPlay.visibility = View.VISIBLE
+                binding.imvPause.visibility = View.GONE
+                endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
+                binding.customCutterSeekBar.setSelectedMaxValue(endTime + 1f)
+                Log.d("check_value", "initActionMinus: "+ startTime)
+                binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
+//                if(binding.customCutterSeekBar.getSelectedMaxValue() >= maxValueTime){
+//                    binding.btnPlusEnd.isClickable = false
+//                    Toast.makeText(this, getString(R.string.time_reaches_its_maximum_value), Toast.LENGTH_SHORT).show()
+//                }
+//                if(binding.customCutterSeekBar.getSelectedMaxValue() > binding.customCutterSeekBar.getSelectedMinValue() + 1f){
+//                    binding.btnMinusEnd.isClickable = true
+//                }
+                binding.edtEndTime.setSelection(binding.edtEndTime.text.length)
+                if(checkType== true){
+                    timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                }else{
+                    timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                }
+                binding.tvTimeCut.text = timeCut
             }
-            binding.tvTimeCut.text = timeCut
         }
 
         binding.btnMinusEnd.setOnClickListener {
-            isPlaying = false
-            if (checkCut == false){
-                mediaPlayer!!.release()
-            }
-            checkCut = true
-            binding.imvPlay.visibility = View.VISIBLE
-            binding.imvPause.visibility = View.GONE
             val currentTime = binding.edtEndTime.text.toString()
+            binding.btnPlusEnd.isClickable = true
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-            minutes -= 1
-
-            if (minutes < 0) {
-                minutes = 59
-                hours -= 1
-            }
-
-            if (hours < 0) {
-                hours = 23
-            }
-            endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
-            binding.customCutterSeekBar.setSelectedMaxValue(endTime - 1f)
-            binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-            if(binding.customCutterSeekBar.getSelectedMaxValue() < maxValueTime){
-                binding.btnPlusEnd.isClickable = true
-            }
-            if(binding.customCutterSeekBar.getSelectedMaxValue() <= binding.customCutterSeekBar.getSelectedMinValue() + 1f){
+            if(convertTimeToSeconds(currentTime) == convertTimeToSeconds(binding.edtStartTime.text.toString()) + 1){
                 binding.btnMinusEnd.isClickable = false
-            }
-            binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
-            if(checkType== true){
-                timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
             }else{
-                timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                minutes -= 1
+                if (minutes < 0) {
+                    minutes = 59
+                    hours -= 1
+                }
+                if (hours < 0) {
+                    hours = 23
+                }
+                isPlaying = false
+                if (checkCut == false){
+                    mediaPlayer!!.release()
+                }
+                checkCut = true
+                binding.imvPlay.visibility = View.VISIBLE
+                binding.imvPause.visibility = View.GONE
+                endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
+                binding.customCutterSeekBar.setSelectedMaxValue(endTime - 1f)
+                binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
+//                if(binding.customCutterSeekBar.getSelectedMaxValue() < maxValueTime){
+//                    binding.btnPlusEnd.isClickable = true
+//                }
+//                if(binding.customCutterSeekBar.getSelectedMaxValue() <= binding.customCutterSeekBar.getSelectedMinValue() + 1f){
+//                    binding.btnMinusEnd.isClickable = false
+//                }
+                binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
+                if(checkType== true){
+                    timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                }else{
+                    timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                }
+
+                binding.tvTimeCut.text = timeCut
             }
 
-            binding.tvTimeCut.text = timeCut
         }
 
         binding.btnMinus.setOnClickListener {
-            isPlaying = false
-            if (checkCut == false){
-                mediaPlayer!!.release()
-            }
-            checkCut = true
-            binding.imvPlay.visibility = View.VISIBLE
-            binding.imvPause.visibility = View.GONE
             val currentTime = binding.edtStartTime.text.toString()
+            binding.btnPlus.isClickable = true
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
-            minutes -= 1
-            if (minutes < 0) {
-                minutes = 59
-                hours -= 1
-            }
-
-            if (hours < 0) {
-                hours = 23
-            }
-            startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
-            binding.customCutterSeekBar.setSelectedMinValue(startTime - 1f)
-            if(binding.customCutterSeekBar.getSelectedMinValue() < 1f){
+            if(convertTimeToSeconds(currentTime) <= 0){
                 binding.btnMinus.isClickable = false
                 Toast.makeText(this, getString(R.string.time_to_reach_minimum_value), Toast.LENGTH_SHORT).show()
-            }
-            if(binding.customCutterSeekBar.getSelectedMinValue() < binding.customCutterSeekBar.getSelectedMaxValue() ){
-                binding.btnPlus.isClickable = true
-            }
-            binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
-            binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
-            if(checkType== true){
-                timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
             }else{
-                timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                minutes -= 1
+                if (minutes < 0) {
+                    minutes = 59
+                    hours -= 1
+                }
+
+                if (hours < 0) {
+                    hours = 23
+                }
+                isPlaying = false
+                if (checkCut == false){
+                    mediaPlayer!!.release()
+                }
+                checkCut = true
+                binding.imvPlay.visibility = View.VISIBLE
+                binding.imvPause.visibility = View.GONE
+                startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
+                binding.customCutterSeekBar.setSelectedMinValue(startTime - 1f)
+                binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
+                binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
+                if(checkType== true){
+                    timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                }else{
+                    timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
+                }
+                binding.tvTimeCut.text = timeCut
             }
-            binding.tvTimeCut.text = timeCut
         }
-
-
         binding.customCutterSeekBar.setOnRangeSeekBarChangeListener(object : CustomCutterSeekBar.OnRangeSeekBarChangeListener {
             override fun onRangeSeekBarValuesChanged(minValue: Float, maxValue: Float) {
                 startTime = minValue
                 endTime = maxValue
                 if (checkCut == false){
-                    mediaPlayer!!.release()
+                    mediaPlayer!!.stop()
+                    mediaPlayer!!.seekTo(0)
                 }
                 checkCut = true
                 isPlaying = false
                 binding.imvPlay.visibility = View.VISIBLE
                 binding.imvPause.visibility = View.GONE
+                binding.btnPlusEnd.isClickable = true
+                binding.btnMinusEnd.isClickable = true
+                binding.btnPlus.isClickable = true
+                binding.btnMinus.isClickable = true
                 if(checkType== true){
                     timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
                 }else{
@@ -292,15 +313,22 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             }
         })
 
+        binding.imv15Left.setOnClickListener {
+            rewindAudio(15000)
+        }
+        binding.imv15Right.setOnClickListener {
+            forwardAudio(15000)
+        }
+
         binding.imvPlay.onSingleClick {
             if(checkCut == true){
 //                binding.progress.visibility = View.VISIBLE
                 val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
                 val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
-                val durationVideo = convertDurationToSeconds(listAudio[positionAudioPlay].duration)
-                cutterUri = "${cacheDir.path}/cutter.mp3"
+//                val durationVideo = convertDurationToSeconds(listAudio[positionAudioPlay].duration)
                 val timestamp = System.currentTimeMillis()
-                Log.d("check_click", "initAction: thanhhhh anjanah")
+                cutterUri = "${cacheDir.path}/cutter_${timestamp}.mp3"
+                Log.d("check_click", "initAction: thanhhhh anjanah"+ currentValueStart + "    " + currentValueEnd)
                 val videoPath = getRealPathFromURI(this, listAudio[positionAudioPlay].uri)
                 if (videoPath != null) {
                     if(checkType == true){
@@ -329,12 +357,11 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
         binding.tvDone.onSingleClick {
             checkCut = false
-            mediaPlayer?.let {
-                if (it.isPlaying) {
-                    it.stop() // Dừng phát nếu đang phát
-                }
-                it.release() // Giải phóng MediaPlayer
+            if(mediaPlayer!!.isPlaying){
+                mediaPlayer?.stop()
             }
+            binding.imvPause.visibility = View.GONE
+            binding.imvPlay.visibility = View.VISIBLE
             val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
             val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
             val durationVideo = convertDurationToSeconds(listAudio[positionAudioPlay].duration)
@@ -354,6 +381,31 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                         cutAndMergeAudio(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
                     }
                 }
+            }
+        }
+    }
+
+    private fun rewindAudio(milliseconds: Int) {
+        mediaPlayer?.let {
+            val newPosition = it.currentPosition - milliseconds
+            if (newPosition >= 0) {
+                Log.d("check_new_pos", "rewindAudio: "+ newPosition)
+                it.seekTo(newPosition)
+            } else {
+                it.seekTo(0)
+            }
+        }
+    }
+
+    // Hàm tua tới audio
+    private fun forwardAudio(milliseconds: Int) {
+        mediaPlayer?.let {
+            val newPosition = it.currentPosition + milliseconds
+            if (newPosition <= it.duration) {
+                Log.d("check_new_pos", "forwardAudio: "+ newPosition)
+                it.seekTo(newPosition)
+            } else {
+                it.seekTo(it.duration)
             }
         }
     }
@@ -448,10 +500,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer?.let {
-            if (it.isPlaying) {
-                it.stop() // Dừng phát nếu đang phát
+            if (checkCut == false) {
+                it.release()// Dừng phát nếu đang phát
             }
-            it.release() // Giải phóng MediaPlayer
         }
     }
 
@@ -481,8 +532,13 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                     binding.progress.visibility = View.GONE
                     createMediaPlayer()
                     startPlaying()
-                    val cutPath = File(cutterUri)
-                    cutPath.delete()
+                    mediaPlayer?.setOnCompletionListener {
+                        binding.imvPlay.visibility = View.VISIBLE
+                        binding.imvPause.visibility = View.GONE
+                        isPlaying = false
+                    }
+//                    val cutPath = File(cutterUri)
+//                    cutPath.delete()
                     checkCut = false
                 }else{
                     val videoUri = Uri.parse(outputFilePath)
@@ -502,7 +558,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         }
     }
 
-
     fun cutAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         Log.d("check_audio_speed", "$startTime    $endTime")
         val command = "-i \"$inputFilePath\" -ss $startTime -to $endTime -c copy \"$outputFilePath\""
@@ -510,12 +565,17 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         if (resultCode == 0) {
             Log.d("checkType", "cutAudio: "+ checkCut)
             if(checkCut == true){
-                Log.d("check_click", "cutAudio: "+ cutterUri)
+                Log.d("check_click", "cutAudio: "+ cutterUri + "    " + isPlaying)
                 binding.progress.visibility = View.GONE
                 createMediaPlayer()
                 startPlaying()
-                val cutPath = File(cutterUri)
-                cutPath.delete()
+                mediaPlayer?.setOnCompletionListener {
+                    binding.imvPlay.visibility = View.VISIBLE
+                    binding.imvPause.visibility = View.GONE
+                    isPlaying = false
+                }
+//                val cutPath = File(cutterUri)
+//                cutPath.delete()
                 checkCut = false
             }else{
                 val videoUri = Uri.parse(outputFilePath)
@@ -527,9 +587,14 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             Log.d("check_audio_speed", "Cắt âm thanh thất bại. Mã lỗi: $resultCode")
         }
     }
-    override fun onResume() {
-        super.onResume()
-        initData()
+
+
+    fun convertTimeToSeconds(time: String): Int {
+        val timeParts = time.split(":")  // Tách chuỗi thành phút và giây
+        val minutes = timeParts[0].toInt()  // Chuyển đổi phần phút thành số nguyên
+        val seconds = timeParts[1].toInt()  // Chuyển đổi phần giây thành số nguyên
+
+        return minutes * 60 + seconds  // Tính tổng số giây
     }
 
     fun convertDurationToSeconds(duration: String): Int {
@@ -537,8 +602,30 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         return parts.fold(0) { acc, part -> acc * 60 + part }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(checkCut == false){
+            mediaPlayer?.pause()
+            mediaPlayer?.seekTo(0)
+        }
+        checkCut = true
+        isPlaying = false
+    }
+
     override fun onStop() {
         super.onStop()
+        job?.cancel()
         hideLoadingOverlay()
+    }
+
+    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        job?.cancel()
+        if(binding.loadingOverlay.visibility == View.VISIBLE){
+            hideLoadingOverlay()
+        }else{
+            finish()
+        }
     }
 }

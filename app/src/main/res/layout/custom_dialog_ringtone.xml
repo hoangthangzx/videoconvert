@@ -7,9 +7,8 @@
     android:gravity="center">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="15dp"
         android:paddingHorizontal="10dp"
         android:background="@drawable/imv_bg_dialog">
 

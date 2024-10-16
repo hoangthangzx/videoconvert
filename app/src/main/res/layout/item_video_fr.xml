@@ -86,11 +86,10 @@
 
     <ImageView
         android:id="@+id/imvTickBox"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
         android:visibility="gone"
+        android:layout_marginStart="14dp"
         android:src="@drawable/icon_check_box"
         app:layout_constraintEnd_toStartOf="@+id/imvVideoFile"
         app:layout_constraintBottom_toBottomOf="parent"

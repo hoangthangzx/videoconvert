@@ -21,16 +21,13 @@ class AudioAdapterFr (var context: Context): RecyclerView.Adapter<AudioAdapterFr
         data = mData
         notifyDataSetChanged()
     }
-
     interface onClickItemListener {
         fun onClickItem (position: Int, holder: ViewHolder)
         fun onTouchEven(position: Int)
     }
-
     fun onClickListener(onClickItemListener: onClickItemListener){
         mListener = onClickItemListener
     }
-
     inner class ViewHolder(val binding : ItemAudioBinding) : RecyclerView.ViewHolder(binding.root){
         @SuppressLint("ClickableViewAccessibility")
         fun bind(position: Int, holder: AudioAdapterFr.ViewHolder) {

@@ -18,29 +18,16 @@ import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.ui.ActivityAudioCutter
 import com.kan.dev.st_042_video_to_mp3.ui.AudioSpeedActivity
 import com.kan.dev.st_042_video_to_mp3.ui.audio_converter.AudioConverterActivity
-import com.kan.dev.st_042_video_to_mp3.ui.audio_converter.AudioConverterAdapter
-import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertToMp3Activity
 import com.kan.dev.st_042_video_to_mp3.ui.merger_audio.MergerAudioActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
-import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkDataAudio
-import com.kan.dev.st_042_video_to_mp3.utils.Const.checkPlay
-import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
+import com.kan.dev.st_042_video_to_mp3.utils.Const.clickItem
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
-import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
-import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
-import com.kan.dev.st_042_video_to_mp3.utils.Const.playState
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
-import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
-import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
@@ -54,7 +41,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     lateinit var adapter: SelectAudioAdapter
     var countItemt = 1
     private var mediaPlayer: MediaPlayer? = null
-
     override fun init() {
         initData()
         initView()
@@ -82,24 +68,28 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 if(!listAudio[position].active){
                     positionAudioPlay = position
                     countAudio += 1
-                    holder.binding.lnItemCount.visibility = View.VISIBLE
+//                    holder.binding.lnItemCount.visibility = View.VISIBLE
+//                    holder.binding.tvTime.visibility = View.INVISIBLE
+
                     countSize += listAudio[position].sizeInMB.toInt()
+                    clickItem = true
                     holder.binding.edtStartTime.setText("1")
-                    holder.binding.tvTime.visibility = View.INVISIBLE
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
                     listAudioPick.add( listAudio[position])
                     listAudio[position].active = true
+                    adapter.notifyDataSetChanged()
                 }else if(listAudio[position].active){
                     var countEdt = Integer.parseInt(holder.binding.edtStartTime.text.toString())
                     countAudio -= countEdt
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
-                    holder.binding.lnItemCount.visibility = View.GONE
+//                    holder.binding.lnItemCount.visibility = View.GONE
+//                    holder.binding.tvTime.visibility = View.VISIBLE
                     listAudio[position].active = false
-                    holder.binding.tvTime.visibility = View.GONE
                     countItemt = 1
                     Log.d("check_list_audio_pick", "onClickItem: "  + listAudio.size   + " ____ " + position)
                     listAudioPick.removeAll { it.pos == listAudio.size - position -1 }
                     countSize -= countEdt*(listAudio[position].sizeInMB.toInt())
+                    adapter.notifyDataSetChanged()
                 }
                 binding.tvSelected.text = "$countAudio Selected"
                 binding.tvSize.text = "/ $countSize MB"
@@ -168,6 +158,9 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
         binding.imvBack.onSingleClick {
             finish()
+            if(mediaPlayer?.isPlaying == true){
+                mediaPlayer!!.release()
+            }
         }
     }
 
@@ -367,11 +360,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
         return sdf.format(date)
     }
 
-    override fun onStop() {
-        super.onStop()
-        if(mediaPlayer?.isPlaying == true){
-            mediaPlayer!!.release()
-        }
-    }
+
 
 }

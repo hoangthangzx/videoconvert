@@ -12,10 +12,6 @@ import android.util.Log
 import android.widget.Toast
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
-import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
-import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
-import com.kan.dev.st_042_video_to_mp3.utils.Const.typefr
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo.formatDuration
 import java.io.File
 import java.text.SimpleDateFormat

@@ -68,12 +68,16 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         adapter.onClickListener(object : AudioConverterAdapter.onClickItemListener{
             @SuppressLint("NotifyDataSetChanged")
             override fun onItemClick(position: Int) {
-                val pos = listAudioPick[position].pos
-                listAudioPick.removeAt(position)
-                listAudio[pos].active = false
-                countAudio -= 1
-                countSize -= listAudio[pos].sizeInMB.toInt()
-                adapter.notifyDataSetChanged()
+                if(listAudioPick.size == 1){
+                    Toast.makeText(this@AudioConverterActivity, getString(R.string.items_cannot_be_deleted_you_need_at_least_1_items_to_convert), Toast.LENGTH_SHORT).show()
+                }else {
+                    val pos = listAudioPick[position].pos
+                    listAudioPick.removeAt(position)
+                    listAudio[pos].active = false
+                    countAudio -= 1
+                    countSize -= listAudio[pos].sizeInMB.toInt()
+                    adapter.notifyDataSetChanged()
+                }
             }
         })
         binding.imvBack.onSingleClick {
@@ -126,7 +130,6 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     fun convertAudio(inputPath: String, outputPath: String, format: String) {
         val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
 //        val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k -codec:a libmp3lame \"$outputPath\""
-
         Log.d("check_mp3", "Chuyển đổi : $command")
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
@@ -178,6 +181,17 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         binding.loadingOverlay.visibility = View.GONE
     }
 
+    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        job?.cancel()
+        if(binding.loadingOverlay.visibility == View.VISIBLE){
+            hideLoadingOverlay()
+        }else{
+            finish()
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         hideLoadingOverlay()
@@ -190,7 +204,5 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         adapter.getData(listAudioPick)
         binding.recFileConvert.adapter = adapter
         imvItems = listOf(binding.lnMp3,binding.lnFLAC,binding.lnAcc,binding.lnOgg,binding.lnWAV,binding.lnWMA,binding.lnAc3)
-
-
     }
 }

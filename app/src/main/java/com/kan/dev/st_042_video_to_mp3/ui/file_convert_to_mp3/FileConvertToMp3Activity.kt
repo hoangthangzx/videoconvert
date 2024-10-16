@@ -1,6 +1,7 @@
 package com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -41,6 +42,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -53,6 +55,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     var videoUri : Uri? = null
     var videoPath : String? = null
     var count = 0
+    private var job: Job? = null
     private var isConverting = false
     override fun init() {
         initData()
@@ -96,8 +99,8 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         adapter.onClickListener(object : FileConvertAdapter.onClickItemListener{
             override fun onItemClick(position: Int) {
                 Log.d("check_data_size", "onItemClick: "+ listVideoPick.size)
-                if(listVideoPick.size == 2){
-                    Toast.makeText(this@FileConvertToMp3Activity, getString(R.string.items_cannot_be_deleted_you_need_at_least_2_items_to_convert), Toast.LENGTH_SHORT).show()
+                if(listVideoPick.size == 1){
+                    Toast.makeText(this@FileConvertToMp3Activity, getString(R.string.items_cannot_be_deleted_you_need_at_least_1_items_to_convert), Toast.LENGTH_SHORT).show()
                 }else{
                     val pos = listVideoPick[position].pos
                     listVideo[pos].active = false
@@ -147,7 +150,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 if (!isConverting) {
                     showLoadingOverlay()
                     isConverting = true
-                    CoroutineScope(Dispatchers.Main).launch {
+                    job = CoroutineScope(Dispatchers.Main).launch {
                         convertAllVideosToMp3()
                     }
                 }
@@ -233,6 +236,11 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        job?.cancel()
+    }
+
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
         var path: String? = null
         val proj = arrayOf(MediaStore.Video.Media.DATA)
@@ -246,16 +254,21 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         return path
     }
     fun convertMbToBytes(sizeString: String): Long {
-        // Bước 1: Xóa ký tự " MB"
         val numericString = sizeString.replace(" MB", "").trim()
-
-        // Bước 2: Chuyển đổi chuỗi thành Double
         val mbSize = numericString.toDouble()
-
-        // Bước 3: Chuyển đổi sang byte và trả về giá trị Long
         return mbSize.toLong()
     }
 
+    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        job?.cancel()
+        if(binding.loadingOverlay.visibility == View.VISIBLE){
+            hideLoadingOverlay()
+        }else{
+            finish()
+        }
+    }
 
     override fun onResume() {
         super.onResume()

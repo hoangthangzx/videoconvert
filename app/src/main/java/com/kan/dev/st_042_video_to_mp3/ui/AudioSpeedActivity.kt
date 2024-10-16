@@ -17,6 +17,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.lifecycleScope
 import com.arthenica.mobileffmpeg.FFmpeg
 //import com.arthenica.mobileffmpeg.FFmpeg
@@ -43,6 +45,7 @@ import com.masoudss.lib.WaveformSeekBar
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,10 +61,10 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     var audioString : String? = null
     var isUserSeeking = false
     var itemImvs : List<ImageView> = listOf()
-    var mediaPlayer: MediaPlayer? = null
+    lateinit var mediaPlayer: MediaPlayer
     var valueSpeed = 1f
     var duration = 0
-
+    private var job: Job? = null
     var checkSpeedPlay = true
     var checkSpeed = false
     var speedUri = ""
@@ -92,7 +95,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
     @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
     private fun initView() {
-        binding.textView6.text = "Duration : ${listAudio[positionAudioPlay].duration}"
+        binding.tvTimeDr.text = "${listAudio[positionAudioPlay].duration}"
         binding.tvNewDuration.text = " ${listAudio[positionAudioPlay].duration}"
         val colors = intArrayOf(
             ContextCompat.getColor(this@AudioSpeedActivity, R.color.color_1),
@@ -169,8 +172,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             }
         }
     }
-
-
     private fun initAction() {
         binding.imvBack.onSingleClick {
             finish()
@@ -200,7 +201,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
         })
-
         binding.imvPlay.onSingleClick {
             Log.d("check_value_speed", "initAction: "+ valueSpeed)
             if(checkSpeedPlay == true){
@@ -208,7 +208,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                     val audioPath = audioString
                     if (audioPath != null){
                         binding.progress.visibility = View.VISIBLE
-                        CoroutineScope(Dispatchers.Main).launch{
+                        job = CoroutineScope(Dispatchers.Main).launch{
                             val checkValue = changeAudioSpeed(audioPath, speedUri, valueSpeed)
                             Log.d("check_value_speed", "chchchchchchchc: "+ valueSpeed)
                             if (checkValue){
@@ -247,16 +247,13 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
                                 binding.imvPause.visibility = View.VISIBLE
                                 binding.imvPlay.visibility = View.GONE
-                                runOnUiThread(object : Runnable {
-                                    override fun run() {
-                                        if (mediaPlayer?.isPlaying == true) {
-                                            val currentPosition = mediaPlayer!!.currentPosition
-                                            binding.seekBarAudio.progress = currentPosition
-                                        }
-                                        handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
-                                    }
-                                })
-
+//                                runOnUiThread(object : Runnable {
+//                                    override fun run() {
+//                                        val currentPosition = mediaPlayer.currentPosition
+//                                        binding.seekBarAudio.progress = currentPosition
+//                                        handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
+//                                    }
+//                                })
                                 binding.tvDuration.text = "/ ${binding.tvNewDuration.text}"
                                 mediaPlayer!!.setOnCompletionListener {
                                     binding.tvTimeStart.text = formatTimeToHoursMinutes(mediaPlayer!!.duration)
@@ -270,7 +267,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                                         binding.imvPlay.visibility = View.VISIBLE
 //                                    handler.removeCallbacksAndMessages(null)
                                     },1000)
-
                                 }
                             }
                         }
@@ -287,25 +283,21 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
             }
         }
-
         binding.tvCancel.onSingleClick {
             finish()
         }
-
         binding.imvPause.onSingleClick {
             binding.imvPause.visibility = View.GONE
             binding.imvPlay.visibility = View.VISIBLE
             pausePlaying()
 //            handler.removeCallbacksAndMessages(null)
         }
-
         binding.imv15Left.setOnClickListener {
             rewindAudio(15000)
         }
         binding.imv15Right.setOnClickListener {
             forwardAudio(15000)
         }
-
         binding.tvDone.onSingleClick {
             if(mediaPlayer!!.isPlaying){
                 mediaPlayer!!.pause()
@@ -331,16 +323,13 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             }
         }
     }
-
     private fun formatTimeToHoursMinutes(duration: Int): String {
         val minutes = (duration / 1000) / 60
         val seconds = (duration / 1000) % 60
         return String.format("%02d:%02d", minutes, seconds)
     }
-
     @SuppressLint("SetTextI18n")
     private fun initData() {
-
         itemImvs = listOf(binding.imv1,binding.imv2,binding.imv3,binding.imv4,binding.imv5,binding.imv6,binding.imv7,binding.imv8,binding.imv9,
             binding.imv10,binding.imv11,binding.imv12,binding.imv13,binding.imv14,binding.imv15,binding.imv16,binding.imv17,binding.imv18,
             binding.imv19,binding.imv20,binding.imv21,binding.imv22,binding.imv23,binding.imv24,binding.imv25,binding.imv26,binding.imv27,
@@ -377,23 +366,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                 updateTimeAndSeekBar()
             }
         })
-
-//        mediaPlayer!!.setOnCompletionListener {
-//            binding.tvTimeStart.text = listAudio[positionAudioPlay].duration
-//            handler.postDelayed({
-//                binding.seekBarAudio.progress = 0
-//                binding.waveformSeekBar.progress = 0f
-//                mediaPlayer!!.seekTo(0)
-//                binding.tvTimeStart.text = "00:00"
-//                isPlaying = false
-//                binding.imvPause.visibility = View.GONE
-//                binding.imvPlay.visibility = View.VISIBLE
-//                handler.removeCallbacksAndMessages(null)
-//            },1000)
-//
-//        }
-//        mediaPlayer!!.start()
-//        updateTimeAndSeekBar()
     }
     @SuppressLint("DefaultLocale")
     private fun updateTimeAndSeekBar() {
@@ -439,21 +411,14 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     private fun updateSpeed(progress: Int) {
         valueSpeed = ((progress.toFloat()/10f).toFloat()+ 0.5).toFloat()
         Log.d("check_size", "onProgressChanged: "+(progress/10) + " NNNNN  " + valueSpeed)
-//        val playbackParams = PlaybackParams()
-//        playbackParams.speed = valueSpeed
-//        if(mediaPlayer!!.isPlaying){
-//            mediaPlayer!!.playbackParams = playbackParams
-//        }
-        duration = convertTimeToSeconds(listAudio[positionVideoPlay].duration)
         if (valueSpeed == 1f){
             binding.tvNewDuration.text = listAudio[positionAudioPlay].duration
             binding.tvDuration.text = "/ ${listAudio[positionAudioPlay].duration}"
         }else{
-            Log.d("check_time___", "updateSpeed: "+ duration + "    " + valueSpeed + "     " + duration/valueSpeed)
-            binding.tvNewDuration.text = convertSecondsToTime((duration/valueSpeed).toDouble())
-            binding.tvDuration.text = "/ ${convertSecondsToTime((duration/valueSpeed).toDouble())}"
+            Log.d("check_time___", "updateSpeed: "+ duration + "    " + valueSpeed + "     " + convertTimeStringToInt(binding.tvTimeDr.text.toString()))
+            binding.tvNewDuration.text = convertSecondsToTime((convertTimeStringToInt(binding.tvTimeDr.text.toString())/valueSpeed).toDouble())
+            binding.tvDuration.text = "/ ${convertSecondsToTime((convertTimeStringToInt(binding.tvTimeDr.text.toString())/valueSpeed).toDouble())}"
         }
-
         Log.d("check_time", "updateSpeed: "+ convertSecondsToTime((duration/valueSpeed).toDouble()))
     }
 
@@ -488,7 +453,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             Log.d("check_command", "changeAudioSpeed: "+ command)
             val resultCode = FFmpeg.execute(command)
             if (resultCode == 0) {
-
                     Log.d("check_command", "changeAudioSpeed: ytyhth")
                     true
 
@@ -497,9 +461,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                 false
             }
         }
-
     }
-
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
         var path: String? = null
         val proj = arrayOf(MediaStore.Video.Media.DATA)
@@ -512,42 +474,54 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         }
         return path
     }
-
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
         val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
         animator.duration = 3000 // Thời gian chạy animation (5 giây)
         animator.start()
     }
-
     private fun hideLoadingOverlay() {
         binding.loadingOverlay.visibility = View.GONE
     }
-    fun convertTimeToSeconds(time: String): Int {
+    fun convertTimeStringToInt(time: String): Int {
+        // Tách chuỗi theo dấu ":"
         val parts = time.split(":")
-        val minutes = parts[0].toInt()
-        val seconds = parts[1].toInt()
-        return minutes * 60 + seconds // Chuyển đổi thành giây
-    }
 
+        // Chuyển đổi giờ và phút sang số nguyên
+        val hours = parts[0].toInt()
+        val minutes = parts[1].toInt()
+
+        // Tính tổng số phút
+        return hours * 60 + minutes
+    }
     fun convertSecondsToTime(seconds: Double): String {
         val totalSeconds = seconds.toInt() // Chuyển đổi thành giây nguyên
         val minutes = totalSeconds / 60 // Tính phút
         val remainingSeconds = totalSeconds % 60 // Tính giây còn lại
         return String.format("%02d:%02d", minutes, remainingSeconds) // Định dạng về dạng 00:00
     }
-
     override fun onDestroy() {
         super.onDestroy()
-        if (mediaPlayer!=null){
-            mediaPlayer!!.release()
+        if (mediaPlayer != null) {
+            mediaPlayer.release()
         }
-        handler.removeCallbacksAndMessages(null)
+        job?.cancel()
+        handler.removeCallbacksAndMessages(null) // Dừng tất cả Runnable
     }
-
     override fun onStop() {
         super.onStop()
+         job?.cancel()
         hideLoadingOverlay()
-        handler.removeCallbacksAndMessages(null)
+
+    }
+    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        job?.cancel()
+        if(binding.loadingOverlay.visibility == View.VISIBLE){
+            hideLoadingOverlay()
+        }else{
+            finish()
+        }
     }
 }

@@ -54,9 +54,9 @@ class MergerAudioAdapter ( var context: Context) : RecyclerView.Adapter<MergerAu
                 if(position % 5 == 0){
                     binding.imvVideoFile.setImageResource(R.drawable.imv_pause_1)
                 }else if (position % 5 == 1){
-                    binding.imvVideoFile.setImageResource(R.drawable.imv_pause_2)
-                }else if (position % 5 == 2){
                     binding.imvVideoFile.setImageResource(R.drawable.imv_pause_3)
+                }else if (position % 5 == 2){
+                    binding.imvVideoFile.setImageResource(R.drawable.imv_pause_2)
                 }else if (position % 5 == 3){
                     binding.imvVideoFile.setImageResource(R.drawable.imv_pause_4)
                 }else if (position % 5 == 4){

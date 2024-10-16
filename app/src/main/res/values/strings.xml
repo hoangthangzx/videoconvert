@@ -73,7 +73,7 @@
     <string name="set_as">Set as</string>
     <string name="share">Share</string>
     <string name="_19_jan_2024">19 Jan 2024</string>
-    <string name="duration_00_23_01">Duration: 00:23.01</string>
+    <string name="duration_00_23_01">Duration: </string>
     <string name="_00_46_2">00:46.2</string>
     <string name="_0_5x">1x</string>
     <string name="mute">Mute :</string>
@@ -109,7 +109,7 @@
     <string name="yes">Yes</string>
     <string name="ringtone">Ringtone</string>
     <string name="merger">Merger</string>
-    <string name="video_convert">Video Convert</string>
+    <string name="video_convert">Video Converter</string>
     <string name="you_must_choose_the_right_time">You must choose the right time</string>
     <string name="alarm">Alarm</string>
     <string name="play_sound">Play Sound</string>

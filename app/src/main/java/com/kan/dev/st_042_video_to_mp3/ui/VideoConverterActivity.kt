@@ -58,7 +58,6 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         binding.tvCancel.onSingleClick {
             finish()
         }
-
         imvItems.forEachIndexed { index, imvItem ->
             imvItem.onSingleClick {
                 checkItem = true
@@ -68,16 +67,14 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
                 imvItem.setBackgroundResource(R.drawable.bg_item_convert_pick)
                 Log.d("check_style", "initAction: ")
                 when(index){
-                    0 -> audioType ="3gpp"
-                    1 -> audioType ="mp4"
-                    2 -> audioType ="mov"
-                    3 -> audioType ="flv"
-                    4 -> audioType ="mkv"
-                    5 -> audioType ="avi"
-                    6 -> audioType ="mv4"
-                    7 -> audioType ="mts"
-                    8 -> audioType ="m2ts"
-                    9-> audioType ="ts"
+                    0 -> audioType ="mp4"
+                    1 -> audioType ="mov"
+                    2 -> audioType ="flv"
+                    3 -> audioType ="mkv"
+                    4 -> audioType ="avi"
+                    5 -> audioType ="mts"
+                    6 -> audioType ="m2ts"
+                    7 -> audioType ="ts"
                 }
             }
         }
@@ -156,7 +153,7 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
         val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
-        animator.duration = 1000L // Thời gian chạy animation (5 giây)
+        animator.duration = 3000L // Thời gian chạy animation (5 giây)
         animator.start()
     }
 
@@ -181,8 +178,7 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         adapter = FileConvertAdapter(this@VideoConverterActivity)
         adapter.getData(listVideoPick)
         binding.recFileConvert.adapter = adapter
-        imvItems = listOf(binding.ln3Gp,binding.lnMp4,binding.lnMov,binding.lnFlv,binding.lnMkv,binding.lnAvi
-            ,binding.lnM4v,binding.lnMts,binding.lnM2ts,binding.lnTs)
+        imvItems = listOf(binding.lnMp4,binding.lnMov,binding.lnFlv,binding.lnMkv,binding.lnAvi,binding.lnMts,binding.lnM2ts,binding.lnTs)
     }
 
     private fun initViewMutil() {
@@ -209,7 +205,6 @@ class VideoConverterActivity : AbsBaseActivity<ActivityVideoConverterBinding>(fa
         }else{
             finish()
         }
-
     }
 
     override fun onStop() {

@@ -63,6 +63,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -84,6 +85,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initDataItem()
         initData()
         initView()
         initAction()
@@ -124,7 +126,6 @@ class HomeFragment : Fragment() {
             } else {
                 Log.d("MusicDir", "Directory already exists: ${musicStorage!!.path}")
             }
-
             if (!videoStorage!!.exists() ) {
                 if (videoStorage!!.mkdirs()) {
                     shareData.putBooleanValue("music", true)
@@ -136,12 +137,10 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
     private fun initAction() {
         binding.imvAboutUs.onSingleClick {
             startActivity(Intent(requireContext(),ActivityAboutUs::class.java))
         }
-
         binding.lnAudioMerger.onSingleClick {
             selectTypeAudio = "AudioMerger"
             countAudio = 0
@@ -230,14 +229,18 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        listVideoStorage.clear()
-        listAudioStorage.clear()
-        CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.IO) {
-                VideoUtils.getAllVideosFromSpecificDirectory(storageVideo)
-                AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+        initDataItem()
+    }
+
+    private fun initDataItem() {
+        GlobalScope.launch(Dispatchers.IO) {
+            listAudioStorage.clear()
+            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+            withContext(Dispatchers.Main) {
             }
         }
+        listVideo.clear()
+        VideoUtils.getAllVideos(requireContext().contentResolver)
         audioCutter = null
         videoCutter = null
         countPos = 0
@@ -247,8 +250,6 @@ class HomeFragment : Fragment() {
         checkType = true
         selectType = ""
         selectTypeAudio = ""
-        listVideo.clear()
-        VideoUtils.getAllVideos(requireContext().contentResolver)
         listVideoPick.clear()
         listAudio.clear()
         AudioUtils.getAllAudios(requireContext().contentResolver)
@@ -258,7 +259,6 @@ class HomeFragment : Fragment() {
         audioInfo  = null
         Log.d("check_data", "onResume: "+  storageVideo  + "    " + listVideoStorage)
     }
-
 
 
 }

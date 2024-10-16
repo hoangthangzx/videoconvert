@@ -11,6 +11,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -35,8 +36,10 @@ import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -45,9 +48,11 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     override fun getFragmentID(): Int = 0
     override fun getLayoutId(): Int = R.layout.activity_video_cutter
     var videoUri: Uri? = null
-    private var exoPlayer: ExoPlayer? = null
+//    var exoPlayer: ExoPlayer = ExoPlayer()
+    lateinit var exoPlayer: ExoPlayer
     var startTime = 0f
     var endTime = 0f
+    private var job: Job? = null
     var cutterUri = ""
     var checkCutter = false
     var maxValueTime = 0f
@@ -66,7 +71,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         )
         binding.tvDone.applyGradient(this@VideoCutterActivity,colors)
     }
-
     @OptIn(UnstableApi::class)
     private fun initAction() {
         binding.exoVideo.setOnClickListener{
@@ -75,7 +79,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         binding.playerControlView.setOnClickListener {
             binding.playerControlView.hide()
         }
-
         binding.imvBack.onSingleClick {
             finish()
         }
@@ -83,12 +86,8 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             finish()
         }
         binding.btnPlus.setOnClickListener {
-            val cutPath = File(cutterUri)
-            if (cutPath.exists()){
-                cutPath.delete()
-            }
-
             val currentTime = binding.edtStartTime.text.toString()
+            binding.btnMinus.isClickable = true
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
@@ -107,12 +106,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 }
                 startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
                 binding.customRangeSeekBar.setSelectedMinValue(startTime + 1f)
-//                if(binding.customRangeSeekBar.getSelectedMinValue() > 1f){
-//                    binding.btnMinus.isClickable = true
-//                }
-//                if(binding.customRangeSeekBar.getSelectedMinValue() >= binding.customRangeSeekBar.getSelectedMaxValue() -1f){
-//                    binding.btnPlus.isClickable = false
-//                }
                 binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
                 binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
                 timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
@@ -120,16 +113,19 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 val videoPath = getRealPathFromURI(this,videoUri!!)
                 val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
                 val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
-//                val currentValueEnd = convertDurationToSeconds(binding.tvTimeCut.text.toString())
                 if (videoPath != null) {
+                    clearCache()
+                    exoPlayer.release()
+                    val timestamp = System.currentTimeMillis()
+                    cutterUri = "${cacheDir.path}/video_cutter_${timestamp}.mp4"
                     cutVideo(videoPath,cutterUri,currentValueStart.toString(), currentValueEnd.toString())
-                    Log.d("check_listener", "initAction: okeeeee")
+                    Log.d("check_listener", "initAction: okeeeee" +  currentValueStart.toString() + "     " + currentValueEnd.toString())
                 }
             }
-
         }
         binding.btnPlusEnd.setOnClickListener {
             val currentTime = binding.edtEndTime.text.toString()
+            binding.btnMinusEnd.isClickable = true
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
@@ -147,7 +143,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 if (hours > 23) {
                     hours = 0
                 }
-
                 endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
                 binding.customRangeSeekBar.setSelectedMaxValue(endTime + 1f)
                 Log.d("check_value", "initActionMinus: "+ startTime)
@@ -156,10 +151,10 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
                 binding.tvTimeCut.text = timeCut
             }
-
         }
         binding.btnMinusEnd.setOnClickListener {
             val currentTime = binding.edtEndTime.text.toString()
+            binding.btnPlusEnd.isClickable = true
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
@@ -178,27 +173,20 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
                 binding.customRangeSeekBar.setSelectedMaxValue(endTime - 1f)
                 binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-//            if(binding.customRangeSeekBar.getSelectedMaxValue() < maxValueTime){
-//                binding.btnPlusEnd.isClickable = true
-//            }
-//            if(binding.customRangeSeekBar.getSelectedMaxValue() <= binding.customRangeSeekBar.getSelectedMinValue() + 1f){
-//                binding.btnMinusEnd.isClickable = false
-//            }
                 binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
                 timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
                 binding.tvTimeCut.text = timeCut
             }
-
         }
-
         binding.btnMinus.setOnClickListener {
             val currentTime = binding.edtStartTime.text.toString()
+            binding.btnPlus.isClickable = true
             val parts = currentTime.split(":")
             var hours = if (parts.size > 0) parts[0].toIntOrNull() ?: 0 else 0
             var minutes = if (parts.size > 1) parts[1].toIntOrNull() ?: 0 else 0
             if(convertTimeToSeconds(currentTime) <= 0){
                 binding.btnMinusEnd.isClickable = false
-                Toast.makeText(this, getString(R.string.time_reaches_its_maximum_value), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.time_to_reach_minimum_value), Toast.LENGTH_SHORT).show()
             }else{
 
                 binding.btnPlus.isClickable = true
@@ -212,13 +200,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 }
                 startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
                 binding.customRangeSeekBar.setSelectedMinValue(startTime - 1f)
-//                if(binding.customRangeSeekBar.getSelectedMinValue() < 1f){
-//                    binding.btnMinus.isClickable = false
-//                    Toast.makeText(this, getString(R.string.time_to_reach_minimum_value), Toast.LENGTH_SHORT).show()
-//                }
-//                if(binding.customRangeSeekBar.getSelectedMinValue() < binding.customRangeSeekBar.getSelectedMaxValue() ){
-//                    binding.btnPlus.isClickable = true
-//                }
                 binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
                 binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
                 timeCut = convertSecondsToDuration(binding.customRangeSeekBar.getSelectedMaxValue().toInt() - binding.customRangeSeekBar.getSelectedMinValue().toInt())
@@ -244,6 +225,8 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
                 Log.d("check_value", "onRangeSeekBarValuesChanged: "+ minValue + "_________" + maxValue)
             }
         })
+
+
         Log.d("check_duration", "initAction: "+ listVideo[positionVideoPlay].duration)
         binding.tvDone.onSingleClick {
             val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
@@ -253,21 +236,44 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
             if(currentValueStart > currentValueEnd || currentValueStart > durationVideo || currentValueEnd > durationVideo || currentValueEnd <0 || currentValueStart < 0 ){
                 Toast.makeText(this@VideoCutterActivity, getString(R.string.you_must_choose_the_right_time), Toast.LENGTH_SHORT).show()
             }else{
-                showLoadingOverlay()
-                val videoPath = getRealPathFromURI(this,videoUri!!)
-                val timestamp = System.currentTimeMillis()
-                val musicDir = File(Environment.getExternalStorageDirectory(), "Movies/video")
-                val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp4"
-                if (videoPath != null) {
-                    cutVideo(videoPath,outputPath,formatTime_1(currentValueStart.toInt()),formatTime_1(currentValueEnd.toInt()))
+                job = CoroutineScope(Dispatchers.Main).launch{
+                    showLoadingOverlay()
+                    val videoPath = getRealPathFromURI(this@VideoCutterActivity,videoUri!!)
+                    val timestamp = System.currentTimeMillis()
+                    val musicDir = File(Environment.getExternalStorageDirectory(), "Movies/video")
+                    val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp4"
+                    if (videoPath != null) {
+                        withContext(Dispatchers.IO) {
+                            cutVideo(
+                                videoPath,
+                                outputPath,
+                                formatTime_1(currentValueStart.toInt()),
+                                formatTime_1(currentValueEnd.toInt())
+                            )
+                        }
+                    }
                 }
+            }
+        }
+    }
+
+    fun clearCache() {
+        val cacheDir = cacheDir // Lấy thư mục cache của ứng dụng
+        if (cacheDir.isDirectory) {
+            val files = cacheDir.listFiles()
+            if (files != null) {
+                for (file in files) {
+                    if (file.isFile) {
+                        file.delete() // Xóa tệp tin
+                    }
+                }
+                Log.d("check_listener", "All cache files deleted.")
             }
         }
     }
 
     @OptIn(UnstableApi::class)
     private fun initData() {
-        cutterUri = "${cacheDir.path}/video_cutter_00.mp4"
         maxValueTime = (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())
         startTime = (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())*(1f/3f)
         endTime =  (convertDurationToSeconds(listVideo[positionVideoPlay].duration).toFloat())*(2f/3f)
@@ -281,16 +287,6 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
         if (listVideo.size > 0) {
             videoUri = Uri.parse(listVideo[positionVideoPlay].uri.toString())
         }
-//        exoPlayer = ExoPlayer.Builder(this).build()
-//        binding.exoVideo.player = exoPlayer
-//        binding.playerControlView.player = exoPlayer
-//        binding.playerControlView.showTimeoutMs = 3000
-//
-//        val mediaItem = MediaItem.fromUri(videoUri!!)
-//        exoPlayer!!.setMediaItem(mediaItem)
-//        exoPlayer!!.prepare()
-////        exoPlayer!!.play()
-//        exoPlayer!!.playWhenReady = true
         exoPlayer = ExoPlayer.Builder(this).build().apply {
             binding.exoVideo.player = this
             binding.playerControlView.player = this
@@ -365,12 +361,13 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     @OptIn(UnstableApi::class)
     fun cutVideo(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         Log.d("check_audio_speed", ""+ startTime + "    " + endTime)
-        val command = "-i \"$inputFilePath\" -ss \"$startTime\" -c copy -t \"$endTime\" \"$outputFilePath\""
+        val command = "-i \"$inputFilePath\" -ss \"$startTime\" -c copy -to \"$endTime\" \"$outputFilePath\""
         Log.d("check_audio_speed", ""+ startTime + "    " + endTime + "     " + command)
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
             Log.d("check_listener", "initAction: cut thanh cong")
             if(checkCutter == true){
+                exoPlayer.release()
                 Log.d("check_listener", "initAction: videoeoeoeoe")
                 checkCutter = false
                 exoPlayer = ExoPlayer.Builder(this).build().apply {
@@ -449,8 +446,20 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
     }
     override fun onStop() {
         super.onStop()
-        exoPlayer?.release()
+        clearCache()
+        exoPlayer.release()
         hideLoadingOverlay()
+    }
+
+    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        job?.cancel()
+        if(binding.loadingOverlay.visibility == View.VISIBLE){
+            hideLoadingOverlay()
+        }else{
+            finish()
+        }
     }
 
 }

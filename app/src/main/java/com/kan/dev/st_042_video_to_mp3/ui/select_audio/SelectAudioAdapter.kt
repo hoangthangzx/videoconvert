@@ -11,7 +11,7 @@ import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ItemAudioBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const
-import com.kan.dev.st_042_video_to_mp3.utils.Const.checkPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.clickItem
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 
 class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudioAdapter.ViewHolder>() {
@@ -42,10 +42,9 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
 
     inner class ViewHolder(val binding : ItemAudioBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(position: Int, holder: SelectAudioAdapter.ViewHolder) {
-            if(Const.selectTypeAudio.equals("AudioMerger")){
-                binding.tvTime.visibility = View.GONE
-                if(!data[position].active ){
-                    binding.tvTime.visibility = View.GONE
+            if(Const.selectTypeAudio.equals("AudioMerger") ){
+                if(!data[position].active){
+                    binding.tvTime.visibility = View.VISIBLE
                     binding.lnItemCount.visibility = View.GONE
                 }else{
                     binding.lnItemCount.visibility = View.VISIBLE
