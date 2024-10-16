@@ -12,6 +12,7 @@ import com.kan.dev.st_042_video_to_mp3.databinding.ItemAudioBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.clickItem
+import com.kan.dev.st_042_video_to_mp3.utils.Const.elementCounts
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 
 class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudioAdapter.ViewHolder>() {
@@ -57,6 +58,15 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
                 binding.btnPlus.onSingleClick {
                     eListener.onPlusItem(position,holder)
                 }
+            }
+            if(elementCounts.size!=0){
+                elementCounts.forEach {
+                    if(data[position].name.equals(it.element)){
+                        binding.lnItemCount.visibility = View.VISIBLE
+                        binding.edtStartTime.setText(it.count.toString())
+                    }
+                }
+
             }
             binding.tvTitle.isSelected = true
             binding.tvSize.text = "${data[position].sizeInMB} MB"

@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ItemVideoBinding
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
+import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 
 class SelectVideoAdapter (var context: Context): RecyclerView.Adapter<SelectVideoAdapter.ViewHolder>() {
     lateinit var mListener : onClickItemListener
@@ -41,7 +42,7 @@ class SelectVideoAdapter (var context: Context): RecyclerView.Adapter<SelectVide
             }else{
                 binding.imvCheckbox.setImageResource(R.drawable.icon_check_box_yes)
             }
-            holder.binding.imvVideo.setOnClickListener {
+            holder.binding.imvVideo.onSingleClick {
                 mListener.onItemClick(position,holder)
             }
         }

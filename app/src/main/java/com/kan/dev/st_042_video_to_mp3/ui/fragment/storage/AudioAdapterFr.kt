@@ -12,6 +12,7 @@ import com.kan.dev.st_042_video_to_mp3.databinding.ItemAudioBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioAdapter
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 
 class AudioAdapterFr (var context: Context): RecyclerView.Adapter<AudioAdapterFr.ViewHolder>() {
     lateinit var mListener : onClickItemListener
@@ -86,7 +87,7 @@ class AudioAdapterFr (var context: Context): RecyclerView.Adapter<AudioAdapterFr
                 }
             }
 
-            holder.itemView.setOnClickListener {
+            holder.itemView.onSingleClick {
                 if (!isLongPress) { // Kiểm tra nếu không phải long press
                     mListener.onClickItem(position, holder)
                 }

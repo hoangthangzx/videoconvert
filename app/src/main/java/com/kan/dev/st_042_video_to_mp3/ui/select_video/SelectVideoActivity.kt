@@ -46,6 +46,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     override fun getFragmentID(): Int = 0
     override fun getLayoutId(): Int = R.layout.activity_select_video
     lateinit var adapter: SelectVideoAdapter
+    var isAll = false
     override fun init() {
         initData()
         initView()
@@ -71,8 +72,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                 Toast.makeText(this@SelectVideoActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
             }
         }
-
-
         adapter.onClickListener(object : SelectVideoAdapter.onClickItemListener{
             override fun onItemClick(position: Int, holder: SelectVideoAdapter.ViewHolder) {
                 if(!listVideo[position].active){
@@ -200,14 +199,15 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                     countVideo += 1
                     countSizeVideo += listVideo[position].sizeInMB.toInt()
                     holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box_yes)
-                    listVideoPick.add(0, listVideo[position])
                     listVideo[position].active = true
+                    listVideoPick.add(0,listVideo[position])
                 }else if(listVideo[position].active){
                     countVideo -= 1
                     holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box)
+                    Log.d("check_size_list", "onItemClick: "+ listVideoPick  + "        "+ position+  "     "  + listVideo.size)
+                    listVideoPick.remove(listVideo[position])
                     listVideo[position].active = false
                     Log.d("chejjc-wd-d-e", "onItemClick: "+  listVideo[position])
-                    listVideoPick.remove(listVideo[position])
                     countSizeVideo -= listVideo[position].sizeInMB.toInt()
                 }
                 binding.tvSelected.text = "$countVideo Selected"
@@ -216,6 +216,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         })
 
         binding.imvTick.onSingleClick {
+            isAll = true
             Log.d("check_visible", "initAction:eegfeger ")
             binding.imvTickTrue.visibility = View.VISIBLE
             binding.imvTick.visibility = View.GONE
@@ -223,9 +224,18 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
 //            val totalSize = listVideo.sumBy { it.sizeInMB * it.quantity }
             adapter.notifyDataSetChanged()
             listVideoPick = listVideo.map { it.copy() }.toMutableList()
+            countVideo = listVideoPick.size
+            countSizeVideo = listVideoPick.sumOf { it.sizeInMB.toInt() }
+            binding.tvSelected.text = "$countVideo Selected"
+            binding.tvSize.text = "/ $countSizeVideo MB"
         }
 
         binding.imvTickTrue.onSingleClick {
+            countVideo = 0
+            countSizeVideo = 0
+            binding.tvSelected.text = "$countVideo Selected"
+            binding.tvSize.text = "/ $countSizeVideo MB"
+            isAll = false
             binding.imvTickTrue.visibility = View.GONE
             binding.imvTick.visibility = View.VISIBLE
             listVideo.forEach { it.active = false }

@@ -33,13 +33,19 @@ import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
 import com.kan.dev.st_042_video_to_mp3.ui.fragment.HomeFragment
 import com.kan.dev.st_042_video_to_mp3.ui.fragment.SettingFragment
 import com.kan.dev.st_042_video_to_mp3.ui.fragment.storage.StorageFragment
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.utils.showSystemUI
 import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -48,6 +54,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
     lateinit var binding: ActivityMainBinding
     private val viewModel: SharedViewModel by viewModels()
     var currentDestination = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         SystemUtils.setLocale(this)
         showSystemUI(true)
@@ -66,9 +73,6 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
                 shareAudioFilesFromPaths(listAudioPick)
                 Const.isTouchEventHandled = true
             }
-//            viewModel.triggerEvent()
-//            binding.btShare.visibility = View.GONE
-//            binding.bottomNavigationView.visibility = View.VISIBLE
         }
 
         binding.lnCancel.onSingleClick {
@@ -152,104 +156,136 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
         binding.iconSetting.isSelected = false
     }
 
+    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        when (currentDestination) {
-            0-> {
-//                Const.listVideoStorage.clear()
-//                Const.listVideoPick.clear()
-//                Const.listAudioPick.clear()
-//                Const.listAudioStorage.clear()
-                var inAppCount = providerSharedPreference.getNumberRate("RateNumber")
-                inAppCount ++
-                providerSharedPreference.putNumber("RateNumber",inAppCount)
-                Log.d("check_rate", "onBackPressed: "+ inAppCount + providerSharedPreference.getBooleanValue("booleanRate"))
-                if(!providerSharedPreference.getBooleanValue("booleanRate")){
-                    if( inAppCount % 2 != 0 ){
-                        val dialog = Dialog(this)
-                        SystemUtils.setLocale(this)
-                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                        val bindingDialog = DialogRateBinding.inflate(layoutInflater)
-                        dialog.setContentView(bindingDialog.root)
-                        dialog.setCanceledOnTouchOutside(false)
-                        dialog.setCancelable(false)
-                        val window = dialog.window ?: return
-                        window.setGravity(Gravity.CENTER)
-                        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
-                        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        bindingDialog.apply {
-                            ll1.rating = 0f
-                            ll1.setOnRatingChangeListener { _, p1, _ ->
-                                if (p1.toInt() == 0) {
-                                    tv1.text = getString(R.string.one_start_title)
-                                    tv2.text = getString(R.string.one_start)
-                                } else if (p1.toInt() in 1..3) {
-                                    tv1.text = getString(R.string.one_start_title)
-                                    tv2.text = getString(R.string.one_start)
-                                } else {
-                                    tv1.text = getString(R.string.four_start_title)
-                                    tv2.text = getString(R.string.four_start)
-                                }
-                                when (p1.toInt()) {
-                                    0 -> {
-                                        imvAvtRate.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_rate_rero))
-                                    }
-                                    1 -> {
-                                        imvAvtRate.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_rate_one))
-                                    }
-                                    2 -> {
-                                        imvAvtRate.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_rate_two))
-                                    }
-                                    3 -> {
-                                        imvAvtRate.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_rate_three))
-                                    }
-                                    4 -> {
-                                        imvAvtRate.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_rate_four))
-                                    }
-                                    5 -> {
-                                        imvAvtRate.setImageDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_rate_five))
-                                    }
-                                }
+        var inAppCount = providerSharedPreference.getNumberRate("RateNumber")
+        inAppCount ++
+        providerSharedPreference.putNumber("RateNumber",inAppCount)
+        Log.d("check_rate", "onBackPressed: "+ inAppCount + providerSharedPreference.getBooleanValue("booleanRate"))
+        if(!providerSharedPreference.getBooleanValue("booleanRate")) {
+            if (inAppCount % 2 != 0) {
+                val dialog = Dialog(this)
+                SystemUtils.setLocale(this)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                val bindingDialog = DialogRateBinding.inflate(layoutInflater)
+                dialog.setContentView(bindingDialog.root)
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.setCancelable(false)
+                val window = dialog.window ?: return
+                window.setGravity(Gravity.CENTER)
+                window.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                window.decorView.systemUiVisibility =
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                bindingDialog.apply {
+                    ll1.rating = 0f
+                    ll1.setOnRatingChangeListener { _, p1, _ ->
+                        if (p1.toInt() == 0) {
+                            tv1.text = getString(R.string.one_start_title)
+                            tv2.text = getString(R.string.one_start)
+                        } else if (p1.toInt() in 1..3) {
+                            tv1.text = getString(R.string.one_start_title)
+                            tv2.text = getString(R.string.one_start)
+                        } else {
+                            tv1.text = getString(R.string.four_start_title)
+                            tv2.text = getString(R.string.four_start)
+                        }
+                        when (p1.toInt()) {
+                            0 -> {
+                                imvAvtRate.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                        this@MainActivity,
+                                        R.drawable.ic_rate_rero
+                                    )
+                                )
                             }
-                            btnVote.onSingleClick {
-                                providerSharedPreference.putBooleanValue("booleanRate", true)
-                                if (ll1.rating.toInt() >= 3) {
-                                    Toast.makeText(this@MainActivity, R.string.successful, Toast.LENGTH_SHORT).show()
-                                    reviewApp(this@MainActivity, true)
-                                    dialog.dismiss()
-                                    finishAffinity()
-                                } else if(ll1.rating.toInt() == 0){
-                                    Toast.makeText(this@MainActivity, R.string.please_give_a_review, Toast.LENGTH_SHORT).show()
-                                }else{
-                                    dialog.dismiss()
-                                    finishAffinity()
-                                }
+
+                            1 -> {
+                                imvAvtRate.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                        this@MainActivity,
+                                        R.drawable.ic_rate_one
+                                    )
+                                )
                             }
-                            btnCancal.onSingleClick {
-                                inAppCount += 1
-                                providerSharedPreference.putBooleanValue("booleanRate",false)
-                                dialog.dismiss()
-                                finishAffinity()
+
+                            2 -> {
+                                imvAvtRate.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                        this@MainActivity,
+                                        R.drawable.ic_rate_two
+                                    )
+                                )
+                            }
+
+                            3 -> {
+                                imvAvtRate.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                        this@MainActivity,
+                                        R.drawable.ic_rate_three
+                                    )
+                                )
+                            }
+
+                            4 -> {
+                                imvAvtRate.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                        this@MainActivity,
+                                        R.drawable.ic_rate_four
+                                    )
+                                )
+                            }
+
+                            5 -> {
+                                imvAvtRate.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                        this@MainActivity,
+                                        R.drawable.ic_rate_five
+                                    )
+                                )
                             }
                         }
-                        dialog.show()
-                    }else{
+                    }
+                    btnVote.onSingleClick {
+                        providerSharedPreference.putBooleanValue("booleanRate", true)
+                        if (ll1.rating.toInt() >= 3) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                R.string.successful,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            reviewApp(this@MainActivity, true)
+                            dialog.dismiss()
+                            finishAffinity()
+                        } else if (ll1.rating.toInt() == 0) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                R.string.please_give_a_review,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            dialog.dismiss()
+                            finishAffinity()
+                        }
+                    }
+                    btnCancal.onSingleClick {
+                        inAppCount += 1
+                        providerSharedPreference.putBooleanValue("booleanRate", false)
+                        dialog.dismiss()
                         finishAffinity()
                     }
-                }else{
-                    finishAffinity()
                 }
-            }
-            1 ->{
+                dialog.show()
+            }else{
                 finishAffinity()
             }
-            2 -> {
-                finishAffinity()
-            }
-
         }
     }
+
     private fun reviewApp(context: Context, isBackPress: Boolean) {
         val manager = ReviewManagerFactory.create(context)
         val request = manager.requestReviewFlow();
@@ -279,4 +315,5 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
         linearLayout.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
         bottomShare.visibility = View.VISIBLE
     }
+
 }

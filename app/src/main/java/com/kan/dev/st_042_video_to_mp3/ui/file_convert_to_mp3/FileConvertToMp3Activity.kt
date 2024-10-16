@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -29,6 +31,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioMerger
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
@@ -57,6 +60,8 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     var count = 0
     private var job: Job? = null
     private var isConverting = false
+
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun init() {
         initData()
         initAction()
@@ -70,6 +75,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun initData() {
         if(selectType.equals("VideoCutter")){
             videoUri = videoCutter!!.uri
@@ -79,6 +85,8 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             videoUri = Uri.parse(listVideo[positionVideoPlay].uri.toString())
             Log.d("check_mp3", "initData: "+ videoUri)
         }
+
+
     }
 
     @OptIn(UnstableApi::class)
@@ -225,7 +233,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         adapter = FileConvertAdapter(this@FileConvertToMp3Activity)
         adapter.getData(listVideoPick)
         binding.recFileConvert.adapter = adapter
-        Log.d("check_list_video_pick", "initDataMulti: " + listVideoPick)
+        Log.d("check_size_list", "initDataMulti: " + listVideoPick.size)
     }
 
     override fun onDestroy() {

@@ -280,18 +280,6 @@ object VideoUtils {
                         countVd
                     )
                 )
-//
-//                listVideoT.add(
-//                    VideoInfo(
-//                        videoUri,
-//                        formatTimeToHoursMinutes(duration),
-//                        sizeInMB,
-//                        videoName,
-//                        formattedDate,
-//                        true,
-//                        countVd
-//                    )
-//                )
                 countVd += 1
             }
         }

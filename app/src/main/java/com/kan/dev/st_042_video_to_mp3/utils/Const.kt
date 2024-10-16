@@ -6,6 +6,7 @@ import android.os.Environment
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
+import com.kan.dev.st_042_video_to_mp3.model.ElementCount
 import com.kan.dev.st_042_video_to_mp3.model.VideoConvertModel
 import com.kan.dev.st_042_video_to_mp3.model.VideoCutterModel
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
@@ -30,6 +31,10 @@ object Const {
     var listAudioPick = mutableListOf<AudioInfo>()
     var listAudioMerger = mutableListOf<AudioInfo>()
     var listVideoPick = mutableListOf<VideoInfo>()
+    val countMap = mutableMapOf<String, Int>()
+    var elementCounts: List<ElementCount> = countMap.map { (name, count) ->
+        ElementCount(name, count) // Dùng uri placeholder cho mục đích hiển thị
+    }
     var checkData = false
     var checkDataAudio = false
     var positionVideoPlay = 0

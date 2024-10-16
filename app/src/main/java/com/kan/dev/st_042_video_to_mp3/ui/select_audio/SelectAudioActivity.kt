@@ -6,15 +6,18 @@ import android.content.Intent
 import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityAudioMergerBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivitySelectAudioBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
+import com.kan.dev.st_042_video_to_mp3.model.ElementCount
 import com.kan.dev.st_042_video_to_mp3.ui.ActivityAudioCutter
 import com.kan.dev.st_042_video_to_mp3.ui.AudioSpeedActivity
 import com.kan.dev.st_042_video_to_mp3.ui.audio_converter.AudioConverterActivity
@@ -24,7 +27,9 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkDataAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.clickItem
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countMap
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
+import com.kan.dev.st_042_video_to_mp3.utils.Const.elementCounts
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
@@ -180,14 +185,14 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     countAudio += 1
                     countSize += listAudio[position].sizeInMB.toInt()
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
-                    listAudio[position].active = true
-                    listAudioPick.clear() // Xóa danh sách đã chọn trước đó
+                    listAudioPick.clear()
+                    listAudio[position].active = true// Xóa danh sách đã chọn trước đó
                     listAudioPick.add( listAudio[position])
                 } else {
                     countAudio -= 1
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
-                    listAudio[position].active = false
                     listAudioPick.remove(listAudio[position])
+                    listAudio[position].active = false
                     countSize -= listAudio[position].sizeInMB.toInt()
                 }
                 binding.tvSelected.text = "$countAudio Selected"
@@ -342,8 +347,18 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
         return mediaPlayer
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
+        for (audio in listAudioPick) {
+            countMap[audio.name] = countMap.getOrDefault(audio.name, 0) + 1
+        }
+        // Chuyển đổi kết quả sang danh sách các AudioInfo và số lần xuất hiện
+        elementCounts = countMap.map { (name, count) ->
+            ElementCount(name, count) // Dùng uri placeholder cho mục đích hiển thị
+        }
+
+        Log.d("check_data_list_el", "onResume: "+ elementCounts)
         binding.tvSelected.text = "$countAudio Selected"
         adapter.notifyDataSetChanged()
     }

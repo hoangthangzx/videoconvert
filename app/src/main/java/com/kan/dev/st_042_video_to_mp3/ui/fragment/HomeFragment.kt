@@ -34,15 +34,18 @@ import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioActivity
 import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.countPos
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.getAllAudiosFromSpecificDirectory
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkData
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countMap
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.elementCounts
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
@@ -92,8 +95,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun initView() {
-//        binding.tvConverter.isSelected = true
-//        binding.tvSpeed.isSelected = true
         binding.tvCutter.isSelected = true
         binding.tvMerger.isSelected = true
         binding.tvAudioConverter.isSelected = true
@@ -233,12 +234,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun initDataItem() {
-        GlobalScope.launch(Dispatchers.IO) {
-            listAudioStorage.clear()
-            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
-            withContext(Dispatchers.Main) {
-            }
-        }
+        countMap.clear()
+        listAudioStorage.clear()
+        AudioUtils.getAllAudiosFromSpecificDirectory_1(musicStorage.toString())
         listVideo.clear()
         VideoUtils.getAllVideos(requireContext().contentResolver)
         audioCutter = null

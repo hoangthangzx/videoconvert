@@ -29,6 +29,7 @@ import com.kan.dev.st_042_video_to_mp3.interface_bottom.BottomNavVisibilityListe
 import com.kan.dev.st_042_video_to_mp3.ui.ActivityAboutUs
 import com.kan.dev.st_042_video_to_mp3.ui.PlaySongActivity
 import com.kan.dev.st_042_video_to_mp3.ui.PlayVideoActivity
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
@@ -50,6 +51,10 @@ import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class StorageFragment : Fragment() {
@@ -61,6 +66,7 @@ class StorageFragment : Fragment() {
         VideoAdapterFr(requireContext())
     }
     var isClick = false
+    var isAllFr = false
     private val viewModel: SharedViewModel by activityViewModels()
     private var listener: BottomNavVisibilityListener? = null
     lateinit var shareData : SharedPreferenceUtils
@@ -101,6 +107,10 @@ class StorageFragment : Fragment() {
             listAudioStorage.forEach{it.active = true}
             adapterFr.notifyDataSetChanged()
             listAudioPick = listAudioStorage.map { it.copy() }.toMutableList()
+            countAudio = listAudioPick.size
+            countSize = listAudioPick.sumOf { it.sizeInMB.toInt() }
+            binding.tvSelectedItem.text = "$countAudio Selected"
+            binding.size.text = "$countSize KB"
         }
 
         binding.imvAllTrue.onSingleClick {
@@ -109,6 +119,8 @@ class StorageFragment : Fragment() {
             listAudioStorage.forEach{it.active = false}
             adapterFr.notifyDataSetChanged()
             listAudioPick.clear()
+            binding.tvSelectedItem.text = "Selected items"
+            binding.size.text = "$0 KB"
         }
 
         adapterVdFr.onClickListener(object : VideoAdapterFr.onClickItemListener{
@@ -129,11 +141,11 @@ class StorageFragment : Fragment() {
                         listVideoPick.removeAt(position)
                         countSizeVideo -= listVideoStorage[position].sizeInMB.toInt()
                     }
-                    if(countVideo <= 1){
-                        binding.imvRename.visibility = View.VISIBLE
-                    }else{
-                        binding.imvRename.visibility = View.GONE
-                    }
+//                    if(countVideo <= 1){
+//                        binding.imvRename.visibility = View.VISIBLE
+//                    }else{
+//                        binding.imvRename.visibility = View.GONE
+//                    }
                     binding.tvSelectedItem.text = "$countVideo Selected"
                     binding.size.text = "$countSizeVideo KB"
                 }else{
@@ -166,20 +178,20 @@ class StorageFragment : Fragment() {
                         countAudio += 1
                         countSize += listAudioStorage[position].sizeInMB.toInt()
                         holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
-                        listAudioPick.add( listAudioStorage[position])
                         listAudioStorage[position].active = true
+                        listAudioPick.add(0, listAudioStorage[position])
                     }else if(listAudioStorage[position].active){
                         countAudio -= 1
                         holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
-                        listAudioStorage[position].active = false
                         listAudioPick.remove(listAudioStorage[position])
+                        listAudioStorage[position].active = false
                         countSize -= listAudioStorage[position].sizeInMB.toInt()
                     }
                     if(countAudio <= 1){
-                        binding.imvRename.visibility = View.VISIBLE
+//                        binding.imvRename.visibility = View.VISIBLE
                         binding.imvRingtone.visibility = View.VISIBLE
                     }else{
-                        binding.imvRename.visibility = View.GONE
+//                        binding.imvRename.visibility = View.GONE
                         binding.imvRingtone.visibility = View.GONE
                     }
                     binding.tvSelectedItem.text = "$countAudio Selected"
@@ -226,7 +238,7 @@ class StorageFragment : Fragment() {
                     adapterFr.notifyDataSetChanged()
                     binding.ctlStorage.visibility = View.VISIBLE
                     binding.ctlItem.visibility = View.GONE
-                    binding.tvSelectedItem.text = "$countVideo Selected"
+                    binding.tvSelectedItem.text = "Select items"
                     binding.size.text = "$countSizeVideo KB"
             }
         }

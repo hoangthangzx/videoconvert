@@ -6,6 +6,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -13,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
@@ -25,12 +27,13 @@ import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityAudioMergerBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
-import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
 import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countMap
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
+import com.kan.dev.st_042_video_to_mp3.utils.Const.elementCounts
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioMerger
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
@@ -60,18 +63,24 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
     var checkMerger = true
     var MergerUri = ""
     private var job: Job? = null
-    var listVideoPickMerger : MutableList<AudioInfo> = mutableListOf()
+    var listAudioPickMerger : MutableList<AudioInfo> = mutableListOf()
     private var isPlaying: Boolean = false
     var audioFilePaths : List<String> = listOf()
     override fun init() {
+        binding.tvCancel.onSingleClick {
+            finish()
+        }
     }
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun initData() {
         mediaPlayer = MediaPlayer()
-        if(listAudioMerger.size >= 1){
-            listAudioPick = listAudioMerger
-            Log.d("check_list_data", "initData: "+ listAudioMerger)
-        }
-        listVideoPickMerger = listAudioPick
+//        if(listAudioMerger.size >= 1){
+//            listAudioPick = listAudioMerger.map { it.copy() }.toMutableList()
+//            Log.d("check_list_data", "initData: "+ listAudioMerger)
+//        }
+        listAudioPickMerger = listAudioPick.map { it.copy() }.toMutableList()
+        // Đếm số lần xuất hiện của từng tên
+
     }
     private fun initView() {
         val colors = intArrayOf(
@@ -80,7 +89,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
         )
         binding.tvDone.applyGradient(this@MergerAudioActivity,colors)
 
-        binding.tvTitle.text = "${listVideoPickMerger.size} audio files"
+        binding.tvTitle.text = "${listAudioPickMerger.size} audio files"
     }
     suspend fun mergeAudioFilesTemp(
         context: Context,
@@ -88,9 +97,9 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
     ): Boolean {
         return withContext(Dispatchers.IO) {
             if(selectType.equals("Video")){
-                audioFilePaths = listVideoPickMerger.mapNotNull { it.uri.toString() }
+                audioFilePaths = listAudioPickMerger.mapNotNull { it.uri.toString() }
             }else{
-                audioFilePaths = listVideoPickMerger.mapNotNull { getPathFromUri(it.uri, context) }
+                audioFilePaths = listAudioPickMerger.mapNotNull { getPathFromUri(it.uri, context) }
             }
             Log.d("check_merger", "mergeAudioFilesTemp: $audioFilePaths") // Ghi lại đường dẫn file
             if (audioFilePaths.isEmpty()) {
@@ -99,12 +108,12 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
             }
             val convertedFiles = mutableListOf<String>()
             for (filePath in audioFilePaths) {
-                val validFilePath = filePath?.replace(" ", "\\ ")?.replace("(", "\\(")?.replace(")", "\\)") ?: ""
+//                val validFilePath = filePath?.replace(" ", "\\ ")?.replace("(", "\\(")?.replace(")", "\\)") ?: ""
                 val timestamp = System.currentTimeMillis()
-                Log.d("check_merger", "Chuyển đổi file: $validFilePath")
-                val convertedFilePath = "${validFilePath.substringBeforeLast(".")}_${timestamp}_converter.aac"
-//                val command = "-i \"$validFilePath\" -codec:a libmp3lame \"$convertedFilePath\""
-                val command = "-i \"$validFilePath\" -vn -c:a aac -b:a 192k -ar 44100 \"$convertedFilePath\""
+                Log.d("check_merger", "Chuyển đổi file: $filePath")
+                val convertedFilePath = "${filePath.substringBeforeLast(".")}_${timestamp}_converter.mp3"
+                val command = "-i \"$filePath\" -codec:a libmp3lame \"$convertedFilePath\""
+//                val command = "-i \"$validFilePath\" -vn -c:a aac -b:a 192k -ar 44100 \"$convertedFilePath\""
                 val rc = FFmpeg.execute(command)
                 if (rc == 0) {
                     Log.d("check_merger", "Chuyển đổi thành công: $convertedFilePath")
@@ -113,15 +122,15 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                     return@withContext false
                 }
             }
-//            val fileListPath = "${context.cacheDir}/file_list.txt"
-//            File(fileListPath).printWriter().use { out ->
-//                convertedFiles.forEach { out.println("file '$it'") }
-//            }
-//            val commandMerge = "-f concat -safe 0 -i \"$fileListPath\" -c copy \"$outputPath\""
+            val fileListPath = "${context.cacheDir}/file_list.txt"
+            File(fileListPath).printWriter().use { out ->
+                convertedFiles.forEach { out.println("file '$it'") }
+            }
+            val commandMerge = "-f concat -safe 0 -i \"$fileListPath\" -c copy \"$outputPath\""
 //            val filterComplex = convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
 //            val commandMerge = convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
-            val filterComplex = convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
-            val commandMerge = convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
+////            val filterComplex = convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
+//            val commandMerge = convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
             val rcMerge = FFmpeg.execute(commandMerge)
             if (rcMerge == 0) {
                 Log.d("check_merger", "Gộp âm thanh thành công.")
@@ -139,28 +148,31 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
         binding.recFileConvert.itemAnimator = null
         adapter.onClickListener(object : MergerAudioAdapter.onClickItemListener{
             override fun onItemClick(position: Int) {
-                if(listVideoPickMerger.size == 1){
+                if(listAudioPickMerger.size == 2){
                     Toast.makeText(this@MergerAudioActivity, getString(R.string.items_cannot_be_deleted_you_need_at_least_2_items_to_convert), Toast.LENGTH_SHORT).show()
                 }else {
-                    val pos = listVideoPickMerger[position].pos
+                    val pos = listAudioPickMerger[position].pos
                     Log.d("check_sizze_audio_pick", "onItemClick: " + pos + "   "+ listAudioPick)
                     listAudio[pos].active = false
                     countAudio -= 1
                     countSize -= listAudio[pos].sizeInMB.toInt()
-                    listVideoPickMerger.removeAt(position)
-                    listVideoPick.removeAt(position)
+                    listAudioPickMerger.removeAt(position)
+                    listAudioPick.removeAt(position)
+                    if(listAudioPick.size>1){
+                        binding.tvTitle.text = "${listAudioPick.size} audio files"
+                    }
                     adapter.notifyDataSetChanged()
                 }
             }
             override fun onClickPlay(position: Int, holder: MergerAudioAdapter.ViewHolder) {
                 Log.d("cjcjcjcc", "onClickPlay: ")
-                val previouslySelectedIndex = listVideoPickMerger.indexOfFirst { it.activePl }
+                val previouslySelectedIndex = listAudioPickMerger.indexOfFirst { it.activePl }
                 if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
-                    listVideoPickMerger[previouslySelectedIndex].activePl = false
+                    listAudioPickMerger[previouslySelectedIndex].activePl = false
                     adapter.notifyItemChanged(previouslySelectedIndex)
                     mediaPlayer?.release()
                 }
-                if (!listVideoPickMerger[position].activePl) {
+                if (!listAudioPickMerger[position].activePl) {
                     if(position % 5 == 0){
                         holder.binding.imvVideoFile.setImageResource(R.drawable.imv_pause_1)
                     }else if (position % 5 == 1){
@@ -172,7 +184,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                     }else if (position % 5 == 4){
                         holder.binding.imvVideoFile.setImageResource(R.drawable.imv_pause_5)
                     }
-                    listVideoPickMerger[position].activePl = true
+                    listAudioPickMerger[position].activePl = true
                     mediaPlayer = setupMediaPlayer(this@MergerAudioActivity, listAudioPick[position].uri)!!
                     mediaPlayer?.start()
                 } else {
@@ -188,7 +200,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                     }else if (position % 5 == 4){
                         holder.binding.imvVideoFile.setImageResource(R.drawable.icon_play_5)
                     }
-                    listVideoPickMerger[position].activePl = false
+                    listAudioPickMerger[position].activePl = false
                     mediaPlayer?.pause()
                 }
                 adapter.notifyItemChanged(position)
@@ -203,7 +215,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
         binding.imvPlay.onSingleClick {
             if(checkMerger == true) {
                 binding.progress.visibility = View.VISIBLE
-                MergerUri = "${cacheDir.path}/merger.aac"
+                MergerUri = "${cacheDir.path}/merger.mp3"
                 Log.d("check_click", "initAction: thanhhhh anjanah")
                     job = CoroutineScope(Dispatchers.Main).launch{
                         Log.d("check_audio_link", "initData3: "+ listAudioPick)
@@ -288,7 +300,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                 showLoadingOverlay()
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                outputPath = "${musicDir.absolutePath}/${timestamp}_merger.aac"
+                outputPath = "${musicDir.absolutePath}/${timestamp}_merger.mp3"
                 Log.d("check_audio_link", "initData2: "+ listAudioPick)
                 job = CoroutineScope(Dispatchers.Main).launch{
                     Log.d("check_audio_link", "initData3: "+ listAudioPick)
@@ -483,6 +495,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
         hideLoadingOverlay()
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
         initData()
