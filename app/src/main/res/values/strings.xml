@@ -140,4 +140,11 @@
     <string name="items_cannot_be_deleted_you_need_at_least_2_items_to_convert">Items cannot be deleted, you need at least 2 items to convert</string>
     <string name="items_cannot_be_deleted_you_need_at_least_1_items_to_convert">Items cannot be deleted, you need at least 1 items to convert</string>
     <string name="_0_kb">0 KB</string>
+    <string name="adjust_audio">Adjust audio</string>
+    <string name="feel_free_to_adjust_mp3_according_to_your_needs_cut_merge_convert">Feel free to adjust mp3 according to your needs: cut, merge, convert,...</string>
+    <string name="create_impressive_videos">Create impressive videos</string>
+    <string name="supports_features_like_trim_merge_reduce_speed">Supports features like trim, merge, reduce speed,...</string>
+    <string name="convert_video_to_mp3">Convert video to MP3</string>
+    <string name="easy_and_fast">easy and fast</string>
+
 </resources>

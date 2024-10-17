@@ -32,15 +32,16 @@ object Const {
     var listAudioMerger = mutableListOf<AudioInfo>()
     var listVideoPick = mutableListOf<VideoInfo>()
     val countMap = mutableMapOf<String, Int>()
-    var elementCounts: List<ElementCount> = countMap.map { (name, count) ->
+    var elementCounts: MutableList<ElementCount> = countMap.map { (name, count) ->
         ElementCount(name, count) // Dùng uri placeholder cho mục đích hiển thị
-    }
+    }.toMutableList()
     var checkData = false
     var checkDataAudio = false
     var positionVideoPlay = 0
     var positionAudioPlay = 0
     var mp3Uri : Uri? = null
     var uriPlay : Uri? = null
+    var uriPlayAll : String? = ""
     var currentRingtone = 0
     var VideoUriSpeed : Uri? = null
     var countAudio = 0
@@ -62,6 +63,7 @@ object Const {
     var musicStorage : File? = null
     var videoStorage : File? = null
     var checkType : Boolean = false
+    var selectFr = "Fr"
     var listLanguage = mutableListOf<LanguageModel>(
         LanguageModel("Spanish", "es", R.drawable.ic_flag_spanish),
         LanguageModel("French", "fr", R.drawable.ic_flag_french),

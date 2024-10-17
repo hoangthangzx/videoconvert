@@ -192,17 +192,18 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        hideLoadingOverlay()
-        job?.cancel()
-    }
 
     private fun initData() {
-        audioUri = Uri.parse(listAudioPick[0].uri.toString())
+//        audioUri = Uri.parse(listAudioPick[0].uri.toString())
         adapter = AudioConverterAdapter(this@AudioConverterActivity)
         adapter.getData(listAudioPick)
         binding.recFileConvert.adapter = adapter
         imvItems = listOf(binding.lnMp3,binding.lnFLAC,binding.lnAcc,binding.lnOgg,binding.lnWAV,binding.lnWMA,binding.lnAc3)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+        hideLoadingOverlay()
     }
 }

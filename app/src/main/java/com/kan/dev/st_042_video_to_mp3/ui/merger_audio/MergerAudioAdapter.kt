@@ -21,16 +21,13 @@ class MergerAudioAdapter ( var context: Context) : RecyclerView.Adapter<MergerAu
         data = mData
         notifyDataSetChanged()
     }
-
     interface onClickItemListener {
         fun onItemClick(position: Int)
         fun onClickPlay(position: Int, holder: ViewHolder)
     }
-
     fun onClickListener (onClickItemListener: onClickItemListener){
         mListener = onClickItemListener
     }
-
     inner class ViewHolder (val binding: ItemAudioMergerBinding): RecyclerView.ViewHolder(binding.root){
         @SuppressLint("SetTextI18n")
         fun bind(position: Int, holder: ViewHolder, mListener: onClickItemListener) {

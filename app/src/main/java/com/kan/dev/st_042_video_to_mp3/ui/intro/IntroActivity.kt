@@ -36,19 +36,24 @@ class IntroActivity : AbsBaseActivity<ActivityIntroBinding>(false) {
     var data = arrayListOf<TutorialModel>()
     override fun getFragmentID(): Int = 0
     override fun getLayoutId(): Int = R.layout.activity_intro
-
     override fun init() {
         initView()
         SystemUtils.setPreLanguage(this,codeLang)
         data = arrayListOf(
             TutorialModel(
                 R.drawable.imv_intro1,
+                getString(R.string.adjust_audio),
+                getString(R.string.feel_free_to_adjust_mp3_according_to_your_needs_cut_merge_convert)
             ),
             TutorialModel(
                 R.drawable.imv_intro2,
+                getString(R.string.create_impressive_videos),
+                getString(R.string.supports_features_like_trim_merge_reduce_speed),
             ),
             TutorialModel(
                 R.drawable.imv_intro3,
+                getString(R.string.convert_video_to_mp3),
+                getString(R.string.easy_and_fast),
             )
         )
         viewPagerAdapter = ViewPagerAdapter()
@@ -130,6 +135,8 @@ class IntroActivity : AbsBaseActivity<ActivityIntroBinding>(false) {
     private fun addBottomDots(position: Int) {
         binding.apply {
             lnDots.removeAllViews()
+            tvTitle.text = data[position].title
+            tvTitle1.text = data[position].title2
             dots = Array(3) { ImageView(applicationContext) }
             for (i in 0..listFragment - 1) {
                 dots[i] = ImageView(applicationContext)

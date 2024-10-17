@@ -54,8 +54,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             initActionAudioSpeed()
         }else if(selectTypeAudio.equals("AudioMerger")){
             initActionAudioMerger()
-        }
-        else{
+        } else{
             initAction()
         }
     }
@@ -69,30 +68,28 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             }
         }
         adapter.onClickListener(object : SelectAudioAdapter.onClickItemListener{
+            @RequiresApi(Build.VERSION_CODES.N)
             override fun onClickItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
                 if(!listAudio[position].active){
                     positionAudioPlay = position
                     countAudio += 1
-//                    holder.binding.lnItemCount.visibility = View.VISIBLE
-//                    holder.binding.tvTime.visibility = View.INVISIBLE
-
                     countSize += listAudio[position].sizeInMB.toInt()
                     clickItem = true
                     holder.binding.edtStartTime.setText("1")
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
-                    listAudioPick.add( listAudio[position])
                     listAudio[position].active = true
+                    listAudioPick.add(listAudio[position])
+                    dataItemChange()
                     adapter.notifyDataSetChanged()
                 }else if(listAudio[position].active){
                     var countEdt = Integer.parseInt(holder.binding.edtStartTime.text.toString())
                     countAudio -= countEdt
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
-//                    holder.binding.lnItemCount.visibility = View.GONE
-//                    holder.binding.tvTime.visibility = View.VISIBLE
-                    listAudio[position].active = false
                     countItemt = 1
-                    Log.d("check_list_audio_pick", "onClickItem: "  + listAudio.size   + " ____ " + position)
-                    listAudioPick.removeAll { it.pos == listAudio.size - position -1 }
+                    listAudioPick.removeAll { it.name == listAudio[position].name }
+                    dataItemChange()
+                    Log.d("check_list_audio_pick____", "onClickItem: "  + listAudioPick.size   + " ____ " + listAudio[position])
+                    listAudio[position].active = false
                     countSize -= countEdt*(listAudio[position].sizeInMB.toInt())
                     adapter.notifyDataSetChanged()
                 }
@@ -105,12 +102,10 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
                     listAudio[previouslySelectedIndex].activePl = false
                     adapter.notifyItemChanged(previouslySelectedIndex)
-
                     // Release media cho item trước đó
                     mediaPlayer?.release()
                     mediaPlayer = null
                 }
-
                 // Nếu item hiện tại chưa phát, bắt đầu phát
                 if (!listAudio[position].activePl) {
                     holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_pause_audio)
@@ -118,7 +113,10 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     if(mediaPlayer == null){
                         mediaPlayer = setupMediaPlayer(this@SelectAudioActivity, listAudio[position].uri)
                     }
-                    mediaPlayer?.start()
+                    if(mediaPlayer!= null){
+                        mediaPlayer!!.start()
+                    }
+
                 } else {
                     // Nếu item hiện tại đang phát, tạm dừng
                     holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_play_audio)
@@ -130,22 +128,27 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
         })
 
         adapter.onClickEdtListener(object :SelectAudioAdapter.onClickItemListenerEdt{
+            @RequiresApi(Build.VERSION_CODES.N)
             override fun onPlusItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
                 countItemt = Integer.parseInt(holder.binding.edtStartTime.text.toString())
                 countItemt += 1
                 positionAudioPlay = position
                 countAudio += 1
                 countSize += listAudio[position].sizeInMB.toInt()
-                listAudioPick.add( listAudio[position])
+                listAudioPick.add(listAudio[position])
+                dataItemChange()
                 holder.binding.edtStartTime.setText(countItemt.toString())
                 binding.tvSelected.text = "$countAudio Selected"
                 binding.tvSize.text = "/ $countSize MB"
+                adapter.notifyDataSetChanged()
             }
+            @RequiresApi(Build.VERSION_CODES.N)
             override fun onMinusItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
                 countItemt = Integer.parseInt(holder.binding.edtStartTime.text.toString())
                 countItemt -= 1
                 listAudioPick.remove(listAudio[position])
                 countSize -= listAudio[position].sizeInMB.toInt()
+                dataItemChange()
                 countAudio -= 1
                 if(countItemt == 0){
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
@@ -204,12 +207,10 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
                     listAudio[previouslySelectedIndex].activePl = false
                     adapter.notifyItemChanged(previouslySelectedIndex)
-
                     // Release media cho item trước đó
                     mediaPlayer?.release()
                     mediaPlayer = null
                 }
-
                 // Nếu item hiện tại chưa phát, bắt đầu phát
                 if (!listAudio[position].activePl) {
                     holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_pause_audio)
@@ -245,19 +246,20 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
     private fun initAction() {
         adapter.onClickListener(object : SelectAudioAdapter.onClickItemListener{
+            @RequiresApi(Build.VERSION_CODES.N)
             override fun onClickItem(position: Int, holder: SelectAudioAdapter.ViewHolder) {
                 if(!listAudio[position].active){
                     positionAudioPlay = position
                     countAudio += 1
                     countSize += listAudio[position].sizeInMB.toInt()
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
-                    listAudioPick.add(0, listAudio[position])
                     listAudio[position].active = true
+                    listAudioPick.add(0, listAudio[position])
                 }else if(listAudio[position].active){
                     countAudio -= 1
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
-                    listAudio[position].active = false
                     listAudioPick.remove(listAudio[position])
+                    listAudio[position].active = false
                     countSize -= listAudio[position].sizeInMB.toInt()
                 }
                 binding.tvSelected.text = "$countAudio Selected"
@@ -269,12 +271,10 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
                     listAudio[previouslySelectedIndex].activePl = false
                     adapter.notifyItemChanged(previouslySelectedIndex)
-
                     // Release media cho item trước đó
                     mediaPlayer?.release()
                     mediaPlayer = null
                 }
-
                 // Nếu item hiện tại chưa phát, bắt đầu phát
                 if (!listAudio[position].activePl) {
                     holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_pause_audio)
@@ -329,7 +329,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     fun setupMediaPlayer(context: Context, uri: Uri): MediaPlayer? {
         // Tạo đối tượng MediaPlayer
         val mediaPlayer = MediaPlayer()
-
         try {
             // Thiết lập nguồn nhạc từ URI
             mediaPlayer.setDataSource(context, uri)
@@ -339,7 +338,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             e.printStackTrace()
             return null // Trả về null nếu có lỗi
         }
-
         // Bắt đầu phát nhạc
         mediaPlayer.start()
 
@@ -348,19 +346,25 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    override fun onResume() {
-        super.onResume()
+    fun dataItemChange (){
+        countMap.clear()
         for (audio in listAudioPick) {
             countMap[audio.name] = countMap.getOrDefault(audio.name, 0) + 1
         }
-        // Chuyển đổi kết quả sang danh sách các AudioInfo và số lần xuất hiện
         elementCounts = countMap.map { (name, count) ->
-            ElementCount(name, count) // Dùng uri placeholder cho mục đích hiển thị
-        }
+            ElementCount(name, count)
+        }.toMutableList()
+        adapter.notifyDataSetChanged()
+    }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onResume() {
+        super.onResume()
+        dataItemChange()
+        listAudio.forEach { it.activePl = false }
+        adapter.notifyDataSetChanged()
         Log.d("check_data_list_el", "onResume: "+ elementCounts)
         binding.tvSelected.text = "$countAudio Selected"
-        adapter.notifyDataSetChanged()
     }
 
     fun formatTimeToHoursMinutes(duration: Long): String {
@@ -375,6 +379,13 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
         return sdf.format(date)
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (mediaPlayer!=null){
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+    }
 
 
 }

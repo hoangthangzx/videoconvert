@@ -28,6 +28,7 @@ import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.ui.MainActivity
+import com.kan.dev.st_042_video_to_mp3.ui.PlaySongActivity
 import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertAdapter
 import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertToMp3Activity
 import com.kan.dev.st_042_video_to_mp3.ui.merger_audio.MergerAudioActivity
@@ -49,6 +50,8 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.mp3Uri
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
+import com.kan.dev.st_042_video_to_mp3.utils.Const.uriPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.uriPlayAll
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoConvert
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoInfo
@@ -187,6 +190,17 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         adapterAudioSaved = AdapterAudioSaved(this@SavedActivity)
         adapterAudioSaved.getData(listAudioSaved)
         binding.recVideo.adapter = adapterAudioSaved
+
+        adapterAudioSaved.onClickListener(object : AdapterAudioSaved.onClickItemListener{
+            override fun onClickItem(position: Int, holder: AdapterAudioSaved.ViewHolder) {
+                uriPlayAll = "file://${listAudioSaved[position].uri}"
+                uriPlay = listAudioSaved[position].uri
+                audioInfo = listAudioSaved[position]
+
+                startActivity(Intent(this@SavedActivity,PlaySongActivity::class.java))
+            }
+
+        })
     }
 
     private fun initActionCuttertoMp3() {
@@ -264,17 +278,14 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             startActivity(Intent(this@SavedActivity,MergerAudioActivity::class.java))
         }
     }
-
     private fun initActionFile() {
         binding.lnShare.onSingleClick {
             uriAll?.let { shareMp3File(this@SavedActivity, it) }
         }
-
         binding.lnRingtone.onSingleClick {
             showDialogRingtone()
         }
     }
-
     fun shareAudioUris(context: Context, listAudio: MutableList<String>) {
         // Chuyển đổi danh sách String thành danh sách Uri
         val uriList: ArrayList<Uri> = ArrayList()
@@ -397,6 +408,15 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         adapterSaved = AdapterSaved(this)
         adapterSaved.getData(listAudioSaved)
         binding.recVideo.adapter = adapterSaved
+
+        adapterSaved.onClickListener(object : AdapterSaved.onClickItemListener{
+            override fun onClickItem(position: Int, holder: AdapterSaved.ViewHolder) {
+                uriPlayAll = "file://${listAudioSaved[position].uri}"
+                uriPlay = listAudioSaved[position].uri
+                startActivity(Intent(this@SavedActivity,PlaySongActivity::class.java))
+            }
+
+        })
     }
 
     private fun initVideoSpeed() {
@@ -658,23 +678,40 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
     override fun onStop() {
         super.onStop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-        handler.removeCallbacksAndMessages(null)
+        if(mediaPlayer!=null){
+            mediaPlayer!!.pause()
+            binding.imvPause.visibility = View.GONE
+            binding.imvPlay.visibility = View.VISIBLE
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (mediaPlayer!=null){
+            binding.imvPause.visibility = View.GONE
+            binding.imvPlay.visibility = View.VISIBLE
+            mediaPlayer!!.seekTo(0)
             mediaPlayer!!.release()
         }
         handler.removeCallbacksAndMessages(null) // Dừng Handler
     }
-//    override fun onResume() {
-//        super.onResume()
-////        if(!mediaPlayer!!.isPlaying && Const.selectType.equals("Video")){
-////            initData()
-////        }
-//    }
+    override fun onResume() {
+        super.onResume()
+        if(mediaPlayer == null){
+            if(listVideoPick.size == 1 && selectType.equals("Video")){
+                uriAll = videoConvert!!.uri
+            } else if (selectTypeAudio.equals("AudioSpeed")){
+                uriAll = audioInfo!!.uri
+            }else if(selectTypeAudio.equals("AudioMerger")){
+                uriAll = audioInfo!!.uri
+            }else if(selectTypeAudio.equals("AudioCutter")){
+                uriAll = audioCutter!!.uri
+            }
+            else{
+                uriAll = videoCutter!!.uri
+            }
+        }
+
+    }
 
 }

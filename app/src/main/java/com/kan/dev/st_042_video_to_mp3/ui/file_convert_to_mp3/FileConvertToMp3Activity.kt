@@ -65,6 +65,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     override fun init() {
         initData()
         initAction()
+        binding.tvVidoeToMp3.isSelected = true
         if(listVideoPick.size == 1){
             initViewFile()
             initDataFile()
@@ -238,15 +239,20 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     override fun onDestroy() {
         super.onDestroy()
-        if (exoPlayer?.isPlaying == true) {
-            exoPlayer?.pause() // Dừng phát âm thanh nếu đang phát
+        if (exoPlayer!=null) {
             exoPlayer?.release() // Giải phóng tài nguyên
         }
+        job?.cancel()
+
     }
 
     override fun onStop() {
         super.onStop()
-        job?.cancel()
+        if (exoPlayer?.isPlaying == true) {
+            // Dừng phát âm thanh nếu đang phát
+            exoPlayer?.pause() // Giải phóng tài nguyên
+        }
+        hideLoadingOverlay()
     }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
@@ -278,9 +284,11 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
-        hideLoadingOverlay()
         initData()
     }
+
+
 }

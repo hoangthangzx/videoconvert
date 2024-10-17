@@ -44,6 +44,30 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
     inner class ViewHolder(val binding : ItemAudioBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(position: Int, holder: SelectAudioAdapter.ViewHolder) {
             if(Const.selectTypeAudio.equals("AudioMerger") ){
+                if(elementCounts.size==0 && !data[position].active){
+                    binding.tvTime.visibility = View.VISIBLE
+                    binding.lnItemCount.visibility = View.INVISIBLE
+                }else if(elementCounts.size >= 1 && data[position].active){
+                    binding.tvTime.visibility = View.INVISIBLE
+                    binding.lnItemCount.visibility = View.VISIBLE
+                    elementCounts.forEach {
+                        if(data[position].name.equals(it.element)){
+                            binding.lnItemCount.visibility = View.VISIBLE
+                            binding.tvTime.visibility = View.INVISIBLE
+                            binding.edtStartTime.setText(it.count.toString())
+                        }
+                    }
+                }
+//                else if(!data[position].active){
+//                    elementCounts.removeAll { it.count == 0 }
+//                    elementCounts.forEach {
+//                        if(!data[position].name.equals(it.element)){
+//                            binding.lnItemCount.visibility = View.INVISIBLE
+//                            binding.tvTime.visibility = View.VISIBLE
+////                            binding.edtStartTime.setText(it.count.toString())
+//                        }
+//                    }
+//                }
                 if(!data[position].active){
                     binding.tvTime.visibility = View.VISIBLE
                     binding.lnItemCount.visibility = View.GONE
@@ -51,7 +75,6 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
                     binding.lnItemCount.visibility = View.VISIBLE
                     binding.tvTime.visibility = View.INVISIBLE
                 }
-
                 binding.btnMinus.setOnClickListener {
                     eListener.onMinusItem(position,holder)
                 }
@@ -59,15 +82,7 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
                     eListener.onPlusItem(position,holder)
                 }
             }
-            if(elementCounts.size!=0){
-                elementCounts.forEach {
-                    if(data[position].name.equals(it.element)){
-                        binding.lnItemCount.visibility = View.VISIBLE
-                        binding.edtStartTime.setText(it.count.toString())
-                    }
-                }
 
-            }
             binding.tvTitle.isSelected = true
             binding.tvSize.text = "${data[position].sizeInMB} MB"
             binding.tvTitle.text = data[position].name

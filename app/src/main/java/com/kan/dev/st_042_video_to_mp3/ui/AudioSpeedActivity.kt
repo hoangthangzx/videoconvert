@@ -61,7 +61,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     var audioString : String? = null
     var isUserSeeking = false
     var itemImvs : List<ImageView> = listOf()
-    lateinit var mediaPlayer: MediaPlayer
+    var mediaPlayer: MediaPlayer? = null
     var valueSpeed = 1f
     var duration = 0
     private var job: Job? = null
@@ -228,7 +228,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                                     override fun run() {
                                         if (mediaPlayer != null) {
                                             try {
-                                                if (mediaPlayer?.isPlaying == true) {
+                                                if (mediaPlayer!=null) {
                                                     binding.waveformSeekBar.progress = (mediaPlayer!!.currentPosition * 100 / mediaPlayer!!.duration).toFloat()
                                                     binding.seekBarAudio.progress = mediaPlayer!!.currentPosition
                                                 }
@@ -249,8 +249,10 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                                 binding.imvPlay.visibility = View.GONE
 //                                runOnUiThread(object : Runnable {
 //                                    override fun run() {
-//                                        val currentPosition = mediaPlayer.currentPosition
-//                                        binding.seekBarAudio.progress = currentPosition
+//                                        if(mediaPlayer != null ){
+//                                            val currentPosition = mediaPlayer!!.currentPosition
+//                                            binding.seekBarAudio.progress = currentPosition
+//                                        }
 //                                        handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
 //                                    }
 //                                })
@@ -502,16 +504,16 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     }
     override fun onDestroy() {
         super.onDestroy()
-        if (mediaPlayer != null) {
-            mediaPlayer.release()
+        handler.removeCallbacksAndMessages(null) // Dừng tất cả Runnable
+        if (mediaPlayer?.isPlaying == true) {
+            mediaPlayer!!.release()
         }
         job?.cancel()
-        handler.removeCallbacksAndMessages(null) // Dừng tất cả Runnable
+        hideLoadingOverlay()
     }
     override fun onStop() {
         super.onStop()
-         job?.cancel()
-        hideLoadingOverlay()
+
 
     }
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")

@@ -34,6 +34,7 @@ import com.kan.dev.st_042_video_to_mp3.ui.fragment.HomeFragment
 import com.kan.dev.st_042_video_to_mp3.ui.fragment.SettingFragment
 import com.kan.dev.st_042_video_to_mp3.ui.fragment.storage.StorageFragment
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.getAllAudiosFromSpecificDirectory_1
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
@@ -42,6 +43,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.kan.dev.st_042_video_to_mp3.utils.showSystemUI
 import com.kan.dev.st_042_video_to_mp3.view_model.SharedViewModel
 import com.metaldetector.golddetector.finder.SharedPreferenceUtils
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -54,6 +56,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
     lateinit var binding: ActivityMainBinding
     private val viewModel: SharedViewModel by viewModels()
     var currentDestination = 0
+    var storageMusic = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         SystemUtils.setLocale(this)
@@ -83,6 +86,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
         }
 
         binding.homeFragment.onSingleClick {
+            loadFragment(HomeFragment())
             currentDestination = 0
             binding.iconHome.isSelected = true
             binding.homeFragment.isSelected = true
@@ -90,10 +94,11 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             binding.settingFragment.isSelected = false
             binding.iconStorage.isSelected = false
             binding.iconSetting.isSelected = false
-            loadFragment(HomeFragment())
+
         }
 
         binding.storageFragment.onSingleClick {
+
             currentDestination = 1
             binding.iconHome.isSelected = false
             binding.iconStorage.isSelected = true
@@ -102,6 +107,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             binding.settingFragment.isSelected = false
             binding.iconSetting.isSelected = false
             loadFragment(StorageFragment())
+
         }
 
         binding.settingFragment.onSingleClick {
@@ -124,7 +130,6 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
 
     fun shareAudioFilesFromPaths(audioInfoList: List<AudioInfo>) {
         val uriList = ArrayList<Uri>()
-
         audioInfoList.forEach { audioInfo ->
             val filePath = audioInfo.uri.toString().replace("file://", "")
             val file = File(filePath)
@@ -143,10 +148,9 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
         }
         this@MainActivity.startActivity(Intent.createChooser(intent, "Share Audio Files"))
     }
-
-
     private fun initData() {
         providerSharedPreference = SharedPreferenceUtils.getInstance(this)
+        storageMusic = providerSharedPreference.getStringValue("musicStorage").toString()
         loadFragment(HomeFragment())
         binding.iconHome.isSelected = true
         binding.homeFragment.isSelected = true
@@ -185,8 +189,8 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
                     ll1.rating = 0f
                     ll1.setOnRatingChangeListener { _, p1, _ ->
                         if (p1.toInt() == 0) {
-                            tv1.text = getString(R.string.one_start_title)
-                            tv2.text = getString(R.string.one_start)
+                            tv1.text = getString(R.string.zero_start_title)
+                            tv2.text = getString(R.string.zero_start)
                         } else if (p1.toInt() in 1..3) {
                             tv1.text = getString(R.string.one_start_title)
                             tv2.text = getString(R.string.one_start)
@@ -283,6 +287,8 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             }else{
                 finishAffinity()
             }
+        }else{
+            finishAffinity()
         }
     }
 

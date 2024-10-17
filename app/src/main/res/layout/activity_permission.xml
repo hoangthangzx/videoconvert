@@ -38,7 +38,7 @@
             android:textColor="#ED86D9"
             android:textStyle="italic"
             android:gravity="center"
-            android:text="@string/video_convert_to_mp3"
+            android:text="@string/app_name"
             android:layout_marginBottom="22dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

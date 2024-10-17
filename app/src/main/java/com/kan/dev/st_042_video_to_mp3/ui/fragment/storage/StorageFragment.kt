@@ -21,6 +21,7 @@ import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.util.UnstableApi
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
@@ -39,12 +40,14 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.currentRingtone
 import com.kan.dev.st_042_video_to_mp3.utils.Const.isTouchEventHandled
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.selectFr
 import com.kan.dev.st_042_video_to_mp3.utils.Const.uriPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoInfo
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
@@ -141,11 +144,6 @@ class StorageFragment : Fragment() {
                         listVideoPick.removeAt(position)
                         countSizeVideo -= listVideoStorage[position].sizeInMB.toInt()
                     }
-//                    if(countVideo <= 1){
-//                        binding.imvRename.visibility = View.VISIBLE
-//                    }else{
-//                        binding.imvRename.visibility = View.GONE
-//                    }
                     binding.tvSelectedItem.text = "$countVideo Selected"
                     binding.size.text = "$countSizeVideo KB"
                 }else{
@@ -180,12 +178,27 @@ class StorageFragment : Fragment() {
                         holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
                         listAudioStorage[position].active = true
                         listAudioPick.add(0, listAudioStorage[position])
+                        if (listAudioPick.size == listAudioStorage.size) {
+                            binding.imvAll.visibility = View.GONE
+                            binding.imvAllTrue.visibility = View.VISIBLE
+                        }
+                        binding.tvSelectedItem.text = "$countAudio ${getString(R.string.selected)}"
+                        binding.size.text = "$countSize KB"
                     }else if(listAudioStorage[position].active){
                         countAudio -= 1
                         holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
                         listAudioPick.remove(listAudioStorage[position])
                         listAudioStorage[position].active = false
                         countSize -= listAudioStorage[position].sizeInMB.toInt()
+                        if(listAudioPick.size == 0){
+                            binding.tvSelectedItem.text = "${getString(R.string.select_items)}"
+                            binding.size.text = ""
+                        }else if (listAudioPick.size < listAudioStorage.size){
+                            binding.imvAll.visibility = View.VISIBLE
+                            binding.imvAllTrue.visibility = View.GONE
+                            binding.tvSelectedItem.text = "$countAudio ${getString(R.string.selected)}"
+                            binding.size.text = "$countSize KB"
+                        }
                     }
                     if(countAudio <= 1){
 //                        binding.imvRename.visibility = View.VISIBLE
@@ -194,14 +207,13 @@ class StorageFragment : Fragment() {
 //                        binding.imvRename.visibility = View.GONE
                         binding.imvRingtone.visibility = View.GONE
                     }
-                    binding.tvSelectedItem.text = "$countAudio Selected"
-                    binding.size.text = "$countSize KB"
                 }else{
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
                     positionAudioPlay = position
                     isClick = true
                     uriPlay = listAudioStorage[position].uri
                     audioInformation = listAudioStorage[position]
+                    selectFr = "Fr"
                     Log.d("check_data", "onClickItem: "+ audioInformation)
                     startActivity(Intent(requireContext(), PlaySongActivity::class.java))
                 }
@@ -320,7 +332,6 @@ class StorageFragment : Fragment() {
         Toast.makeText(requireContext(), R.string.set_ringtone_successfully, Toast.LENGTH_SHORT).show()
     }
 
-
     private fun openAndroidPermissionsMenu() {
         val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
         intent.setData(Uri.parse("package:" + requireContext().packageName))
@@ -333,10 +344,15 @@ class StorageFragment : Fragment() {
     }
 
     private fun initData() {
-        initRec()
+        binding.progressBar.visibility = View.VISIBLE
         shareData = SharedPreferenceUtils.getInstance(requireContext())
         storageMusic = shareData.getStringValue("musicStorage").toString()
         storageVideo = shareData.getStringValue("videoStorage").toString()
+        lifecycleScope.launch {
+            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+            binding.progressBar.visibility = View.GONE
+            initRec()
+        }
     }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {

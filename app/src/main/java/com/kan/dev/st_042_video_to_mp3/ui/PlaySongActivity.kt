@@ -32,10 +32,14 @@ import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRenameBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomDialogRingtoneBinding
 import com.kan.dev.st_042_video_to_mp3.databinding.CustomeDialogDeleteBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.currentRingtone
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.selectFr
+import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
+import com.kan.dev.st_042_video_to_mp3.utils.Const.uriPlay
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.masoudss.lib.SeekBarOnProgressChanged
@@ -89,19 +93,19 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         }
 
         binding.lnShare.onSingleClick {
-            shareAudioFile(this@PlaySongActivity, audioInformation!!.uri)
+            uriPlay?.let { shareAudioFile(this@PlaySongActivity, it) }
             mediaPlayer!!.pause()
             binding.imvPause.visibility = View.GONE
             binding.imvPlay.visibility = View.VISIBLE
         }
-
-        binding.lnDelete.onSingleClick {
-            showDialogDelete()
-        }
-
-        binding.lnRename.onSingleClick {
-            showDialogRename()
-        }
+//
+//        binding.lnDelete.onSingleClick {
+//            showDialogDelete()
+//        }
+//
+//        binding.lnRename.onSingleClick {
+//            showDialogRename()
+//        }
 
         binding.imvTick.onSingleClick {
             binding.lnMenu.visibility = View.GONE
@@ -248,7 +252,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             "${this.packageName}.provider",  // Package của ứng dụng bạn
             file
         )
-
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "audio/*"
             putExtra(Intent.EXTRA_STREAM, uri)
@@ -260,7 +263,7 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
     }
 
     private fun setRingtone(type: Int) {
-        val customRingtoneUri = Uri.parse(audioInformation!!.uri.toString())
+        val customRingtoneUri = Uri.parse(uriPlay!!.toString())
         when (type) {
             0       -> {
                 RingtoneManager.setActualDefaultRingtoneUri(this, RingtoneManager.TYPE_RINGTONE, customRingtoneUri)
@@ -281,7 +284,8 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initDataWaveForn() {
-        binding.waveformSeekBar.setSampleFrom(audioUri!!)
+        uriPlay?.let { binding.waveformSeekBar.setSampleFrom(it.toString()) }
+        Log.d("check_uriPlay", "initDataWaveForn: "+ uriPlay)
         val handler = Handler(Looper.getMainLooper())
         val updateProgress = object : Runnable {
             override fun run() {
@@ -332,18 +336,38 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
 
     private fun initData() {
         binding.tvNameSong.isSelected = true
+        binding.tvShare.isSelected = true
+        binding.tvSetAs.isSelected = true
         binding.imvPause.visibility = View.VISIBLE
         binding.imvPlay.visibility = View.GONE
-        binding.tvNameSong.text =  audioInformation!!.name
-        audioString = audioInformation!!.uri.toString()
-        audioUri = audioInformation!!.uri
+        if( selectType.equals("Video")){
+            binding.tvNameSong.text =  audioInformation!!.name
+            audioString = audioInformation!!.uri.toString()
+            audioUri = audioInformation!!.uri
+        }else if (selectFr.equals("Fr")){
+            binding.tvNameSong.text =  audioInformation!!.name
+            audioString = audioInformation!!.uri.toString()
+            audioUri = audioInformation!!.uri
+        }else{
+            binding.tvNameSong.text =  audioInfo!!.name
+            audioString = audioInfo!!.uri.toString()
+            audioUri = audioInfo!!.uri
+        }
+
         Log.d("check_audio", "initData: "+ audioUri)
         createMediaPlayer()
         binding.seekBarAudio.max = mediaPlayer!!.duration
-        binding.tvDuration.text = "/ ${audioInformation!!.duration}"
+        if(selectType.equals("Video")){
+            binding.tvDuration.text = "/ ${audioInformation!!.duration}"
+        }else if (selectFr.equals("Fr")){
+            binding.tvDuration.text = "/ ${audioInformation!!.duration}"
+
+        }else{
+            binding.tvDuration.text = "/ ${audioInfo!!.duration}"
+        }
         runOnUiThread(object : Runnable {
             override fun run() {
-                if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
+                if (mediaPlayer != null ) {
                     val currentPosition = mediaPlayer!!.currentPosition
                     binding.seekBarAudio.progress = currentPosition
                 }
@@ -446,7 +470,7 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
     private fun createMediaPlayer() {
         mediaPlayer = MediaPlayer().apply {
             try {
-                setDataSource(audioString) // Không cần ?. vì đã kiểm tra tồn tại
+                setDataSource(uriPlay.toString()) // Không cần ?. vì đã kiểm tra tồn tại
                 prepare()
                 Log.d("AudioPlay___", "Playback started"+ audioString)
             } catch (e: IOException) {

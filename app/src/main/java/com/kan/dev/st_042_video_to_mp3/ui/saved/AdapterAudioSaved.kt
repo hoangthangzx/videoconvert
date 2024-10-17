@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kan.dev.st_042_video_to_mp3.databinding.ItemSaveConvertedFileBinding
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
+import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 
 class AdapterAudioSaved (var context: Context): RecyclerView.Adapter<AdapterAudioSaved.ViewHolder>() {
     lateinit var mListener : onClickItemListener
@@ -32,6 +33,10 @@ class AdapterAudioSaved (var context: Context): RecyclerView.Adapter<AdapterAudi
             binding.tvSize.text = "${data[position].sizeInMB}"
             binding.tvDurationVideo.text = data[position].duration
             binding.tvTitle.isSelected = true
+
+            holder.itemView.onSingleClick {
+                mListener.onClickItem(position,holder)
+            }
         }
     }
     override fun onCreateViewHolder(

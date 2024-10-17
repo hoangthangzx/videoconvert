@@ -17,6 +17,7 @@ import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
+import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 
 class AdapterSaved (var context: Context): RecyclerView.Adapter<AdapterSaved.ViewHolder>() {
     lateinit var mListener : onClickItemListener
@@ -50,6 +51,10 @@ class AdapterSaved (var context: Context): RecyclerView.Adapter<AdapterSaved.Vie
             binding.tvSize.text = "${data[position].sizeInMB}"
             binding.tvDurationVideo.text = data[position].duration
             binding.tvTitle.isSelected = true
+
+            holder.itemView.onSingleClick {
+                mListener.onClickItem(position,holder)
+            }
         }
     }
     override fun onCreateViewHolder(

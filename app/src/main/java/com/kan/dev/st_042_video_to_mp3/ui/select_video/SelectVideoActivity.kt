@@ -201,11 +201,17 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                     holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box_yes)
                     listVideo[position].active = true
                     listVideoPick.add(0,listVideo[position])
+                    if (listVideoPick.size == listVideo.size){
+                        binding.imvTick.visibility = View.GONE
+                        binding.imvTickTrue.visibility = View.VISIBLE
+                    }
                 }else if(listVideo[position].active){
                     countVideo -= 1
                     holder.binding.imvCheckbox.setImageResource(R.drawable.icon_check_box)
                     Log.d("check_size_list", "onItemClick: "+ listVideoPick  + "        "+ position+  "     "  + listVideo.size)
                     listVideoPick.remove(listVideo[position])
+                    binding.imvTick.visibility = View.VISIBLE
+                    binding.imvTickTrue.visibility = View.GONE
                     listVideo[position].active = false
                     Log.d("chejjc-wd-d-e", "onItemClick: "+  listVideo[position])
                     countSizeVideo -= listVideo[position].sizeInMB.toInt()
@@ -221,7 +227,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             binding.imvTickTrue.visibility = View.VISIBLE
             binding.imvTick.visibility = View.GONE
             listVideo.forEach { it.active = true }
-//            val totalSize = listVideo.sumBy { it.sizeInMB * it.quantity }
             adapter.notifyDataSetChanged()
             listVideoPick = listVideo.map { it.copy() }.toMutableList()
             countVideo = listVideoPick.size

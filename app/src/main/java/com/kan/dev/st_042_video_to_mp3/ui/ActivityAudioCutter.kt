@@ -103,15 +103,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
         binding.imvBack.onSingleClick {
             finish()
-            if(mediaPlayer?.isPlaying == true){
-                mediaPlayer!!.release()
-            }
         }
         binding.tvCancel.onSingleClick {
             finish()
-            if(mediaPlayer?.isPlaying == true){
-                mediaPlayer!!.release()
-            }
         }
         binding.btnPlus.setOnClickListener {
             val currentTime = binding.edtStartTime.text.toString()
@@ -139,12 +133,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 binding.imvPause.visibility = View.GONE
                 startTime = convertDurationToSeconds(binding.edtStartTime.text.toString()).toFloat()
                 binding.customCutterSeekBar.setSelectedMinValue(startTime + 1f)
-//                if(binding.customCutterSeekBar.getSelectedMinValue() > 1f){
-//                    binding.btnMinus.isClickable = true
-//                }
-//                if(binding.customCutterSeekBar.getSelectedMinValue() >= binding.customCutterSeekBar.getSelectedMaxValue() -1f){
-//                    binding.btnPlus.isClickable = false
-//                }
                 binding.edtStartTime.setText(String.format("%02d:%02d", hours, minutes))
                 binding.edtStartTime.setSelection(binding.edtStartTime.text.length)
                 if(checkType== true){
@@ -185,13 +173,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 binding.customCutterSeekBar.setSelectedMaxValue(endTime + 1f)
                 Log.d("check_value", "initActionMinus: "+ startTime)
                 binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-//                if(binding.customCutterSeekBar.getSelectedMaxValue() >= maxValueTime){
-//                    binding.btnPlusEnd.isClickable = false
-//                    Toast.makeText(this, getString(R.string.time_reaches_its_maximum_value), Toast.LENGTH_SHORT).show()
-//                }
-//                if(binding.customCutterSeekBar.getSelectedMaxValue() > binding.customCutterSeekBar.getSelectedMinValue() + 1f){
-//                    binding.btnMinusEnd.isClickable = true
-//                }
                 binding.edtEndTime.setSelection(binding.edtEndTime.text.length)
                 if(checkType== true){
                     timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
@@ -229,12 +210,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 endTime = convertDurationToSeconds(binding.edtEndTime.text.toString()).toFloat()
                 binding.customCutterSeekBar.setSelectedMaxValue(endTime - 1f)
                 binding.edtEndTime.setText(String.format("%02d:%02d", hours, minutes))
-//                if(binding.customCutterSeekBar.getSelectedMaxValue() < maxValueTime){
-//                    binding.btnPlusEnd.isClickable = true
-//                }
-//                if(binding.customCutterSeekBar.getSelectedMaxValue() <= binding.customCutterSeekBar.getSelectedMinValue() + 1f){
-//                    binding.btnMinusEnd.isClickable = false
-//                }
                 binding.edtEndTime.setSelection(binding.edtStartTime.text.length)
                 if(checkType== true){
                     timeCut = convertSecondsToDuration(binding.customCutterSeekBar.getSelectedMaxValue().toInt() - binding.customCutterSeekBar.getSelectedMinValue().toInt())
@@ -340,6 +315,11 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 binding.imvPause.visibility = View.VISIBLE
                 binding.imvPlay.visibility = View.GONE
 //                createMediaPlayer()
+//                mediaPlayer?.setOnCompletionListener {
+//                    mediaPlayer!!.seekTo(0)
+//                    binding.imvPause.visibility = View.GONE
+//                    binding.imvPlay.visibility = View.VISIBLE
+//                }
             }else{
                 Log.d("check_click", "initAction: huefuyhehgehghwttghtanah")
                 binding.imvPause.visibility = View.VISIBLE
@@ -397,15 +377,14 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         }
     }
 
-    // Hàm tua tới audio
     private fun forwardAudio(milliseconds: Int) {
         mediaPlayer?.let {
             val newPosition = it.currentPosition + milliseconds
             if (newPosition <= it.duration) {
-                Log.d("check_new_pos", "forwardAudio: "+ newPosition)
                 it.seekTo(newPosition)
             } else {
                 it.seekTo(it.duration)
+                checkCut = true
             }
         }
     }
@@ -499,11 +478,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer?.let {
-            if (checkCut == false) {
-                it.release()// Dừng phát nếu đang phát
-            }
-        }
+        mediaPlayer?.release()
+        job?.cancel()
+        hideLoadingOverlay()
     }
 
     fun cutAndMergeAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
@@ -604,19 +581,21 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     override fun onResume() {
         super.onResume()
-        if(checkCut == false){
-            mediaPlayer?.pause()
-            mediaPlayer?.seekTo(0)
+        if (mediaPlayer != null){
+            mediaPlayer!!.start()
         }
         checkCut = true
-        isPlaying = false
     }
 
     override fun onStop() {
         super.onStop()
-        job?.cancel()
-        hideLoadingOverlay()
+        if (mediaPlayer!=null && mediaPlayer!!.isPlaying){
+            mediaPlayer!!.pause()
+        }
+        binding.imvPause.visibility = View.VISIBLE
+        binding.imvPlay.visibility = View.GONE
     }
+
 
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")

@@ -35,6 +35,7 @@ import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.countPos
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.getAllAudiosFromSpecificDirectory
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.getAllAudiosFromSpecificDirectory_1
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
@@ -55,6 +56,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.musicStorage
+import com.kan.dev.st_042_video_to_mp3.utils.Const.selectFr
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoCutter
@@ -88,7 +90,6 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initDataItem()
         initData()
         initView()
         initAction()
@@ -167,6 +168,8 @@ class HomeFragment : Fragment() {
 //            startActivity(Intent(requireContext(),SelectVideoActivity::class.java))
 //        }
         binding.lnVideoConvert.onSingleClick {
+            listVideo.clear()
+            VideoUtils.getAllVideos(requireContext().contentResolver)
             selectType = "Video"
             Const.checkData = false
             countVideo = 0
@@ -176,6 +179,8 @@ class HomeFragment : Fragment() {
         }
 
         binding.lnAudioConvert.onSingleClick {
+            listAudio.clear()
+            AudioUtils.getAllAudios(requireContext().contentResolver)
             selectTypeAudio = "AudioConvert"
             countAudio = 0
             countSize = 0
@@ -185,6 +190,8 @@ class HomeFragment : Fragment() {
         }
 
         binding.lnAudioMerger.onSingleClick {
+            listAudio.clear()
+            AudioUtils.getAllAudios(requireContext().contentResolver)
             selectTypeAudio = "AudioMerger"
             countAudio = 0
             countSize = 0
@@ -195,6 +202,8 @@ class HomeFragment : Fragment() {
         }
 
         binding.lnAudioCutter.onSingleClick {
+            listAudio.clear()
+            AudioUtils.getAllAudios(requireContext().contentResolver)
             selectTypeAudio = "AudioCutter"
             countAudio = 0
             countSize = 0
@@ -209,7 +218,11 @@ class HomeFragment : Fragment() {
 //            countSizeVideo = 0
 //            startActivity(Intent(requireContext(), SelectVideoActivity::class.java))
 //        }
+
+
         binding.lnAudioSpeed.onSingleClick {
+            listAudio.clear()
+            AudioUtils.getAllAudios(requireContext().contentResolver)
             selectTypeAudio = "AudioSpeed"
             countAudio = 0
             countSize = 0
@@ -235,10 +248,8 @@ class HomeFragment : Fragment() {
 
     private fun initDataItem() {
         countMap.clear()
-        listAudioStorage.clear()
-        AudioUtils.getAllAudiosFromSpecificDirectory_1(musicStorage.toString())
-        listVideo.clear()
-        VideoUtils.getAllVideos(requireContext().contentResolver)
+//        listAudioStorage.clear()
+//        getAllAudiosFromSpecificDirectory_1(storageMusic)
         audioCutter = null
         videoCutter = null
         countPos = 0
@@ -247,16 +258,13 @@ class HomeFragment : Fragment() {
         countSize = 0
         checkType = true
         selectType = ""
+        selectFr = ""
         selectTypeAudio = ""
         listVideoPick.clear()
-        listAudio.clear()
-        AudioUtils.getAllAudios(requireContext().contentResolver)
         listAudioPick.clear()
         listAudioSaved.clear()
         listConvertMp3.clear()
         audioInfo  = null
         Log.d("check_data", "onResume: "+  storageVideo  + "    " + listVideoStorage)
     }
-
-
 }
