@@ -192,6 +192,11 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        hideLoadingOverlay()
+    }
+
 
     private fun initData() {
 //        audioUri = Uri.parse(listAudioPick[0].uri.toString())

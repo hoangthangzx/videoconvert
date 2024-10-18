@@ -202,9 +202,11 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             }
         })
         binding.imvPlay.onSingleClick {
+            clearCache()
             Log.d("check_value_speed", "initAction: "+ valueSpeed)
             if(checkSpeedPlay == true){
-                speedUri = "${cacheDir.path}/speed.mp3"
+                val timestamp = System.currentTimeMillis()
+                speedUri = "${cacheDir.path}/speed_${timestamp}.mp3"
                     val audioPath = audioString
                     if (audioPath != null){
                         binding.progress.visibility = View.VISIBLE
@@ -217,8 +219,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                                 createMediaPlayerSpeed()
                                 startPlaying()
                                 Log.d("check_audio_speed", "fvgrnrohegjegmbvkermkbhtrnh")
-                                val cutPath = File(speedUri)
-                                cutPath.delete()
                                 checkSpeedPlay = false
                                 binding.progress.visibility = View.GONE
                                 binding.seekBarAudio.max = mediaPlayer!!.duration
@@ -502,6 +502,17 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         val remainingSeconds = totalSeconds % 60 // Tính giây còn lại
         return String.format("%02d:%02d", minutes, remainingSeconds) // Định dạng về dạng 00:00
     }
+
+    fun clearCache() {
+        val cacheDir = cacheDir
+        val files = cacheDir.listFiles()
+        if (files != null) {
+            for (file in files) {
+                file.delete() // Xóa từng tệp
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacksAndMessages(null) // Dừng tất cả Runnable
@@ -513,8 +524,8 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     }
     override fun onStop() {
         super.onStop()
-
-
+        clearCache()
+        hideLoadingOverlay()
     }
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")

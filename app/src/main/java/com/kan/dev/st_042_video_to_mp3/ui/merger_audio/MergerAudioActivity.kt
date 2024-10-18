@@ -106,27 +106,32 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
             }
             val convertedFiles = mutableListOf<String>()
             for (filePath in audioFilePaths) {
-//                val validFilePath = filePath?.replace(" ", "\\ ")?.replace("(", "\\(")?.replace(")", "\\)") ?: ""
-                val timestamp = System.currentTimeMillis()
-                Log.d("check_merger", "Chuyển đổi file: $filePath")
-                val convertedFilePath = "${filePath.substringBeforeLast(".")}_${timestamp}_converter.mp3"
-                val command = "-i \"$filePath\" -codec:a libmp3lame \"$convertedFilePath\""
-//                val command = "-i \"$validFilePath\" -vn -c:a aac -b:a 192k -ar 44100 \"$convertedFilePath\""
-                val rc = FFmpeg.execute(command)
-                if (rc == 0) {
-                    Log.d("check_merger", "Chuyển đổi thành công: $convertedFilePath")
-                    convertedFiles.add(convertedFilePath)
-                } else {
-                    return@withContext false
-                }
+                convertedFiles.add(filePath)
+
+////                val validFilePath = filePath?.replace(" ", "\\ ")?.replace("(", "\\(")?.replace(")", "\\)") ?: ""
+//                val timestamp = System.currentTimeMillis()
+//                Log.d("check_merger", "Chuyển đổi file: $filePath")
+//                val convertedFilePath = "${filePath.substringBeforeLast(".")}_${timestamp}_converter.mp3"
+//                val command = "-i \"$filePath\" -codec:a libmp3lame \"$convertedFilePath\""
+////                val command = "-i \"$validFilePath\" -vn -c:a aac -b:a 192k -ar 44100 \"$convertedFilePath\""
+//                val rc = FFmpeg.execute(command)
+//                if (rc == 0) {
+//                    Log.d("check_merger", "Chuyển đổi thành công: $convertedFilePath")
+//                    convertedFiles.add(convertedFilePath)
+//                } else {
+//                    return@withContext false
+//                }
             }
             val fileListPath = "${context.cacheDir}/file_list.txt"
             File(fileListPath).printWriter().use { out ->
                 convertedFiles.forEach { out.println("file '$it'") }
             }
-            val commandMerge = "-f concat -safe 0 -i \"$fileListPath\" -c copy \"$outputPath\""
-//            val filterComplex = convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
-//            val commandMerge = convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
+//            val commandMerge = "-f concat -safe 0 -i \"$fileListPath\" -c copy \"$outputPath\""
+
+//            val commandMerge = "-f concat -safe 0 -i \"$fileListPath\" -c:a libmp3lame \"$outputPath\""
+
+            val filterComplex = convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
+            val commandMerge = convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
 ////            val filterComplex = convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
 //            val commandMerge = convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
             val rcMerge = FFmpeg.execute(commandMerge)
@@ -158,6 +163,10 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                         mediaPlayer_1 = null
 
                     }
+                    binding.imvPause.visibility = View.GONE
+                    binding.imvPlay.visibility = View.VISIBLE
+                    mediaPlayer.stop()
+                    mediaPlayer.seekTo(0)
                     clearCache()
                     val pos = listAudioPickMerger[position].pos
                     Log.d("check_sizze_audio_pick", "onItemClick: " + pos + "   "+ listAudioPick)
@@ -183,6 +192,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                 }
             }
             override fun onClickPlay(position: Int, holder: MergerAudioAdapter.ViewHolder) {
+                adapter.notifyDataSetChanged()
                 Log.d("cjcjcjcc", "onClickPlay: ")
                 val previouslySelectedIndex = listAudioPickMerger.indexOfFirst { it.activePl }
                 if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
@@ -239,6 +249,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
             binding.imvPlay.visibility = View.VISIBLE
             pausePlaying()
         }
+
         binding.imvPlay.onSingleClick {
             listAudioPickMerger.forEach { it.activePl = false }
             adapter.notifyDataSetChanged()
@@ -335,6 +346,8 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                         var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
                         audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                         startActivity(Intent(this@MergerAudioActivity,SavedActivity::class.java))
+                    }else{
+                        clearCache()
                     }
                 }
             }
@@ -460,21 +473,9 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                     val adapter = recyclerView.adapter
                     val from = viewHolder.adapterPosition
                     val to = target.adapterPosition
-//                    if (from < to) {
-//                        for (i in from until to) {
-//                            checkMerger = true
-//                            clearCache()
-//                            Collections.swap(listAudioPick, i, i + 1)
-//                        }
-//                    } else {
-//                        for (i in from downTo to + 1) {
-//                            checkMerger = true
-//                            clearCache()
-//                            Collections.swap(listAudioPick, i, i - 1)
-//                        }
-//                    }
-                    Collections.swap(listAudioPick, from, to)
-//                    adapter?.notifyItemMoved(from, to)
+                    Collections.swap(listAudioPickMerger, from, to)
+                    listAudioPickMerger.forEach { it.activePl = false }
+                    Log.d("check-item_listtt", "onMove: "+ listAudioPickMerger)
                     adapter?.notifyItemMoved(from, to)
                     return true
                 }
