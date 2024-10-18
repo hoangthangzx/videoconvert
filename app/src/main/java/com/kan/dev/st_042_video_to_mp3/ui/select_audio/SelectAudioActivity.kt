@@ -47,6 +47,9 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     var countItemt = 1
     private var mediaPlayer: MediaPlayer? = null
     override fun init() {
+        if(listAudio.size == 0){
+            binding.noItem.visibility = View.VISIBLE
+        }
         initData()
         initView()
         if(selectTypeAudio.equals("AudioSpeed") || Const.selectTypeAudio.equals("AudioCutter")){

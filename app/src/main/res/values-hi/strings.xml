@@ -147,4 +147,6 @@
     <string name="supports_features_like_trim_merge_reduce_speed">काटने, मिलाने, गति को कम करने जैसी सुविधाओं का समर्थन करता है,...</string>
     <string name="convert_video_to_mp3">वीडियो को MP3 में परिवर्तित करें</string>
     <string name="easy_and_fast">आसान और तेज़</string>
+    <string name="select_audio">ऑडियो चुनें</string>
+    <string name="you_must_choose_a_format">आपको एक प्रारूप चुनना होगा</string>
 </resources>

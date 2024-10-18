@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Video convert ke audio</string>
+    <string name="app_name">Video covert to audio</string>
     <string name="language">Bahasa</string>
     <string name="english">Inggris</string>
     <string name="next">Selanjutnya</string>
@@ -147,5 +147,6 @@
     <string name="supports_features_like_trim_merge_reduce_speed">Mendukung fitur seperti potong, gabungkan, kurangi kecepatan,...</string>
     <string name="convert_video_to_mp3">Konversi video ke MP3</string>
     <string name="easy_and_fast">mudah dan cepat</string>
-
+    <string name="select_audio">Pilih Audio</string>
+    <string name="you_must_choose_a_format">Anda harus memilih format</string>
 </resources>

@@ -32,7 +32,7 @@ object AudioUtils {
                     if (file.isFile && audioExtensions.any { file.name.endsWith(it, ignoreCase = true) }) {
                         val audioUri = Uri.fromFile(file) // Tạo URI từ tệp
                         val duration = getAudioDuration(file) // Gọi hàm lấy thời gian
-                        val sizeInMB = file.length() / (1024 * 1024) // Kích thước tệp tính bằng MB
+                        val sizeInMB = file.length() / 1024 // Kích thước tệp tính bằng MB
                         val name = file.name
                         val mimeType = file.extension
                         val date = formatDate(file.lastModified()) // Định dạng ngày

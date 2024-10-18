@@ -13,6 +13,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.arthenica.mobileffmpeg.FFmpeg
@@ -25,12 +26,15 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
+import com.kan.dev.st_042_video_to_mp3.utils.FileInfo.formatDuration
+import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils.formatTimeToHoursMinutes_1
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 import kotlinx.coroutines.Job
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     override fun getFragmentID(): Int  = 0
@@ -64,6 +68,30 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     }
 
     private fun initAction() {
+        binding.seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            @SuppressLint("DefaultLocale")
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    mediaPlayer!!.seekTo(progress)
+                    val elapsedTime = String.format(
+                        "%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(progress.toLong()),
+                        TimeUnit.MILLISECONDS.toSeconds(progress.toLong()) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(progress.toLong()))
+                    )
+                    binding.tvTimeStart.text = "${elapsedTime}"
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                handler.removeCallbacksAndMessages(null)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                updateTimeAndSeekBar()
+            }
+        })
+
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
@@ -216,7 +244,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 }else{
                     timeCut = convertSecondsToDuration(  timeSum.toInt() - binding.customCutterSeekBar.getSelectedMaxValue().toInt() + binding.customCutterSeekBar.getSelectedMinValue().toInt())
                 }
-
                 binding.tvTimeCut.text = timeCut
             }
 
@@ -265,7 +292,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 startTime = minValue
                 endTime = maxValue
                 if (checkCut == false){
-                    mediaPlayer!!.stop()
+                    mediaPlayer!!.pause()
                     mediaPlayer!!.seekTo(0)
                 }
                 checkCut = true
@@ -296,11 +323,10 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         }
 
         binding.imvPlay.onSingleClick {
+            Log.d("check_play", "initAction: "+ checkCut)
             if(checkCut == true){
-//                binding.progress.visibility = View.VISIBLE
                 val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
                 val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
-//                val durationVideo = convertDurationToSeconds(listAudio[positionAudioPlay].duration)
                 val timestamp = System.currentTimeMillis()
                 cutterUri = "${cacheDir.path}/cutter_${timestamp}.mp3"
                 Log.d("check_click", "initAction: thanhhhh anjanah"+ currentValueStart + "    " + currentValueEnd)
@@ -312,21 +338,40 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                         cutAndMergeAudio(videoPath,cutterUri,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
                     }
                 }
+                binding.seekBarAudio.isEnabled = true
+                binding.progress.visibility = View.GONE
+                createMediaPlayer()
+                Log.d("check_audio_speed", "fvgrnrohegjegmbvkermkbhtrnh")
+                checkCut = false
+                binding.progress.visibility = View.GONE
+                binding.seekBarAudio.max = mediaPlayer!!.duration
+                binding.tvDuration.text = "/ ${formatDuration(mediaPlayer!!.duration)}"
+                updateTimeAndSeekBar()
+                val handler = Handler(Looper.getMainLooper())
                 binding.imvPause.visibility = View.VISIBLE
                 binding.imvPlay.visibility = View.GONE
-//                createMediaPlayer()
-//                mediaPlayer?.setOnCompletionListener {
-//                    mediaPlayer!!.seekTo(0)
-//                    binding.imvPause.visibility = View.GONE
-//                    binding.imvPlay.visibility = View.VISIBLE
-//                }
+                mediaPlayer!!.setOnCompletionListener {
+                    binding.tvTimeStart.text =
+                        formatTimeToHoursMinutes_1(mediaPlayer!!.duration)
+                        handler.postDelayed({
+                        binding.seekBarAudio.progress = 0
+                        mediaPlayer!!.seekTo(0)
+                        binding.tvTimeStart.text = "00:00"
+                        isPlaying = false
+                        binding.imvPause.visibility = View.GONE
+                        binding.imvPlay.visibility = View.VISIBLE
+//                                    handler.removeCallbacksAndMessages(null)
+                    }, 1000)
+                }
+                binding.imvPause.visibility = View.VISIBLE
+                binding.imvPlay.visibility = View.GONE
+                startPlaying()
             }else{
                 Log.d("check_click", "initAction: huefuyhehgehghwttghtanah")
                 binding.imvPause.visibility = View.VISIBLE
                 binding.imvPlay.visibility = View.GONE
                 startPlaying()
             }
-
         }
 
         binding.imvPause.onSingleClick {
@@ -365,6 +410,30 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         }
     }
 
+    fun formatDuration(duration: Int): String {
+        val minutes = (duration / 1000) / 60
+        val seconds = (duration / 1000) % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun updateTimeAndSeekBar() {
+        val mediaPlayer = mediaPlayer ?: return
+        if (mediaPlayer!=null){
+            val currentPosition = mediaPlayer.currentPosition
+            binding.seekBarAudio.progress = currentPosition
+            val elapsedTime = String.format(
+                "%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(currentPosition.toLong()),
+                TimeUnit.MILLISECONDS.toSeconds(currentPosition.toLong()) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition.toLong()))
+            )
+            binding.tvTimeStart.text = "${elapsedTime}"
+            handler.postDelayed({ updateTimeAndSeekBar() }, 1000)
+        }
+
+    }
+
     private fun rewindAudio(milliseconds: Int) {
         mediaPlayer?.let {
             val newPosition = it.currentPosition - milliseconds
@@ -391,6 +460,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initData() {
+        checkCut = true
         mediaPlayer = MediaPlayer()
         binding.waveformSeekBar.setSampleFrom(listAudio[positionAudioPlay].uri)
         maxValueTime = (convertDurationToSeconds(listAudio[positionAudioPlay].duration).toFloat())
@@ -479,8 +549,10 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer?.release()
+        Log.d("fergrhgreher", "destroy ")
         job?.cancel()
         hideLoadingOverlay()
+        handler.removeCallbacksAndMessages(null)
     }
 
     fun cutAndMergeAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
@@ -506,18 +578,19 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 sPath.delete()
                 if(checkCut == true){
                     Log.d("check_click", "cutAudio: "+ cutterUri)
-                    binding.progress.visibility = View.GONE
-                    createMediaPlayer()
-                    startPlaying()
-                    mediaPlayer?.setOnCompletionListener {
-                        binding.imvPlay.visibility = View.VISIBLE
-                        binding.imvPause.visibility = View.GONE
-                        isPlaying = false
-                    }
-//                    val cutPath = File(cutterUri)
+//                    binding.progress.visibility = View.GONE
+//                    createMediaPlayer()
+//                    startPlaying()
+//                    mediaPlayer?.setOnCompletionListener {
+//                        binding.imvPlay.visibility = View.VISIBLE
+//                        binding.imvPause.visibility = View.GONE
+//                        isPlaying = false
+//                    }
+////                    val cutPath = File(cutterUri)
 //                    cutPath.delete()
                     checkCut = false
                 }else{
+                    checkCut = false
                     val videoUri = Uri.parse(outputFilePath)
                     val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
                     Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
@@ -543,18 +616,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             Log.d("checkType", "cutAudio: "+ checkCut)
             if(checkCut == true){
                 Log.d("check_click", "cutAudio: "+ cutterUri + "    " + isPlaying)
-                binding.progress.visibility = View.GONE
-                createMediaPlayer()
-                startPlaying()
-                mediaPlayer?.setOnCompletionListener {
-                    binding.imvPlay.visibility = View.VISIBLE
-                    binding.imvPause.visibility = View.GONE
-                    isPlaying = false
-                }
-//                val cutPath = File(cutterUri)
-//                cutPath.delete()
                 checkCut = false
             }else{
+                checkCut = false
                 val videoUri = Uri.parse(outputFilePath)
                 val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
                 Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
@@ -581,30 +645,32 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     override fun onResume() {
         super.onResume()
-        if (mediaPlayer != null){
-            mediaPlayer!!.start()
+        if(binding.loadingOverlay.visibility == View.VISIBLE){
+            hideLoadingOverlay()
+            checkCut = true
         }
-        checkCut = true
     }
 
     override fun onStop() {
         super.onStop()
         if (mediaPlayer!=null && mediaPlayer!!.isPlaying){
             mediaPlayer!!.pause()
+            checkCut = false
         }
-        binding.imvPause.visibility = View.VISIBLE
-        binding.imvPlay.visibility = View.GONE
+        binding.imvPause.visibility = View.GONE
+        binding.imvPlay.visibility = View.VISIBLE
+        isPlaying = false
     }
-
 
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        job?.cancel()
         if(binding.loadingOverlay.visibility == View.VISIBLE){
             hideLoadingOverlay()
+            checkCut = true
         }else{
             finish()
         }
     }
+
 }

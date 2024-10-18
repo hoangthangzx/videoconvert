@@ -48,6 +48,9 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     lateinit var adapter: SelectVideoAdapter
     var isAll = false
     override fun init() {
+        if(listVideo.size == 0){
+            binding.noItem.visibility = View.VISIBLE
+        }
         initData()
         initView()
         if(selectType.equals("VideoCutter")){
@@ -92,8 +95,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                 binding.tvSize.text = "/ $countSizeVideo MB"
             }
         })
-
-
     }
 
     private fun initActionMerger() {
@@ -273,10 +274,12 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
 
     override fun onResume() {
         super.onResume()
+        if(listVideoPick.size < listVideo.size){
+            binding.imvTick.visibility = View.VISIBLE
+            binding.imvTickTrue.visibility = View.GONE
+        }
         binding.tvSelected.text = "$countVideo Selected"
         binding.tvSize.text = "/ $countSizeVideo MB"
         adapter.notifyDataSetChanged()
     }
-
-
 }

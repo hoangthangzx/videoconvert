@@ -240,7 +240,7 @@ class SettingFragment : Fragment() {
     }
     private fun initView() {
         binding.tvPathAudio.text = storageMusic
-        binding.tvPathVideo.text = storageVideo
+//        binding.tvPathVideo.text = storageVideo
 
         if (providerSharedPreference.getBooleanValue("booleanRate")
         ) {

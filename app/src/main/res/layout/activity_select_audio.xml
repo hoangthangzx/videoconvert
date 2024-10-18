@@ -36,7 +36,7 @@
                 android:layout_marginEnd="5dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Select Audio"
+                android:text="@string/select_audio"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -66,6 +66,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lnStatus_2"
             tools:listitem="@layout/item_audio" />
+
+        <TextView
+            android:id="@+id/noItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="20dp"
+            android:text="@string/you_don_t_have_any_content_yet_create_a_new_video_now"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/recFileConvert"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lnStatus_2" />
 
         <LinearLayout
             android:id="@+id/linearLayout5"
@@ -110,21 +124,21 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:layout_marginEnd="5dp"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tvContinue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="italic"
-                        android:text="@string/continue_1"/>
+                        android:text="@string/continue_1"
+                        android:textStyle="italic" />
 
                     <View
                         android:layout_width="55dp"
                         android:layout_height="1dp"
-                        android:background="#FE8BEC"/>
+                        android:background="#FE8BEC" />
 
 
                 </LinearLayout>

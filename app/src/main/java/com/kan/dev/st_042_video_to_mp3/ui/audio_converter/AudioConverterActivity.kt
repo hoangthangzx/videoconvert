@@ -39,6 +39,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(false) {
     override fun getFragmentID(): Int = 0
@@ -109,11 +112,12 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
 
             }
         }
-
-
         binding.tvDone.onSingleClick {
-            if(listAudioPick.size == 0){
-                Toast.makeText(this@AudioConverterActivity, getString(R.string.you_must_choose_2_or_more_items), Toast.LENGTH_SHORT).show()
+            if(checkItem == false){
+                Toast.makeText(this@AudioConverterActivity, getString(R.string.you_must_choose_a_format), Toast.LENGTH_SHORT).show()
+            }
+            else if(listAudioPick.size == 0){
+                Toast.makeText(this@AudioConverterActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
             }else{
                 showLoadingOverlay()
                     if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
@@ -123,7 +127,6 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                             convertAllSongsToMp3()
                         }
                     }
-
             }
         }
     }
@@ -134,6 +137,10 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
                 var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse("$outputPath").toString())
+                audioInformation = AudioInfo(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),convertMbToBytes(
+                audioInfoConverter.fileSize.toString()
+                ), audioInfoConverter.fileName, getFormattedDate(),false, "mp3", 0, false  )
+                listAudioMerger.add(audioInformation!!)
                 audioInfo = AudioSpeedModel(Uri.parse("$outputPath"),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                 listAudioSaved.add(audioInfo!!)
                 Log.d("check---------------", "convertAudio: "+ audioInfo)
@@ -155,6 +162,18 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         }
         startActivity(Intent(this, SavedActivity::class.java))
         isConverting = false
+    }
+
+    fun convertMbToBytes(sizeString: String): Long {
+        val numericString = sizeString.replace(" MB", "").replace(",", ".").trim()
+        val mbSize = numericString.toDouble()
+        return (mbSize * 1024 * 1024).toLong() // Nhân để chuyển đổi từ MB sang bytes
+    }
+
+    fun getFormattedDate(): String {
+        val currentDate = Date() // Lấy ngày hiện tại
+        val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault()) // Định dạng ngày
+        return dateFormat.format(currentDate) // Trả về chuỗi ngày đã định dạng
     }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
@@ -184,7 +203,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        job?.cancel()
+        startCoroutine()
         if(binding.loadingOverlay.visibility == View.VISIBLE){
             hideLoadingOverlay()
         }else{
@@ -197,9 +216,7 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         hideLoadingOverlay()
     }
 
-
     private fun initData() {
-//        audioUri = Uri.parse(listAudioPick[0].uri.toString())
         adapter = AudioConverterAdapter(this@AudioConverterActivity)
         adapter.getData(listAudioPick)
         binding.recFileConvert.adapter = adapter
@@ -207,8 +224,15 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         job?.cancel()
+        super.onDestroy()
         hideLoadingOverlay()
+    }
+
+    fun startCoroutine(){
+        job?.cancel()
+        job = CoroutineScope(Dispatchers.Main).launch {
+            convertAllSongsToMp3()
+        }
     }
 }

@@ -75,7 +75,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             }
         }
     }
-
     override fun init() {
         initData()
         initDataWaveForn()
@@ -333,7 +332,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             false
         }
     }
-
     private fun initData() {
         binding.tvNameSong.isSelected = true
         binding.tvShare.isSelected = true
@@ -481,8 +479,9 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
     }
     override fun onStop() {
         super.onStop()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        pausePlaying()
+        binding.imvPlay.visibility = View.VISIBLE
+        binding.imvPause.visibility = View.GONE
     }
     override fun onDestroy() {
         super.onDestroy()

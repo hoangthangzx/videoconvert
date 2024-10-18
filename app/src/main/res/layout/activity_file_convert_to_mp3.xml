@@ -198,6 +198,7 @@
                 android:textColor="#60517A"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                android:paddingHorizontal="20dp"
                 app:layout_constraintBottom_toTopOf="@+id/lottieAnimationView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -206,6 +207,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="55dp"
+                android:paddingHorizontal="20dp"
+                android:textAlignment="center"
                 android:text="@string/we_are_exporting_your_files_please_don_t_quit"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

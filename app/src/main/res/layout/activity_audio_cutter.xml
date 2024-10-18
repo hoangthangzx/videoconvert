@@ -104,7 +104,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ctlBottom"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="240dp"
             android:background="@drawable/imv_bottom_convert"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -212,6 +212,7 @@
                 app:layout_constraintTop_toTopOf="@+id/edtEndTime" />
 
             <ImageView
+                android:id="@+id/imageView8"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_marginStart="-1dp"
@@ -228,10 +229,49 @@
                 app:layout_constraintStart_toEndOf="@+id/edtEndTime"
                 app:layout_constraintTop_toTopOf="@+id/edtEndTime" />
 
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text=" / 00:00"
+                android:textColor="@color/color_time_audio"
+                app:layout_constraintBottom_toTopOf="@+id/seekBarAudio"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tvTimeStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/seekBarAudio"
+                app:layout_constraintEnd_toStartOf="@+id/tvDuration"
+                app:layout_constraintTop_toTopOf="@+id/tvDuration" />
+
+            <SeekBar
+                android:id="@+id/seekBarAudio"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginHorizontal="5dp"
+                android:max="0"
+                android:paddingTop="9dp"
+                android:paddingBottom="9dp"
+                android:progress="6"
+                android:layout_marginBottom="20dp"
+                android:progressDrawable="@drawable/custom_progress"
+                android:splitTrack="false"
+                android:thumb="@drawable/seek_bar_1x"
+                app:layout_constraintBottom_toTopOf="@+id/lnBtn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
             <LinearLayout
                 android:id="@+id/lnBtn"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
+                app:layout_constraintVertical_bias=".75"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -280,6 +320,7 @@
                 android:text="@string/cancel"
                 android:textColor="#C2C2C2"
                 android:textSize="15sp"
+                android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/lnBtn" />
@@ -321,6 +362,7 @@
                 android:text="@string/processing"
                 android:textColor="#60517A"
                 android:textSize="20sp"
+                android:paddingHorizontal="20dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/lottieAnimationView"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -330,6 +372,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="55dp"
+                android:paddingHorizontal="20dp"
+                android:textAlignment="center"
                 android:text="@string/we_are_exporting_your_files_please_don_t_quit"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

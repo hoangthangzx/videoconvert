@@ -147,4 +147,6 @@
         <string name="supports_features_like_trim_merge_reduce_speed">Suporta recursos como cortar, mesclar, reduzir a velocidade,...</string>
         <string name="convert_video_to_mp3">Converter vídeo para MP3</string>
         <string name="easy_and_fast">fácil e rápido</string>
+        <string name="select_audio">Selecionar áudio</string>
+        <string name="you_must_choose_a_format">Deve escolher um formato</string>
 </resources>

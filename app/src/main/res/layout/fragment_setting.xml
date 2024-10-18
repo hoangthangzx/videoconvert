@@ -86,20 +86,20 @@
             android:text="@string/storage_emulated_0_music_wellyvoicechanger"
             android:textColor="#8C8C8C" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:text="@string/video"
-            android:textColor="@color/white" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="2dp"-->
+<!--            android:text="@string/video"-->
+<!--            android:textColor="@color/white" />-->
 
-        <TextView
-            android:id="@+id/tvPathVideo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="@string/storage_emulated_0_video_wellyvoicechanger"
-            android:textColor="#8C8C8C" />
+<!--        <TextView-->
+<!--            android:id="@+id/tvPathVideo"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:text="@string/storage_emulated_0_video_wellyvoicechanger"-->
+<!--            android:textColor="#8C8C8C" />-->
 
     </LinearLayout>
 

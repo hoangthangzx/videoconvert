@@ -99,8 +99,15 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             initData()
             initActionSpeed()
         }else if (selectTypeAudio.equals("AudioConvert")){
-            initRecConvert()
-            initActionAudioConvert()
+            if(listAudioSaved.size ==  1){
+                initActionFile()
+                initData()
+                initViewConvert()
+            }else{
+                initRecConvert()
+                initActionAudioConvert()
+            }
+
         }else if(selectType.equals("VideoConvert")){
             initViewConveter()
             initActionCoberter()
@@ -114,6 +121,17 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             initData()
             initViewAudioCutter()
         }
+    }
+
+    private fun initViewConvert() {
+        binding.imvPlay.visibility = View.GONE
+        binding.imvPause.visibility = View.VISIBLE
+        binding.tvTitle.isSelected = true
+        binding.ctlFile.visibility = View.VISIBLE
+        binding.tvTitle.text = listAudioSaved[0].name
+        binding.tvSize.text = listAudioSaved[0].sizeInMB.toString()
+        binding.tvDurationVideo.text = listAudioSaved[0].duration
+        binding.tvDuration.text =" / ${listAudioSaved[0].duration}"
     }
 
     private fun initActionAudioCutter() {
@@ -395,13 +413,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             2-> {
                 RingtoneManager.setActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM, customRingtoneUri)
             }
-
             else                                                   -> {}
         }
         Toast.makeText(this@SavedActivity, R.string.set_ringtone_successfully, Toast.LENGTH_SHORT).show()
     }
-
-
 
     private fun initRec() {
         binding.recVideo.visibility = View.VISIBLE
@@ -472,7 +487,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             uriAll = audioInfo!!.uri
         }else if(selectTypeAudio.equals("AudioCutter")){
             uriAll = audioCutter!!.uri
-        }
+        }else if (
+            selectTypeAudio.equals("AudioConvert")
+        )
+            uriAll = listAudioSaved[0].uri
         else{
             uriAll = videoCutter!!.uri
         }
@@ -593,9 +611,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         }
 
         binding.imvBack.onSingleClick {
-            listConvertMp3.clear()
-            listAudioSaved.clear()
-            listAudioMerger.clear()
             finish()
         }
 
@@ -680,6 +695,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         super.onStop()
         if(mediaPlayer!=null){
             mediaPlayer!!.pause()
+            isPlaying = false
             binding.imvPause.visibility = View.GONE
             binding.imvPlay.visibility = View.VISIBLE
         }
@@ -687,12 +703,12 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
     override fun onDestroy() {
         super.onDestroy()
-        if (mediaPlayer!=null){
-            binding.imvPause.visibility = View.GONE
-            binding.imvPlay.visibility = View.VISIBLE
-            mediaPlayer!!.seekTo(0)
-            mediaPlayer!!.release()
-        }
+//        if (mediaPlayer!=null){
+//            binding.imvPause.visibility = View.GONE
+//            binding.imvPlay.visibility = View.VISIBLE
+//            mediaPlayer!!.seekTo(0)
+//            mediaPlayer!!.release()
+//        }
         handler.removeCallbacksAndMessages(null) // Dừng Handler
     }
     override fun onResume() {

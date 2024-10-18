@@ -49,6 +49,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.elementCounts
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPickMerger
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
@@ -264,6 +265,7 @@ class HomeFragment : Fragment() {
         listAudioPick.clear()
         listAudioSaved.clear()
         listConvertMp3.clear()
+        listAudioPickMerger.clear()
         audioInfo  = null
         Log.d("check_data", "onResume: "+  storageVideo  + "    " + listVideoStorage)
     }

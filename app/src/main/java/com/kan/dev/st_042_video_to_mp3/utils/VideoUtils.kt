@@ -1,7 +1,6 @@
 package com.kan.dev.st_042_video_to_mp3.utils
 
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -11,11 +10,8 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
-import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.formatDateFromSeconds
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoF
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoStorage
-import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoT
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo.formatDuration
 import java.io.File
@@ -293,6 +289,13 @@ object VideoUtils {
         val seconds = (duration / 1000) % 60
         return String.format("%02d:%02d", minutes, seconds)
     }
+
+    fun formatTimeToHoursMinutes_1(duration: Int): String {
+        val minutes = (duration / 1000) / 60
+        val seconds = (duration / 1000) % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
 
     fun formatMilliseconds(milliseconds: Long): String {
         val seconds = (milliseconds / 1000) % 60

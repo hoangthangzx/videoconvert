@@ -66,6 +66,20 @@
                 app:layout_constraintTop_toTopOf="@+id/textView2" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/noItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/you_don_t_have_any_content_yet_create_a_new_video_now"
+            app:layout_constraintBottom_toBottomOf="@+id/recVideo"
+            android:textSize="16sp"
+            android:paddingHorizontal="20dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/recVideo" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recVideo"

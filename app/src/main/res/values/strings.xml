@@ -146,5 +146,8 @@
     <string name="supports_features_like_trim_merge_reduce_speed">Supports features like trim, merge, reduce speed,...</string>
     <string name="convert_video_to_mp3">Convert video to MP3</string>
     <string name="easy_and_fast">easy and fast</string>
+    <string name="select_audio">Select Audio</string>
+    <string name="you_must_choose_a_format">You must choose a format</string>
+    <string name="_00_00">00:00</string>
 
 </resources>

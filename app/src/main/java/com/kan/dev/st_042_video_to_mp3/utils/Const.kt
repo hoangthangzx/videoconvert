@@ -43,6 +43,7 @@ object Const {
     var uriPlay : Uri? = null
     var uriPlayAll : String? = ""
     var currentRingtone = 0
+    var listAudioPickMerger : MutableList<AudioInfo> = mutableListOf()
     var VideoUriSpeed : Uri? = null
     var countAudio = 0
     var countSize = 0
@@ -59,6 +60,7 @@ object Const {
     var audioCutter : VideoCutterModel? = null
     var videoConvert : VideoConvertModel? = null
     var listConvertMp3 = mutableListOf<String>()
+    var checkDone = false
     var listAudioSaved = mutableListOf<AudioSpeedModel>()
     var musicStorage : File? = null
     var videoStorage : File? = null

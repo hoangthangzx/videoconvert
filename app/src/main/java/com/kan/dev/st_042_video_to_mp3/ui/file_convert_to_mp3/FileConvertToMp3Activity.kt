@@ -39,6 +39,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.mp3Uri
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionVideoPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.selectType
+import com.kan.dev.st_042_video_to_mp3.utils.Const.videoConvert
 import com.kan.dev.st_042_video_to_mp3.utils.Const.videoCutter
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
@@ -49,6 +50,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding>(false) {
     override fun getFragmentID(): Int = 0
@@ -160,6 +164,8 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                     showLoadingOverlay()
                     isConverting = true
                     job = CoroutineScope(Dispatchers.Main).launch {
+                        listAudioMerger.clear()
+                        listAudioSaved.clear()
                         convertAllVideosToMp3()
                     }
                 }
@@ -208,7 +214,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
                 audioInformation = AudioInfo(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),convertMbToBytes(
                     audioInfoConverter.fileSize.toString()
-                ), audioInfoConverter.fileName, "27/06/01",false, "mp3", 0, false  )
+                ), audioInfoConverter.fileName, getFormattedDate(),false, "mp3", 0, false  )
                 listAudioMerger.add(audioInformation!!)
                 audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
                 listAudioSaved.add(audioInfo!!)
@@ -223,6 +229,12 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         binding.exoVideo.visibility = View.VISIBLE
         binding.playerControlView.visibility = View.VISIBLE
         binding.tvTitle.text = getString(R.string.convert_to_mp3)
+    }
+
+    fun getFormattedDate(): String {
+        val currentDate = Date() // Lấy ngày hiện tại
+        val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault()) // Định dạng ngày
+        return dateFormat.format(currentDate) // Trả về chuỗi ngày đã định dạng
     }
 
     private fun initViewMutil() {
@@ -248,11 +260,12 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     override fun onStop() {
         super.onStop()
+        hideLoadingOverlay()
         if (exoPlayer?.isPlaying == true) {
             // Dừng phát âm thanh nếu đang phát
             exoPlayer?.pause() // Giải phóng tài nguyên
         }
-        hideLoadingOverlay()
+
     }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
@@ -268,15 +281,15 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         return path
     }
     fun convertMbToBytes(sizeString: String): Long {
-        val numericString = sizeString.replace(" MB", "").trim()
+        val numericString = sizeString.replace(" MB", "").replace(",", ".").trim()
         val mbSize = numericString.toDouble()
-        return mbSize.toLong()
+        return (mbSize * 1024 * 1024).toLong() // Nhân để chuyển đổi từ MB sang bytes
     }
 
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        job?.cancel()
+        startCoroutine()
         if(binding.loadingOverlay.visibility == View.VISIBLE){
             hideLoadingOverlay()
         }else{
@@ -288,7 +301,15 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     override fun onResume() {
         super.onResume()
         initData()
+
     }
 
+    fun startCoroutine (){
+        job?.cancel()
+        isConverting = false
+//        job = CoroutineScope(Dispatchers.Main).launch {
+//            convertAllVideosToMp3()
+//        }
+    }
 
 }
