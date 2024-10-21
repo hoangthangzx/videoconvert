@@ -149,4 +149,6 @@
         <string name="easy_and_fast">fácil e rápido</string>
         <string name="select_audio">Selecionar áudio</string>
         <string name="you_must_choose_a_format">Deve escolher um formato</string>
+        <string name="_00_00">00:00</string>
+
 </resources>

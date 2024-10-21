@@ -35,6 +35,7 @@ import com.kan.dev.st_042_video_to_mp3.ui.merger_audio.MergerAudioActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
@@ -423,11 +424,12 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         adapterSaved = AdapterSaved(this)
         adapterSaved.getData(listAudioSaved)
         binding.recVideo.adapter = adapterSaved
-
+        Log.d("chekjckdkrklrd", "initRec: "+ listAudioSaved)
         adapterSaved.onClickListener(object : AdapterSaved.onClickItemListener{
             override fun onClickItem(position: Int, holder: AdapterSaved.ViewHolder) {
-                uriPlayAll = "file://${listAudioSaved[position].uri}"
+                uriPlayAll = "${listAudioSaved[position].uri}"
                 uriPlay = listAudioSaved[position].uri
+                audioInformation = listAudioMerger[position]
                 startActivity(Intent(this@SavedActivity,PlaySongActivity::class.java))
             }
 
@@ -443,8 +445,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
     private fun initActionSpeed() {
         binding.lnShare.onSingleClick {
+            Log.d("chejkckfkjefke", "initActionSpeed: "+ uriAll  + " ___ " + uriPlay)
             uriAll?.let { shareMp3File(this@SavedActivity, it) }
         }
+
 
         binding.lnRingtone.onSingleClick {
             showDialogRingtone()
@@ -464,11 +468,13 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     }
 
     fun shareMp3File(context: Context, mp3Uri: Uri) {
+        val filePath = mp3Uri.toString().replace("file://", "")
+        val file = File(filePath)
         val uri = FileProvider.getUriForFile(
             this,
             "${this.packageName}.provider",  // Package của ứng dụng bạn
-            File(mp3Uri.toString())
-        )
+            file)
+
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "audio/mpeg"  // MIME type cho tệp MP3
             putExtra(Intent.EXTRA_STREAM, uri)
@@ -476,6 +482,25 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         }
 
         context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ tệp MP3"))
+    }
+
+    fun shareMp3File_1(context: Context, fileName: String) {
+        val file = File(context.cacheDir, fileName) // Tạo đối tượng File
+        if (file.exists()) {
+            val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_STREAM, uri)
+                type = "audio/mpeg" // Định nghĩa loại tệp
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Cấp quyền đọc
+            }
+
+            context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ MP3"))
+        } else {
+            Log.e("ShareError", "File does not exist: ${file.absolutePath}")
+            Toast.makeText(context, "Tệp không tồn tại", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun initData() {

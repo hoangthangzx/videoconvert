@@ -91,6 +91,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
+
             <TextView
                 android:id="@+id/tvSelected"
                 android:layout_width="wrap_content"
@@ -99,7 +100,6 @@
                 android:text="@string/selected"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
-
 
             <TextView
                 android:id="@+id/tvSize"

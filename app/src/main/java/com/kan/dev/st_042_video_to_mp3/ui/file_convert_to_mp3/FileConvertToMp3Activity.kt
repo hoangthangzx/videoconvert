@@ -62,7 +62,9 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     var videoUri: Uri? = null
     var videoPath: String? = null
     private var job: Job? = null
+    var outputPath = ""
     var checkDone = false
+    var listOutputPath = mutableListOf<File>()
     private var isConverting = false
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -156,10 +158,10 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 }
                 showLoadingOverlay()
                 val timestamp = System.currentTimeMillis()
-                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+//                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
                 Log.d("check_path", "initAction: " + videoPath)
-                val outputPath =
-                    "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".")}_${timestamp}_convert.mp3"
+                outputPath = "${cacheDir.path}/converter_to_mp3_cache_${timestamp}.mp3"
+
                 if (videoPath != null) {
                     convertVideoToMp3(videoPath!!, outputPath)
                 }
@@ -182,9 +184,8 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             for (video in listVideoPick) {
                 val videoPath = getRealPathFromURI(this@FileConvertToMp3Activity, video.uri)
                 val timestamp = System.currentTimeMillis()
-                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                val outputPath =
-                    "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".")}_${timestamp}_convert.mp3"
+//                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                outputPath = "${cacheDir.path}/converter_to_mp3_cache_${timestamp}.mp3"
                 if (videoPath != null) {
                     convertVideoToMp3(videoPath, outputPath)
                 }
@@ -193,7 +194,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         startActivity(Intent(this, SavedActivity::class.java))
         isConverting = false
     }
-
 
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
@@ -210,8 +210,15 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k $outputPath"
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
+            listOutputPath.add(File(outputPath))
+            Log.d("check_iust_out_put_path", "convertAudio: "+ listOutputPath  + listOutputPath.size + "  " + listAudioPick.size)
             if (listVideoPick.size == 1) {
                 checkDone = true
+                val timestamp = System.currentTimeMillis()
+                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                val path = File("${musicDir.absolutePath}/${timestamp}_video_converter.mp3")
+                val cacheFile = File(outputPath)
+                cacheFile.copyTo(path, overwrite = true)
                 mp3Uri = Uri.parse(outputPath)
                 val infoFile = FileInfo.getFileInfoFromPath(mp3Uri!!.toString())
                 Const.videoConvert = VideoConvertModel(
@@ -221,32 +228,40 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                     infoFile.fileName
                 )
                 startActivity(Intent(this@FileConvertToMp3Activity, SavedActivity::class.java))
-            } else {
+            } else if(listOutputPath.size == listVideoPick.size){
+                listOutputPath.forEachIndexed { index, cacheFile ->
+                    Log.d("check_iust_out_put_path", "convertAudio: "+ index  + "  ____  "+ cacheFile)
+                    val timestamp = System.currentTimeMillis()
+                    val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                    val path = File("${musicDir.absolutePath}/${timestamp}_convertMp3_$index.mp3")
+                    cacheFile.copyTo(path, overwrite = true)
+                    var audioInfoConverter =
+                        FileInfo.getFileInfoFromPath(cacheFile.toString())
+                    audioInformation = AudioInfo(
+                        Uri.fromFile(cacheFile),
+                        audioInfoConverter!!.duration.toString(),
+                        convertMbToBytes(
+                            audioInfoConverter.fileSize.toString()
+                        ),
+                        audioInfoConverter.fileName,
+                        getFormattedDate(),
+                        false,
+                        "mp3",
+                        0,
+                        false
+                    )
+                    listAudioMerger.add(audioInformation!!)
+                    audioInfo = AudioSpeedModel(
+                        Uri.fromFile(cacheFile),
+                        audioInfoConverter!!.duration.toString(),
+                        audioInfoConverter.fileSize,
+                        audioInfoConverter.fileName.toString()
+                    )
+                    listAudioSaved.add(audioInfo!!)
+                    Log.d("check__dkfnehbfebhjf", "convertVideoToMp3: " + listAudioMerger)
+                }
                 checkDone = true
-                var audioInfoConverter =
-                    FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-                audioInformation = AudioInfo(
-                    Uri.parse(outputPath),
-                    audioInfoConverter!!.duration.toString(),
-                    convertMbToBytes(
-                        audioInfoConverter.fileSize.toString()
-                    ),
-                    audioInfoConverter.fileName,
-                    getFormattedDate(),
-                    false,
-                    "mp3",
-                    0,
-                    false
-                )
-                listAudioMerger.add(audioInformation!!)
-                audioInfo = AudioSpeedModel(
-                    Uri.parse(outputPath),
-                    audioInfoConverter!!.duration.toString(),
-                    audioInfoConverter.fileSize,
-                    audioInfoConverter.fileName.toString()
-                )
-                listAudioSaved.add(audioInfo!!)
-                Log.d("check__dkfnehbfebhjf", "convertVideoToMp3: " + listAudioMerger)
+
             }
             listConvertMp3.add(outputPath)
         } else {
@@ -298,7 +313,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             // Dừng phát âm thanh nếu đang phát
             exoPlayer?.pause() // Giải phóng tài nguyên
         }
-
     }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
@@ -323,6 +337,8 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
+        job?.cancel()
+        FFmpeg.cancel()
         if (binding.loadingOverlay.visibility == View.VISIBLE) {
             hideLoadingOverlay()
             startCoroutine()
@@ -335,15 +351,15 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
+        listOutputPath.clear()
         listAudioSaved.clear()
         listAudioMerger.clear()
         if (binding.loadingOverlay.visibility == View.VISIBLE) {
             if (listVideoPick.size == 1) {
                 val timestamp = System.currentTimeMillis()
-                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                Log.d("check_path", "initAction: " + videoPath)
-                val outputPath =
-                    "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".")}_${timestamp}_convert.mp3"
+//                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+//                Log.d("check_path", "initAction: " + videoPath)
+                outputPath = "${cacheDir.path}/converter_to_mp3_cache_${timestamp}.mp3"
                 if (videoPath != null) {
                     convertVideoToMp3(videoPath!!, outputPath)
                 }
@@ -362,8 +378,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     fun startCoroutine() {
         listAudioSaved.clear()
         listAudioMerger.clear()
-        job?.cancel()
-        FFmpeg.cancel()
+        listOutputPath.clear()
         isConverting = false
     }
 

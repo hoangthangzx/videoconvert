@@ -173,7 +173,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         })
 
         binding.lnContinue.onSingleClick {
-            if(countVideo>0){
+            if(listVideoPick.size>0){
                 startActivity(Intent(this@SelectVideoActivity, VideoCutterActivity::class.java))
             }else{
                 Toast.makeText(this@SelectVideoActivity, getString(R.string.you_must_choose_1_file), Toast.LENGTH_SHORT).show()
@@ -250,6 +250,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             listVideoPick.clear()
         }
     }
+
     private fun initView() {
         val colors = intArrayOf(
             ContextCompat.getColor(this@SelectVideoActivity, R.color.color_1),
@@ -257,7 +258,6 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         )
         binding.tvContinue.applyGradient(this@SelectVideoActivity,colors)
         binding.tvSelected.text = "$countVideo Selected"
-
     }
 
     private fun initData() {
@@ -266,14 +266,15 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
         binding.recVideo.adapter = adapter
     }
 
-    fun formatTimeToHoursMinutes(duration: Long): String {
-        val minutes = (duration / 1000) / 60
-        val seconds = (duration / 1000) % 60
-        return String.format("%02d:%02d", minutes, seconds)
-    }
+//    fun formatTimeToHoursMinutes(duration: Long): String {
+//        val minutes = (duration / 1000) / 60
+//        val seconds = (duration / 1000) % 60
+//        return String.format("%02d:%02d", minutes, seconds)
+//    }
 
     override fun onResume() {
         super.onResume()
+        Log.d("check_crash", "onResume: "+ listVideoPick +  "_____" + listVideo)
         if(listVideoPick.size < listVideo.size){
             binding.imvTick.visibility = View.VISIBLE
             binding.imvTickTrue.visibility = View.GONE

@@ -23,6 +23,7 @@ import com.kan.dev.st_042_video_to_mp3.databinding.ActivityAudioCutterBinding
 import com.kan.dev.st_042_video_to_mp3.model.VideoCutterModel
 import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
@@ -138,6 +139,8 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         binding.tvCancel.onSingleClick {
             finish()
         }
+
+
         binding.btnPlus.setOnClickListener {
             val currentTime = binding.edtStartTime.text.toString()
             binding.btnMinus.isClickable = true
@@ -326,6 +329,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         }
 
         binding.imvPlay.onSingleClick {
+            countPlay += 1
             Log.d("check_play", "initAction: "+ checkCut)
             if(checkCut == true){
                 val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
@@ -336,8 +340,10 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 val videoPath = getRealPathFromURI(this, listAudio[positionAudioPlay].uri)
                 if (videoPath != null) {
                     if(checkType == true){
+                        checkCut = true
                         cutAudio(videoPath,cutterUri,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
                     }else{
+                        checkCut = true
                         cutAndMergeAudio(videoPath,cutterUri,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
                     }
                 }
@@ -512,7 +518,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     private fun showLoadingOverlay() {
         val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
-        animator.duration = 1000 // Thời gian chạy animation (5 giây)
+        animator.duration = 1000
         animator.start()
         binding.loadingOverlay.visibility = View.VISIBLE
     }
@@ -570,10 +576,8 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         val secondPartResult = FFmpeg.execute(secondPartCommand)
 
         if (firstPartResult == 0 && secondPartResult == 0) {
-            // Ghép hai đoạn lại
             val mergeCommand = "-i \"concat:$firstPartPath|$secondPartPath\" -c copy \"$outputFilePath\""
             val mergeResult = FFmpeg.execute(mergeCommand)
-
             if (mergeResult == 0) {
                 val videoUri = Uri.parse(outputFilePath)
                 val fPath = File(firstPartPath)
@@ -582,19 +586,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 sPath.delete()
                 if(checkCut == true){
                     Log.d("check_click", "cutAudio: "+ cutterUri)
-//                    binding.progress.visibility = View.GONE
-//                    createMediaPlayer()
-//                    startPlaying()
-//                    mediaPlayer?.setOnCompletionListener {
-//                        binding.imvPlay.visibility = View.VISIBLE
-//                        binding.imvPause.visibility = View.GONE
-//                        isPlaying = false
-//                    }
-////                    val cutPath = File(cutterUri)
-//                    cutPath.delete()
-                    checkCut = false
+//                    checkCut = false
                 }else{
-                    checkCut = false
+//                    checkCut = false
                     val videoUri = Uri.parse(outputFilePath)
                     val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
                     Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
@@ -620,9 +614,19 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             Log.d("checkType", "cutAudio: "+ checkCut)
             if(checkCut == true){
                 Log.d("check_click", "cutAudio: "+ cutterUri + "    " + isPlaying)
-                checkCut = false
+                if(countPlay == 0){
+                    checkCut = true
+                }else{
+                    checkCut = false
+                }
+//                checkCut = false
             }else{
-                checkCut = false
+                if(countPlay == 0){
+                    checkCut = true
+                }else{
+                    checkCut = false
+                }
+//                checkCut = false
                 val videoUri = Uri.parse(outputFilePath)
                 val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
                 Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
@@ -651,7 +655,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         super.onResume()
         if(binding.loadingOverlay.visibility == View.VISIBLE){
             hideLoadingOverlay()
-            checkCut = false
             isPlaying = false
         }
     }
@@ -660,7 +663,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         super.onStop()
         if (mediaPlayer!=null && mediaPlayer!!.isPlaying){
             mediaPlayer!!.pause()
-            checkCut = false
         }
         binding.imvPause.visibility = View.GONE
         binding.imvPlay.visibility = View.VISIBLE
@@ -681,6 +683,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         if(binding.loadingOverlay.visibility == View.VISIBLE){
+            job?.cancel()
             hideLoadingOverlay()
             startCoroutine()
         }else{
@@ -689,11 +692,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     }
 
     fun startCoroutine() {
-        job = CoroutineScope(Dispatchers.Main).launch {
-            FFmpeg.cancel()
-            clearCache()
-            isPlaying = false
-        }
+        FFmpeg.cancel()
+        clearCache()
+        isPlaying = false
         binding.imvPause.visibility = View.GONE
         binding.imvPlay.visibility = View.VISIBLE
     }

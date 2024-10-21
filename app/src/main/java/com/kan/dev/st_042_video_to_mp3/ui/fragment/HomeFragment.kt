@@ -43,6 +43,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.checkData
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countMap
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSizeVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
@@ -258,6 +259,7 @@ class HomeFragment : Fragment() {
         countVd = 0
         countAudio = 0
         countSize = 0
+        countPlay = 0
         checkType = true
         selectType = ""
         selectFr = ""
@@ -270,7 +272,6 @@ class HomeFragment : Fragment() {
         listAudioPickMerger.clear()
         audioInfo  = null
         Log.d("check_logddd", "onResume: co nhay vap")
-
         Log.d("check_data", "onResume: "+  storageVideo  + "    " + listVideoStorage)
     }
 }

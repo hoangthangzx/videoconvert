@@ -32,6 +32,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkDone
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
@@ -66,11 +67,11 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
     var mediaPlayer: MediaPlayer? = null
     var valueSpeed = 1f
     var duration = 0
+    var outputPath =""
     var checkDone = false
+    var checkDonePlay = false
     var audioPath = ""
     private var job: Job? = null
-
-    //    var checkSpeedPlay = true
     var checkSpeed = true
     var speedUri = ""
     private var isPlaying: Boolean = false
@@ -186,7 +187,8 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         }
     }
 
-    @SuppressLint("SuspiciousIndentation", "ClickableViewAccessibility")
+
+    @SuppressLint("ClickableViewAccessibility")
     private fun initAction() {
         binding.imvBack.onSingleClick {
             finish()
@@ -226,7 +228,9 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             }
         })
         binding.imvPlay.onSingleClick {
+            checkDonePlay = false
             clearCache()
+            countPlay +=1
             Log.d("check_value_speed", "initAction: " + valueSpeed)
             if (checkSpeed) {
                 val timestamp = System.currentTimeMillis()
@@ -276,16 +280,18 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             forwardAudio(15000)
         }
         binding.tvDone.onSingleClick {
+            checkDonePlay = true
             if (mediaPlayer!!.isPlaying) {
                 mediaPlayer!!.pause()
             }
             showLoadingOverlay()
             val audioPath = audioString
             val timestamp = System.currentTimeMillis()
-            val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-            Log.d("check_audio_link", "initData: " + musicDir)
-            val outputPath =
-                "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".")}_${timestamp}_speed.mp3"
+//            val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+//            Log.d("check_audio_link", "initData: " + musicDir)
+//           outputPath =
+//                "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".")}_${timestamp}_speed.mp3"
+            outputPath = "${cacheDir.path}/speed" + "${timestamp}.mp3"
             if (audioPath != null) {
                 Log.d("check_mp3", "initData: " + audioPath)
                 CoroutineScope(Dispatchers.Main).launch {
@@ -293,15 +299,11 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                     Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thành công" + isSpeed)
                     if (isSpeed == true) {
                         checkDone = true
-                        checkSpeed = false
-                        var audioInfoSpeed =
-                            FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-                        audioInfo = AudioSpeedModel(
-                            Uri.parse(outputPath),
-                            audioInfoSpeed!!.duration.toString(),
-                            audioInfoSpeed.fileSize,
-                            audioInfoSpeed.fileName.toString()
-                        )
+                        if(countPlay == 0){
+                            checkSpeed = true
+                        }else{
+                            checkSpeed = false
+                        }
                         startActivity(Intent(this@AudioSpeedActivity, SavedActivity::class.java))
                     }
                 }
@@ -413,8 +415,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             binding.imv35,
             binding.imv36
         )
-        audioString =
-            getRealPathFromURI(this@AudioSpeedActivity, listAudio[Const.positionAudioPlay].uri)
+        audioString = getRealPathFromURI(this@AudioSpeedActivity, listAudio[Const.positionAudioPlay].uri)
         audioUri = listAudio[Const.positionAudioPlay].uri
         Log.d("check_audio", "initData: " + audioUri)
 
@@ -545,6 +546,23 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             Log.d("check_command", "changeAudioSpeed: " + command)
             val resultCode = FFmpeg.execute(command)
             if (resultCode == 0) {
+                if (checkDonePlay){
+                    val timestamp = System.currentTimeMillis()
+                    val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                    val path = File("${musicDir.absolutePath}/${timestamp}_speed.mp3")
+                    val cacheFile = File(outputPath)
+                    cacheFile.copyTo(path, overwrite = true)
+                    var audioInfoSpeed =
+                        FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+                    audioInfo = AudioSpeedModel(
+                        Uri.fromFile(path),
+                        audioInfoSpeed!!.duration.toString(),
+                        audioInfoSpeed.fileSize,
+                        audioInfoSpeed.fileName
+                    )
+                    Log.d("check_audio_info", "changeAudioSpeed: " + audioInfo)
+
+                }
                 Log.d("check_command", "changeAudioSpeed: ytyhth")
                 true
 
@@ -610,67 +628,71 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
     override fun onResume() {
         super.onResume()
-        clearCache()
-        if (binding.loadingOverlay.visibility == View.VISIBLE) {
-            val audioPath = audioString
-            val timestamp = System.currentTimeMillis()
-            val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-            Log.d("check_audio_link", "initData: " + musicDir)
-            val outputPath =
-                "${musicDir.absolutePath}/${File(audioPath).name.substringBeforeLast(".")}_${timestamp}_speed.mp3"
-            if (audioPath != null) {
-                Log.d("check_mp3", "initData: " + audioPath)
-                CoroutineScope(Dispatchers.Main).launch {
-                    val isSpeed = changeAudioSpeed(audioPath, outputPath, valueSpeed)
-                    Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thành công" + isSpeed)
-                    if (isSpeed == true) {
-                        checkSpeed = false
-                        var audioInfoSpeed =
-                            FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-                        audioInfo = AudioSpeedModel(
-                            Uri.parse(outputPath),
-                            audioInfoSpeed!!.duration.toString(),
-                            audioInfoSpeed.fileSize,
-                            audioInfoSpeed.fileName.toString()
-                        )
-                        startActivity(Intent(this@AudioSpeedActivity, SavedActivity::class.java))
-
-                    }
-                }
-            }
-        } else if (binding.progress.visibility == View.VISIBLE) {
-            val timestamp = System.currentTimeMillis()
-            speedUri = "${cacheDir.path}/speed_${timestamp}.mp3"
-            audioPath = audioString.toString()
-            binding.progress.visibility = View.VISIBLE
-            job = CoroutineScope(Dispatchers.Main).launch {
-                val checkValue = changeAudioSpeed(audioPath, speedUri, valueSpeed)
-                Log.d("check_value_speed", "chchchchchchchc: " + valueSpeed)
-                if (checkValue) {
-                    Log.d("check_audio_speed", "dang play")
-                    binding.seekBarAudio.isEnabled = true
-                    binding.progress.visibility = View.GONE
-                    createMediaPlayerSpeed()
-                    startPlaying()
-                    Log.d("check_audio_speed", "fvgrnrohegjegmbvkermkbhtrnh")
-                    checkSpeed = false
-                    binding.progress.visibility = View.GONE
-                    binding.seekBarAudio.max = mediaPlayer!!.duration
-                    updateTimeAndSeekBar()
-                    playAudio()
-                }else{
-                    clearCache()
-                }
-            }
-        } else {
+//        clearCache()
+        job?.cancel()
+//        if (binding.loadingOverlay.visibility == View.VISIBLE) {
+//            checkDonePlay = true
+//            val audioPath = audioString
+//            val timestamp = System.currentTimeMillis()
+////            val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+////            Log.d("check_audio_link", "initData: " + musicDir)
+//            val outputPath =
+//                "${cacheDir.path}/speed${timestamp}.mp3"
+//            if (audioPath != null) {
+//                Log.d("check_mp3", "initData: " + audioPath)
+//                CoroutineScope(Dispatchers.Main).launch {
+//                    val isSpeed = changeAudioSpeed(audioPath, outputPath, valueSpeed)
+//                    Log.d("check_audio_speed", "Thay đổi tốc độ âm thanh thành công" + isSpeed)
+//                    if (isSpeed == true) {
+//                        checkSpeed = false
+//                        var audioInfoSpeed =
+//                            FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+//                        audioInfo = AudioSpeedModel(
+//                            Uri.parse(outputPath),
+//                            audioInfoSpeed!!.duration.toString(),
+//                            audioInfoSpeed.fileSize,
+//                            audioInfoSpeed.fileName.toString()
+//                        )
+//                        startActivity(Intent(this@AudioSpeedActivity, SavedActivity::class.java))
+//
+//                    }
+//                }
+//            }
+//        } else if (binding.progress.visibility == View.VISIBLE) {
+//            checkDonePlay = false
+//            val timestamp = System.currentTimeMillis()
+//            speedUri = "${cacheDir.path}/speed${timestamp}.mp3"
+//            audioPath = audioString.toString()
+//            binding.progress.visibility = View.VISIBLE
+//            job = CoroutineScope(Dispatchers.Main).launch {
+//                val checkValue = changeAudioSpeed(audioPath, speedUri, valueSpeed)
+//                Log.d("check_value_speed", "chchchchchchchc: " + valueSpeed)
+//                if (checkValue) {
+//                    Log.d("check_audio_speed", "dang play")
+//                    binding.seekBarAudio.isEnabled = true
+//                    binding.progress.visibility = View.GONE
+//                    createMediaPlayerSpeed()
+//                    startPlaying()
+//                    Log.d("check_audio_speed", "fvgrnrohegjegmbvkermkbhtrnh")
+//                    checkSpeed = false
+//                    binding.progress.visibility = View.GONE
+//                    binding.seekBarAudio.max = mediaPlayer!!.duration
+//                    updateTimeAndSeekBar()
+//                    playAudio()
+//                }else{
+//                    clearCache()
+//                }
+//            }
+//        } else {
             binding.imvPause.visibility = View.GONE
             binding.imvPlay.visibility = View.VISIBLE
-        }
+//        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         job?.cancel()
+        clearCache()
         hideLoadingOverlay()
         handler.removeCallbacksAndMessages(null) // Dừng tất cả Runnable
         if (mediaPlayer?.isPlaying == true) {
@@ -680,10 +702,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
     override fun onStop() {
         super.onStop()
-        if (checkDone){
-            hideLoadingOverlay()
-        }
-        FFmpeg.cancel()
+//        FFmpeg.cancel()
         if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
             mediaPlayer!!.pause()
             checkSpeed = false
@@ -691,7 +710,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         binding.imvPause.visibility = View.GONE
         binding.imvPlay.visibility = View.VISIBLE
         isPlaying = false
-        clearCache()
     }
 
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")

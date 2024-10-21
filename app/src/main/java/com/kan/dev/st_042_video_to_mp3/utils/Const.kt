@@ -67,6 +67,7 @@ object Const {
     var checkShare = false
     var checkType : Boolean = false
     var selectFr = "Fr"
+    var countPlay = 0
     var listLanguage = mutableListOf<LanguageModel>(
         LanguageModel("Spanish", "es", R.drawable.ic_flag_spanish),
         LanguageModel("French", "fr", R.drawable.ic_flag_french),
@@ -76,8 +77,6 @@ object Const {
         LanguageModel("German", "de", R.drawable.ic_flag_germani),
         LanguageModel("Indonesian", "in", R.drawable.ic_flag_indo)
     )
-
-
 
     fun saveMp3ToStorage(context: Context, inputFilePath: String, outputFileName: String): Boolean {
         try {

@@ -69,6 +69,7 @@ dependencies {
     implementation 'com.arthenica:mobile-ffmpeg-full:4.4.LTS'
 //    implementation 'com.arthenica:mobile-ffmpeg-video:4.4.LTS'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+//    implementation project(':test-app')
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation libs.material

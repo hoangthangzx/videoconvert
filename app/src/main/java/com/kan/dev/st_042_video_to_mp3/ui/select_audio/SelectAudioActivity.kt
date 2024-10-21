@@ -28,6 +28,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.checkDataAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.clickItem
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countMap
+import com.kan.dev.st_042_video_to_mp3.utils.Const.countPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
 import com.kan.dev.st_042_video_to_mp3.utils.Const.elementCounts
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
@@ -43,24 +44,26 @@ import java.util.Locale
 class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     override fun getFragmentID(): Int = 0
     override fun getLayoutId(): Int = R.layout.activity_select_audio
-    lateinit var adapter: SelectAudioAdapter
+    val adapter by lazy {
+        SelectAudioAdapter(this@SelectAudioActivity)
+    }
     var countItemt = 1
     private var mediaPlayer: MediaPlayer? = null
     override fun init() {
-        if(listAudio.size == 0){
-            binding.noItem.visibility = View.VISIBLE
-        }
         initData()
         initView()
-        if(selectTypeAudio.equals("AudioSpeed") || Const.selectTypeAudio.equals("AudioCutter")){
-            Log.d("check_click", "init: okeeeeeeeeeeeeee")
-            initActionAudioSpeed()
-        }else if(selectTypeAudio.equals("AudioMerger")){
-            initActionAudioMerger()
-        } else{
-            initAction()
+        initActionBack()
+    }
+
+    private fun initActionBack() {
+        binding.imvBack.onSingleClick {
+            finish()
+            if(mediaPlayer?.isPlaying == true){
+                mediaPlayer!!.release()
+            }
         }
     }
+
     private fun initActionAudioMerger() {
         binding.tvContinue.onSingleClick {
             Log.d("check_list_audio_pick", "initActionAudioMerger: "+ listAudioPick)
@@ -96,7 +99,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     countSize -= countEdt*(listAudio[position].sizeInMB.toInt())
                     adapter.notifyDataSetChanged()
                 }
-                binding.tvSelected.text = "$countAudio Selected"
+                binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSize MB"
             }
 
@@ -167,12 +170,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
 
         })
 
-        binding.imvBack.onSingleClick {
-            finish()
-            if(mediaPlayer?.isPlaying == true){
-                mediaPlayer!!.release()
-            }
-        }
+
     }
 
     private fun initActionAudioSpeed() {
@@ -193,7 +191,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
                     listAudioPick.clear()
                     listAudio[position].active = true// Xóa danh sách đã chọn trước đó
-                    listAudioPick.add( listAudio[position])
+                    listAudioPick.add(listAudio[position])
                 } else {
                     countAudio -= 1
                     holder.binding.imvTick.setImageResource(R.drawable.icon_check_box)
@@ -232,14 +230,12 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             }
         })
 
-        binding.imvBack.onSingleClick {
-            finish()
-        }
 
         binding.lnContinue.onSingleClick {
-            if(countAudio > 0 && selectTypeAudio.equals("AudioSpeed")){
+//            startActivity(Intent(this@SelectAudioActivity, ActivityAudioCutter::class.java))
+            if(listAudioPick.size > 0 && selectTypeAudio.equals("AudioSpeed")){
                 startActivity(Intent(this@SelectAudioActivity, AudioSpeedActivity::class.java))
-            }else if(countAudio>0 && selectTypeAudio.equals("AudioCutter")){
+            }else if(listAudioPick.size>0 && selectTypeAudio.equals("AudioCutter")){
                 startActivity(Intent(this@SelectAudioActivity, ActivityAudioCutter::class.java))
             } else{
                 Toast.makeText(this@SelectAudioActivity, getString(R.string.you_must_choose_1_video), Toast.LENGTH_SHORT).show()
@@ -274,11 +270,9 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 if (previouslySelectedIndex != -1 && previouslySelectedIndex != position) {
                     listAudio[previouslySelectedIndex].activePl = false
                     adapter.notifyItemChanged(previouslySelectedIndex)
-                    // Release media cho item trước đó
                     mediaPlayer?.release()
                     mediaPlayer = null
                 }
-                // Nếu item hiện tại chưa phát, bắt đầu phát
                 if (!listAudio[position].activePl) {
                     holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_pause_audio)
                     listAudio[position].activePl = true
@@ -287,7 +281,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     }
                     mediaPlayer?.start()
                 } else {
-                    // Nếu item hiện tại đang phát, tạm dừng
                     holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_play_audio)
                     listAudio[position].activePl = false
                     mediaPlayer?.pause()
@@ -295,13 +288,8 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 adapter.notifyItemChanged(position)
             }
         })
-
-        binding.imvBack.onSingleClick {
-            finish()
-        }
-
         binding.lnContinue.onSingleClick {
-            if(countAudio>0){
+            if(listAudioPick.size>0){
                 startActivity(Intent(this@SelectAudioActivity, AudioConverterActivity::class.java))
             }else{
                 Toast.makeText(this@SelectAudioActivity, getString(R.string.you_must_choose_1_video), Toast.LENGTH_SHORT).show()
@@ -314,10 +302,18 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             checkDataAudio = true
         }
         Log.d("check_data_list", "initData: "+ listAudio.size + ":   "+ listAudio)
-        adapter = SelectAudioAdapter(this@SelectAudioActivity)
+//        adapter = SelectAudioAdapter(this@SelectAudioActivity)
         adapter.getData(listAudio)
         binding.recFileConvert.adapter = adapter
-        binding.recFileConvert.itemAnimator = null
+//        binding.recFileConvert.itemAnimator = null
+        if(selectTypeAudio.equals("AudioSpeed") || Const.selectTypeAudio.equals("AudioCutter")){
+            Log.d("check_click", "init: okeeeeeeeeeeeeee")
+            initActionAudioSpeed()
+        }else if(selectTypeAudio.equals("AudioMerger")){
+            initActionAudioMerger()
+        } else{
+            initAction()
+        }
     }
 
     private fun initView() {
@@ -327,24 +323,22 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
         )
         binding.tvSelected.text = "$countAudio Selected"
         binding.tvContinue.applyGradient(this@SelectAudioActivity,colors)
+
+        if(listAudio.size == 0){
+            binding.noItem.visibility = View.VISIBLE
+        }
     }
 
     fun setupMediaPlayer(context: Context, uri: Uri): MediaPlayer? {
-        // Tạo đối tượng MediaPlayer
         val mediaPlayer = MediaPlayer()
         try {
-            // Thiết lập nguồn nhạc từ URI
             mediaPlayer.setDataSource(context, uri)
-            // Chuẩn bị phát nhạc
             mediaPlayer.prepare()
         } catch (e: Exception) {
             e.printStackTrace()
-            return null // Trả về null nếu có lỗi
+            return null
         }
-        // Bắt đầu phát nhạc
         mediaPlayer.start()
-
-        // Trả về đối tượng MediaPlayer
         return mediaPlayer
     }
 
@@ -363,25 +357,14 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
-        dataItemChange()
+        countPlay = 0
+        if(selectTypeAudio.equals("AudioMerger")){
+            dataItemChange()
+        }
         listAudio.forEach { it.activePl = false }
         adapter.notifyDataSetChanged()
-        Log.d("check_data_list_el", "onResume: "+ elementCounts)
         binding.tvSelected.text = "$countAudio Selected"
     }
-
-    fun formatTimeToHoursMinutes(duration: Long): String {
-        val minutes = (duration / 1000) / 60
-        val seconds = (duration / 1000) % 60
-        return String.format("%02d:%02d", minutes, seconds)
-    }
-
-    fun formatDate(timestamp: Long): String {
-        val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) // Định dạng dd MMM yyyy
-        val date = Date(timestamp)
-        return sdf.format(date)
-    }
-
     override fun onStop() {
         super.onStop()
         if (mediaPlayer!=null){

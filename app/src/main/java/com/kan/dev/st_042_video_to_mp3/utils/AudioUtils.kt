@@ -28,29 +28,57 @@ object AudioUtils {
             val directory = File(directoryPath)
             if (directory.exists() && directory.isDirectory) {
                 val audioExtensions = listOf("mp3", "wav", "aac", "ogg", "flac", "ac3", "wma")
-                directory.listFiles()?.forEachIndexed { index, file ->
-                    if (file.isFile && audioExtensions.any { file.name.endsWith(it, ignoreCase = true) }) {
-                        val audioUri = Uri.fromFile(file) // Tạo URI từ tệp
-                        val duration = getAudioDuration(file) // Gọi hàm lấy thời gian
-                        val sizeInMB = file.length() / 1024 // Kích thước tệp tính bằng MB
-                        val name = file.name
-                        val mimeType = file.extension
-                        val date = formatDate(file.lastModified()) // Định dạng ngày
+                // Lấy danh sách file và sắp xếp theo lastModified giảm dần
+                val sortedFiles = directory.listFiles()?.filter { it.isFile && audioExtensions.any { ext -> it.name.endsWith(ext, ignoreCase = true) } }
+                    ?.sortedByDescending { it.lastModified() }
 
-                        // Thêm vào danh sách sau khi xử lý xong
-                        listAudioStorage.add(
-                            AudioInfo(
-                                audioUri, duration, sizeInMB, name, date,
-                                false, mimeType, index, false
-                            )
+                sortedFiles?.forEachIndexed { index, file ->
+                    val audioUri = Uri.fromFile(file)
+                    val duration = getAudioDuration(file)
+                    val sizeInMB = file.length() / 1024
+                    val name = file.name
+                    val mimeType = file.extension
+                    val date = formatDate(file.lastModified())
+                    listAudioStorage.add(
+                        AudioInfo(
+                            audioUri, duration, sizeInMB, name, date,
+                            false, mimeType, index, false
                         )
-                    }
+                    )
                 }
             } else {
                 Log.e("GetAudios", "Directory does not exist or is not a directory.")
             }
         }
     }
+
+//    suspend fun getAllAudiosFromSpecificDirectory_1(directoryPath: String) {
+//        withContext(Dispatchers.IO) { // Chạy trên background thread
+//            val directory = File(directoryPath)
+//            if (directory.exists() && directory.isDirectory) {
+//                val audioExtensions = listOf("mp3", "wav", "aac", "ogg", "flac", "ac3", "wma")
+//                directory.listFiles()?.forEachIndexed { index, file ->
+//                    if (file.isFile && audioExtensions.any { file.name.endsWith(it, ignoreCase = true) }) {
+//                        val audioUri = Uri.fromFile(file) // Tạo URI từ tệp
+//                        val duration = getAudioDuration(file) // Gọi hàm lấy thời gian
+//                        val sizeInMB = file.length() / 1024 // Kích thước tệp tính bằng MB
+//                        val name = file.name
+//                        val mimeType = file.extension
+//                        val date = formatDate(file.lastModified()) // Định dạng ngày
+//                        // Thêm vào danh sách sau khi xử lý xong
+//                        listAudioStorage.add(0,
+//                            AudioInfo(
+//                                audioUri, duration, sizeInMB, name, date,
+//                                false, mimeType, index, false
+//                            )
+//                        )
+//                    }
+//                }
+//            } else {
+//                Log.e("GetAudios", "Directory does not exist or is not a directory.")
+//            }
+//        }
+//    }
 //    var countPos = 0
 
 //

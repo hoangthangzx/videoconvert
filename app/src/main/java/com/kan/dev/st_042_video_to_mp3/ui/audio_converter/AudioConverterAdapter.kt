@@ -36,12 +36,10 @@ class AudioConverterAdapter( var context: Context) : RecyclerView.Adapter<AudioC
             binding.tvTitle.text = data[position].name
             binding.tvTitle.isSelected = true
             binding.tvStyle.text = data[position].mimeType
-
             Glide.with(context)
                 .asBitmap()
                 .load(data[position].uri)
                 .into(binding.imvVideoFile)
-
             binding.imvDelete.onSingleClick {
                 mListener.onItemClick(position)
             }

@@ -183,15 +183,22 @@ class StorageFragment : Fragment() {
                         countSize += listAudioStorage[position].sizeInMB.toInt()
                         holder.binding.imvTick.setImageResource(R.drawable.icon_check_box_yes)
                         listAudioStorage[position].active = true
-                        listAudioPick.add(0, listAudioStorage[position])
+                        listAudioPick.add( listAudioStorage[position])
                         if (listAudioPick.size == listAudioStorage.size) {
                             binding.lnAll.visibility = View.GONE
                             binding.lnAllTrue.visibility = View.VISIBLE
-                        } else if (listAudioPick.size > 0) {
-                            binding.size.visibility = View.VISIBLE
+                        }else if (listAudioPick.size == 1){
+                            binding.imvRingtone.visibility = View.VISIBLE
                             binding.tvSelectedItem.text =
                                 "$countAudio ${getString(R.string.selected)}"
                             binding.size.text = "$countSize KB"
+                            binding.size.visibility = View.VISIBLE
+                        } else if (listAudioPick.size > 0) {
+                            binding.tvSelectedItem.text =
+                                "$countAudio ${getString(R.string.selected)}"
+                            binding.size.text = "$countSize KB"
+                            binding.size.visibility = View.VISIBLE
+                            binding.imvRingtone.visibility = View.GONE
                         }
                         binding.tvSelectedItem.text = "$countAudio ${getString(R.string.selected)}"
                         binding.size.text = "$countSize KB"
@@ -204,22 +211,31 @@ class StorageFragment : Fragment() {
                         if (listAudioPick.size == 0) {
                             binding.tvSelectedItem.text = "${getString(R.string.select_items)}"
                             binding.size.visibility = View.INVISIBLE
-                        } else if (listAudioPick.size < listAudioStorage.size) {
+                            binding.imvRingtone.visibility = View.GONE
+                        }else if (listAudioPick.size == 1){
+                            binding.imvRingtone.visibility = View.VISIBLE
+                            binding.tvSelectedItem.text =
+                                "$countAudio ${getString(R.string.selected)}"
+                            binding.size.text = "$countSize KB"
                             binding.size.visibility = View.VISIBLE
+                        }
+                        else if (listAudioPick.size < listAudioStorage.size) {
                             binding.lnAll.visibility = View.VISIBLE
                             binding.lnAllTrue.visibility = View.GONE
                             binding.tvSelectedItem.text =
                                 "$countAudio ${getString(R.string.selected)}"
                             binding.size.text = "$countSize KB"
+                            binding.size.visibility = View.VISIBLE
+                            binding.imvRingtone.visibility = View.GONE
                         }
                     }
-                    if (countAudio <= 1) {
-//                        binding.imvRename.visibility = View.VISIBLE
-                        binding.imvRingtone.visibility = View.VISIBLE
-                    } else {
-//                        binding.imvRename.visibility = View.GONE
-                        binding.imvRingtone.visibility = View.GONE
-                    }
+//                    if (countAudio <= 1) {
+////                        binding.imvRename.visibility = View.VISIBLE
+//                        binding.imvRingtone.visibility = View.VISIBLE
+//                    } else {
+////                        binding.imvRename.visibility = View.GONE
+//                        binding.imvRingtone.visibility = View.GONE
+//                    }
                 } else {
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
                     positionAudioPlay = position
@@ -241,7 +257,7 @@ class StorageFragment : Fragment() {
                     binding.ctlStorage.layoutParams = layoutParams
                     Log.d("check_logg", "onTouchEven:  ojkeeeee")
                     checkType = false
-                    binding.imvRingtone.visibility = View.VISIBLE
+//                    binding.imvRingtone.visibility = View.VISIBLE
                     isClick = true
                     isTouchEventHandled = true
                     positionAudioPlay = position
@@ -273,9 +289,7 @@ class StorageFragment : Fragment() {
                 binding.ctlItem.visibility = View.GONE
                 binding.tvSelectedItem.text = "Select items"
                 binding.size.text = "$countSizeVideo KB"
-
                 viewModel.resetEvent()
-
             }
         }
         binding.imvRingtone.onSingleClick {
@@ -383,11 +397,12 @@ class StorageFragment : Fragment() {
     }
 
     private fun initData() {
-        listAudioStorage.clear()
         binding.progressBar.visibility = View.VISIBLE
         shareData = SharedPreferenceUtils.getInstance(requireContext())
         storageMusic = shareData.getStringValue("musicStorage").toString()
         storageVideo = shareData.getStringValue("videoStorage").toString()
+
+        listAudioStorage.clear()
         lifecycleScope.launch {
             AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
             binding.progressBar.visibility = View.GONE
@@ -398,6 +413,7 @@ class StorageFragment : Fragment() {
                 binding.lnNoItem.visibility = View.GONE
             }
         }
+
     }
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
@@ -416,7 +432,25 @@ class StorageFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         isClick = false
-        Log.d("check_logddd", "onResume: "+ checkType)
+//        listAudioStorage.clear()
+//        lifecycleScope.launch {
+//            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+//            if (listAudioStorage.size == 0) {
+//                binding.lnNoItem.visibility = View.VISIBLE
+//            } else {
+//                binding.lnNoItem.visibility = View.GONE
+//            }
+//        }
+//        listAudioStorage.clear()
+//        lifecycleScope.launch {
+//            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+//            if (listAudioStorage.size == 0) {
+//                binding.lnNoItem.visibility = View.VISIBLE
+//            } else {
+//                binding.lnNoItem.visibility = View.GONE
+//            }
+//        }
+//        Log.d("check_logddd", "onResume: "+ checkType)
     }
 
 }

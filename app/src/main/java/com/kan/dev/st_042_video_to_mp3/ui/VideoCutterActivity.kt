@@ -319,31 +319,31 @@ class VideoCutterActivity : AbsBaseActivity<ActivityVideoCutterBinding>(false){
 //            }
 //        }
 //        retriever.release()
-        GlobalScope.launch(Dispatchers.IO) {
-            val retriever = MediaMetadataRetriever()
-            try {
-                // Thiết lập nguồn video
-                retriever.setDataSource(this@VideoCutterActivity, videoUri)
-                val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0L
-                val numberOfFrames = 8
-                val interval = duration / numberOfFrames
-
-                // Lấy từng khung hình và hiển thị
-                for (i in 0 until numberOfFrames) {
-                    val frame: Bitmap? = retriever.getFrameAtTime(i * interval * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                    // Chuyển về luồng chính để cập nhật giao diện người dùng
-                    withContext(Dispatchers.Main) {
-                        if (frame != null) {
-                            frames[i].setImageBitmap(frame) // Cập nhật từng ImageView
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                retriever.release() // Giải phóng tài nguyên
-            }
-        }
+//        GlobalScope.launch(Dispatchers.IO) {
+//            val retriever = MediaMetadataRetriever()
+//            try {
+//                // Thiết lập nguồn video
+//                retriever.setDataSource(this@VideoCutterActivity, videoUri)
+//                val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0L
+//                val numberOfFrames = 8
+//                val interval = duration / numberOfFrames
+//
+//                // Lấy từng khung hình và hiển thị
+//                for (i in 0 until numberOfFrames) {
+//                    val frame: Bitmap? = retriever.getFrameAtTime(i * interval * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+//                    // Chuyển về luồng chính để cập nhật giao diện người dùng
+//                    withContext(Dispatchers.Main) {
+//                        if (frame != null) {
+//                            frames[i].setImageBitmap(frame) // Cập nhật từng ImageView
+//                        }
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            } finally {
+//                retriever.release() // Giải phóng tài nguyên
+//            }
+//        }
     }
 
 
