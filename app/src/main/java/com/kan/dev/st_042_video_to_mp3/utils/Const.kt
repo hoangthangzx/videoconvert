@@ -64,6 +64,7 @@ object Const {
     var listAudioSaved = mutableListOf<AudioSpeedModel>()
     var musicStorage : File? = null
     var videoStorage : File? = null
+    var checkShare = false
     var checkType : Boolean = false
     var selectFr = "Fr"
     var listLanguage = mutableListOf<LanguageModel>(

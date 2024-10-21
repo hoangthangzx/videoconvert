@@ -50,6 +50,8 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     var imvItems : List<LinearLayout> = listOf()
     var audioType  = ""
     var checkItem = false
+    var checkDone = false
+
     var audioUri : Uri? = null
     private var job: Job? = null
     private var isConverting = false
@@ -160,8 +162,13 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
                 }
             }
         }
-        startActivity(Intent(this, SavedActivity::class.java))
-        isConverting = false
+        checkDone = true
+        startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
+//        CoroutineScope(Dispatchers.Main).launch {
+//            hideLoadingOverlay()
+//            isConverting = false
+//        }
+
     }
 
     fun convertMbToBytes(sizeString: String): Long {
@@ -203,9 +210,9 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        startCoroutine()
         if(binding.loadingOverlay.visibility == View.VISIBLE){
             hideLoadingOverlay()
+            startCoroutine()
         }else{
             finish()
         }
@@ -213,7 +220,11 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
 
     override fun onStop() {
         super.onStop()
-        hideLoadingOverlay()
+        if (checkDone){
+            hideLoadingOverlay()
+        }
+        job?.cancel()
+        FFmpeg.cancel()
     }
 
     private fun initData() {
@@ -229,10 +240,27 @@ class AudioConverterActivity: AbsBaseActivity<ActivityAudioConverterBinding>(fal
         hideLoadingOverlay()
     }
 
-    fun startCoroutine(){
-        job?.cancel()
-        job = CoroutineScope(Dispatchers.Main).launch {
-            convertAllSongsToMp3()
+    override fun onResume() {
+        super.onResume()
+        listAudioMerger.clear()
+        listAudioSaved.clear()
+        if(binding.loadingOverlay.visibility == View.VISIBLE){
+            if (!isConverting) { // Kiểm tra xem có đang chuyển đổi hay không
+                isConverting = true
+                // Gọi hàm chuyển đổi với Coroutine
+                job = CoroutineScope(Dispatchers.Main).launch {
+                    convertAllSongsToMp3()
+                }
+            }
         }
+    }
+
+    fun startCoroutine(){
+        listAudioSaved.clear()
+        listAudioMerger.clear()
+        job?.cancel()
+        FFmpeg.cancel()
+        listAudioSaved.clear()
+        listAudioMerger.clear()
     }
 }

@@ -56,13 +56,13 @@ import java.util.Locale
 
 class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding>(false) {
     override fun getFragmentID(): Int = 0
-    override fun getLayoutId(): Int  = R.layout.activity_file_convert_to_mp3
+    override fun getLayoutId(): Int = R.layout.activity_file_convert_to_mp3
     lateinit var adapter: FileConvertAdapter
     private var exoPlayer: ExoPlayer? = null
-    var videoUri : Uri? = null
-    var videoPath : String? = null
-    var count = 0
+    var videoUri: Uri? = null
+    var videoPath: String? = null
     private var job: Job? = null
+    var checkDone = false
     private var isConverting = false
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -70,10 +70,10 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         initData()
         initAction()
         binding.tvVidoeToMp3.isSelected = true
-        if(listVideoPick.size == 1){
+        if (listVideoPick.size == 1) {
             initViewFile()
             initDataFile()
-        }else{
+        } else {
             initViewMutil()
             initDataMulti()
             initActionMulti()
@@ -82,13 +82,12 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initData() {
-        if(selectType.equals("VideoCutter")){
+        if (selectType.equals("VideoCutter")) {
             videoUri = videoCutter!!.uri
-            Log.d("check_kfkfjfkf", "initData: "+ videoUri)
-        }
-        else if(listVideo.size>0 && selectType.equals("Video")){
+            Log.d("check_kfkfjfkf", "initData: " + videoUri)
+        } else if (listVideo.size > 0 && selectType.equals("Video")) {
             videoUri = Uri.parse(listVideo[positionVideoPlay].uri.toString())
-            Log.d("check_mp3", "initData: "+ videoUri)
+            Log.d("check_mp3", "initData: " + videoUri)
         }
 
 
@@ -96,7 +95,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     @OptIn(UnstableApi::class)
     private fun initDataFile() {
-        Log.d("check_file", "initDataFile: "+ listVideo[positionVideoPlay])
+        Log.d("check_file", "initDataFile: " + listVideo[positionVideoPlay])
         exoPlayer = ExoPlayer.Builder(this).build()
         binding.exoVideo.player = exoPlayer
         binding.playerControlView.player = exoPlayer
@@ -109,12 +108,16 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     }
 
     private fun initActionMulti() {
-        adapter.onClickListener(object : FileConvertAdapter.onClickItemListener{
+        adapter.onClickListener(object : FileConvertAdapter.onClickItemListener {
             override fun onItemClick(position: Int) {
-                Log.d("check_data_size", "onItemClick: "+ listVideoPick.size)
-                if(listVideoPick.size == 1){
-                    Toast.makeText(this@FileConvertToMp3Activity, getString(R.string.items_cannot_be_deleted_you_need_at_least_1_items_to_convert), Toast.LENGTH_SHORT).show()
-                }else{
+                Log.d("check_data_size", "onItemClick: " + listVideoPick.size)
+                if (listVideoPick.size == 1) {
+                    Toast.makeText(
+                        this@FileConvertToMp3Activity,
+                        getString(R.string.items_cannot_be_deleted_you_need_at_least_1_items_to_convert),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
                     val pos = listVideoPick[position].pos
                     listVideo[pos].active = false
                     countVideo -= 1
@@ -128,7 +131,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     @OptIn(UnstableApi::class)
     private fun initAction() {
-        binding.exoVideo.setOnClickListener{
+        binding.exoVideo.setOnClickListener {
             binding.playerControlView.show()
         }
 
@@ -140,26 +143,27 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             finish()
         }
         binding.LnConvert.onSingleClick {
-            if(listVideoPick.size == 1){
-                if(exoPlayer!=null){
+            if (listVideoPick.size == 1) {
+                if (exoPlayer != null) {
                     exoPlayer!!.pause()
                 }
-                if(selectType.equals("VideoCutter")){
+                if (selectType.equals("VideoCutter")) {
                     videoPath = videoCutter!!.uri.toString()
-                    Log.d("check_path", "initAcrjngrgrgtion: "+ videoPath)
+                    Log.d("check_path", "initAcrjngrgrgtion: " + videoPath)
                     selectType = "VideoCutterToMp3"
-                }else{
-                    videoPath = getRealPathFromURI(this,videoUri!!)
+                } else {
+                    videoPath = getRealPathFromURI(this, videoUri!!)
                 }
                 showLoadingOverlay()
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                Log.d("check_path", "initAction: "+ videoPath)
-                val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_convert.mp3"
+                Log.d("check_path", "initAction: " + videoPath)
+                val outputPath =
+                    "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".")}_${timestamp}_convert.mp3"
                 if (videoPath != null) {
                     convertVideoToMp3(videoPath!!, outputPath)
                 }
-            }else{
+            } else {
                 if (!isConverting) {
                     showLoadingOverlay()
                     isConverting = true
@@ -175,11 +179,12 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     private suspend fun convertAllVideosToMp3() {
         withContext(Dispatchers.IO) { // Chạy trong IO context
-            for(video in listVideoPick){
-                val videoPath = getRealPathFromURI(this@FileConvertToMp3Activity,video.uri)
+            for (video in listVideoPick) {
+                val videoPath = getRealPathFromURI(this@FileConvertToMp3Activity, video.uri)
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_convert.mp3"
+                val outputPath =
+                    "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".")}_${timestamp}_convert.mp3"
                 if (videoPath != null) {
                     convertVideoToMp3(videoPath, outputPath)
                 }
@@ -205,26 +210,50 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k $outputPath"
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
-            if (listVideoPick.size == 1){
+            if (listVideoPick.size == 1) {
+                checkDone = true
                 mp3Uri = Uri.parse(outputPath)
                 val infoFile = FileInfo.getFileInfoFromPath(mp3Uri!!.toString())
-                Const.videoConvert = VideoConvertModel(mp3Uri!!, infoFile!!.duration,infoFile!!.fileSize,infoFile.fileName)
-                startActivity(Intent(this@FileConvertToMp3Activity,SavedActivity::class.java))
-            }else{
-                var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-                audioInformation = AudioInfo(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),convertMbToBytes(
-                    audioInfoConverter.fileSize.toString()
-                ), audioInfoConverter.fileName, getFormattedDate(),false, "mp3", 0, false  )
+                Const.videoConvert = VideoConvertModel(
+                    mp3Uri!!,
+                    infoFile!!.duration,
+                    infoFile!!.fileSize,
+                    infoFile.fileName
+                )
+                startActivity(Intent(this@FileConvertToMp3Activity, SavedActivity::class.java))
+            } else {
+                checkDone = true
+                var audioInfoConverter =
+                    FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+                audioInformation = AudioInfo(
+                    Uri.parse(outputPath),
+                    audioInfoConverter!!.duration.toString(),
+                    convertMbToBytes(
+                        audioInfoConverter.fileSize.toString()
+                    ),
+                    audioInfoConverter.fileName,
+                    getFormattedDate(),
+                    false,
+                    "mp3",
+                    0,
+                    false
+                )
                 listAudioMerger.add(audioInformation!!)
-                audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+                audioInfo = AudioSpeedModel(
+                    Uri.parse(outputPath),
+                    audioInfoConverter!!.duration.toString(),
+                    audioInfoConverter.fileSize,
+                    audioInfoConverter.fileName.toString()
+                )
                 listAudioSaved.add(audioInfo!!)
-                Log.d("check__dkfnehbfebhjf", "convertVideoToMp3: "+ listAudioMerger)
+                Log.d("check__dkfnehbfebhjf", "convertVideoToMp3: " + listAudioMerger)
             }
             listConvertMp3.add(outputPath)
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }
     }
+
     private fun initViewFile() {
         binding.exoVideo.visibility = View.VISIBLE
         binding.playerControlView.visibility = View.VISIBLE
@@ -251,7 +280,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     override fun onDestroy() {
         super.onDestroy()
-        if (exoPlayer!=null) {
+        if (exoPlayer != null) {
             exoPlayer?.release() // Giải phóng tài nguyên
         }
         job?.cancel()
@@ -260,7 +289,11 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     override fun onStop() {
         super.onStop()
-        hideLoadingOverlay()
+        if (checkDone){
+            hideLoadingOverlay()
+        }
+        job?.cancel()
+        FFmpeg.cancel()
         if (exoPlayer?.isPlaying == true) {
             // Dừng phát âm thanh nếu đang phát
             exoPlayer?.pause() // Giải phóng tài nguyên
@@ -280,6 +313,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         }
         return path
     }
+
     fun convertMbToBytes(sizeString: String): Long {
         val numericString = sizeString.replace(" MB", "").replace(",", ".").trim()
         val mbSize = numericString.toDouble()
@@ -289,10 +323,11 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        startCoroutine()
-        if(binding.loadingOverlay.visibility == View.VISIBLE){
+        if (binding.loadingOverlay.visibility == View.VISIBLE) {
             hideLoadingOverlay()
-        }else{
+            startCoroutine()
+
+        } else {
             finish()
         }
     }
@@ -300,16 +335,36 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
-        initData()
+        listAudioSaved.clear()
+        listAudioMerger.clear()
+        if (binding.loadingOverlay.visibility == View.VISIBLE) {
+            if (listVideoPick.size == 1) {
+                val timestamp = System.currentTimeMillis()
+                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                Log.d("check_path", "initAction: " + videoPath)
+                val outputPath =
+                    "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".")}_${timestamp}_convert.mp3"
+                if (videoPath != null) {
+                    convertVideoToMp3(videoPath!!, outputPath)
+                }
+            } else {
+                job = CoroutineScope(Dispatchers.Main).launch {
+                    listAudioMerger.clear()
+                    listAudioSaved.clear()
+                    convertAllVideosToMp3()
+
+                }
+            }
+        }
 
     }
 
-    fun startCoroutine (){
+    fun startCoroutine() {
+        listAudioSaved.clear()
+        listAudioMerger.clear()
         job?.cancel()
+        FFmpeg.cancel()
         isConverting = false
-//        job = CoroutineScope(Dispatchers.Main).launch {
-//            convertAllVideosToMp3()
-//        }
     }
 
 }

@@ -31,7 +31,10 @@ import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils.formatTimeToHoursMinutes
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -153,9 +156,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                     hours = 0
                 }
                 isPlaying = false
-                if (checkCut == false){
-                    mediaPlayer!!.release()
-                }
+//                if (checkCut == false){
+//                    mediaPlayer!!.release()
+//                }
                 checkCut = true
                 binding.imvPlay.visibility = View.VISIBLE
                 binding.imvPause.visibility = View.GONE
@@ -191,9 +194,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                     hours = 0
                 }
                 isPlaying = false
-                if ( checkCut == false){
-                    mediaPlayer!!.release()
-                }
+//                if ( checkCut == false){
+//                    mediaPlayer!!.release()
+//                }
                 checkCut = true
                 binding.imvPlay.visibility = View.VISIBLE
                 binding.imvPause.visibility = View.GONE
@@ -229,9 +232,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                     hours = 23
                 }
                 isPlaying = false
-                if (checkCut == false){
-                    mediaPlayer!!.release()
-                }
+//                if (checkCut == false){
+//                    mediaPlayer!!.release()
+//                }
                 checkCut = true
                 binding.imvPlay.visibility = View.VISIBLE
                 binding.imvPause.visibility = View.GONE
@@ -269,9 +272,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                     hours = 23
                 }
                 isPlaying = false
-                if (checkCut == false){
-                    mediaPlayer!!.release()
-                }
+//                if (checkCut == false){
+//                    mediaPlayer!!.release()
+//                }
                 checkCut = true
                 binding.imvPlay.visibility = View.VISIBLE
                 binding.imvPause.visibility = View.GONE
@@ -381,9 +384,8 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         }
 
         binding.tvDone.onSingleClick {
-            checkCut = false
             if(mediaPlayer!!.isPlaying){
-                mediaPlayer?.stop()
+                mediaPlayer?.pause()
             }
             binding.imvPause.visibility = View.GONE
             binding.imvPlay.visibility = View.VISIBLE
@@ -401,8 +403,10 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                 val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp3"
                 if (videoPath != null) {
                     if (checkType == true){
+                        checkCut = false
                         cutAudio(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
                     }else{
+                        checkCut = false
                         cutAndMergeAudio(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
                     }
                 }
@@ -647,7 +651,8 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         super.onResume()
         if(binding.loadingOverlay.visibility == View.VISIBLE){
             hideLoadingOverlay()
-            checkCut = true
+            checkCut = false
+            isPlaying = false
         }
     }
 
@@ -662,15 +667,35 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         isPlaying = false
     }
 
+    fun clearCache() {
+        val cacheDir = cacheDir
+        val files = cacheDir.listFiles()
+        if (files != null) {
+            for (file in files) {
+                file.delete() // Xóa từng tệp
+            }
+        }
+    }
+
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         if(binding.loadingOverlay.visibility == View.VISIBLE){
             hideLoadingOverlay()
-            checkCut = true
+            startCoroutine()
         }else{
             finish()
         }
+    }
+
+    fun startCoroutine() {
+        job = CoroutineScope(Dispatchers.Main).launch {
+            FFmpeg.cancel()
+            clearCache()
+            isPlaying = false
+        }
+        binding.imvPause.visibility = View.GONE
+        binding.imvPlay.visibility = View.VISIBLE
     }
 
 }

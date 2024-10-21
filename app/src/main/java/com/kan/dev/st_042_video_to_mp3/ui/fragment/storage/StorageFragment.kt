@@ -75,7 +75,6 @@ class StorageFragment : Fragment() {
     lateinit var shareData: SharedPreferenceUtils
     override fun onStart() {
         super.onStart()
-        checkType = true
     }
 
     var storageMusic = ""
@@ -112,6 +111,8 @@ class StorageFragment : Fragment() {
             binding.lnAll.visibility = View.GONE
             listAudioStorage.forEach { it.active = true }
             adapterFr.notifyDataSetChanged()
+            binding.size.visibility = View.VISIBLE
+            binding.imvRingtone.visibility = View.GONE
             listAudioPick = listAudioStorage.map { it.copy() }.toMutableList()
             countAudio = listAudioPick.size
             countSize = listAudioPick.sumOf { it.sizeInMB.toInt() }
@@ -240,6 +241,7 @@ class StorageFragment : Fragment() {
                     binding.ctlStorage.layoutParams = layoutParams
                     Log.d("check_logg", "onTouchEven:  ojkeeeee")
                     checkType = false
+                    binding.imvRingtone.visibility = View.VISIBLE
                     isClick = true
                     isTouchEventHandled = true
                     positionAudioPlay = position
@@ -264,8 +266,6 @@ class StorageFragment : Fragment() {
                 countSize = 0
                 countSizeVideo = 0
                 countVideo = 0
-                checkType = true
-                viewModel.resetEvent()
                 listAudioPick.clear()
                 listAudioStorage.forEach { it.active = false }
                 adapterFr.notifyDataSetChanged()
@@ -273,19 +273,13 @@ class StorageFragment : Fragment() {
                 binding.ctlItem.visibility = View.GONE
                 binding.tvSelectedItem.text = "Select items"
                 binding.size.text = "$countSizeVideo KB"
+
+                viewModel.resetEvent()
+
             }
         }
         binding.imvRingtone.onSingleClick {
-            if (countAudio == 0) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.you_must_choose_1_file),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                showDialogRingtone()
-            }
-            if (countVideo == 0) {
+            if (listAudioPick.size == 0) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.you_must_choose_1_file),
@@ -422,6 +416,7 @@ class StorageFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         isClick = false
+        Log.d("check_logddd", "onResume: "+ checkType)
     }
 
 }

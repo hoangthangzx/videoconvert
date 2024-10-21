@@ -389,6 +389,4 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             mediaPlayer = null
         }
     }
-
-
 }

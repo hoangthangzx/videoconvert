@@ -36,6 +36,8 @@ import com.kan.dev.st_042_video_to_mp3.ui.fragment.storage.StorageFragment
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.getAllAudiosFromSpecificDirectory_1
 import com.kan.dev.st_042_video_to_mp3.utils.Const
+import com.kan.dev.st_042_video_to_mp3.utils.Const.checkShare
+import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.SystemUtils
@@ -75,6 +77,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
             }else{
                 shareAudioFilesFromPaths(listAudioPick)
                 Const.isTouchEventHandled = true
+//                checkShare = true
             }
         }
 
