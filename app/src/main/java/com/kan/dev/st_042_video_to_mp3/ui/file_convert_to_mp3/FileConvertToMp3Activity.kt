@@ -304,11 +304,11 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     override fun onStop() {
         super.onStop()
-        if (checkDone){
-            hideLoadingOverlay()
-        }
+//        if (checkDone){
+//            hideLoadingOverlay()
+//        }
         job?.cancel()
-        FFmpeg.cancel()
+//        FFmpeg.cancel()
         if (exoPlayer?.isPlaying == true) {
             // Dừng phát âm thanh nếu đang phát
             exoPlayer?.pause() // Giải phóng tài nguyên
@@ -354,24 +354,24 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         listOutputPath.clear()
         listAudioSaved.clear()
         listAudioMerger.clear()
-        if (binding.loadingOverlay.visibility == View.VISIBLE) {
-            if (listVideoPick.size == 1) {
-                val timestamp = System.currentTimeMillis()
-//                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-//                Log.d("check_path", "initAction: " + videoPath)
-                outputPath = "${cacheDir.path}/converter_to_mp3_cache_${timestamp}.mp3"
-                if (videoPath != null) {
-                    convertVideoToMp3(videoPath!!, outputPath)
-                }
-            } else {
-                job = CoroutineScope(Dispatchers.Main).launch {
-                    listAudioMerger.clear()
-                    listAudioSaved.clear()
-                    convertAllVideosToMp3()
-
-                }
-            }
-        }
+//        if (binding.loadingOverlay.visibility == View.VISIBLE) {
+//            if (listVideoPick.size == 1) {
+//                val timestamp = System.currentTimeMillis()
+////                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+////                Log.d("check_path", "initAction: " + videoPath)
+//                outputPath = "${cacheDir.path}/converter_to_mp3_cache_${timestamp}.mp3"
+//                if (videoPath != null) {
+//                    convertVideoToMp3(videoPath!!, outputPath)
+//                }
+//            } else {
+//                job = CoroutineScope(Dispatchers.Main).launch {
+//                    listAudioMerger.clear()
+//                    listAudioSaved.clear()
+//                    convertAllVideosToMp3()
+//
+//                }
+//            }
+//        }
 
     }
 
