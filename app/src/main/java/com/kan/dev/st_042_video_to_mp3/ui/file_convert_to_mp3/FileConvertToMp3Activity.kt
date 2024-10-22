@@ -19,7 +19,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.arthenica.mobileffmpeg.FFmpeg
-import com.bumptech.glide.load.Encoder
 //import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityFileConvertToMp3Binding
@@ -54,10 +53,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+import java.io.File
 
 class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding>(false) {
     override fun getFragmentID(): Int = 0
@@ -67,10 +67,10 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     var videoUri: Uri? = null
     var videoPath: String? = null
     private var job: Job? = null
+    private var isConverting = false
     var outputPath = ""
     var shouldCancel = false
     var listOutputPath = mutableListOf<File>()
-    private var isConverting = false
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun init() {
@@ -168,8 +168,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 Log.d("check_path", "initAction: " + videoPath)
                 outputPath = "${cacheDir.path}/converter_to_mp3_cache_${timestamp}.mp3"
                 if (videoPath != null) {
-
-//                    convertVideoToMp3(videoPath!!, outputPath)
+                    convertVideoToMp3(videoPath!!, outputPath)
                 }
             } else {
                 if (!isConverting) {
@@ -183,63 +182,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             }
         }
     }
-
-//    fun convertMp4ToMp3(inputPath: String, outputPath: String) {
-//        val inputFile = File(inputPath) // Đường dẫn đến tệp MP4
-//        println("Bắt đầu chuyển đổi...")
-//
-//        // Kiểm tra tệp đầu vào có tồn tại không
-//        if (!inputFile.exists()) {
-//            println("Tệp không tồn tại: $inputPath")
-//            return
-//        }
-//
-//        val outputFile = File(outputPath) // Đường dẫn đầu ra MP3
-//
-//        // Thiết lập thuộc tính âm thanh
-//        val audioAttributes = AudioAttributes().apply {
-//            setCodec("libmp3lame")
-//            setBitRate(128000)
-//            setChannels(2)
-//            setSamplingRate(44100)
-//        }
-//
-//        // Thiết lập thuộc tính mã hóa
-//        val encodingAttributes = EncodingAttributes().apply {
-//            setFormat("mp3")
-//            setAudioAttributes(audioAttributes)
-//        }
-//
-//        // Khởi tạo bộ mã hóa
-//        val encoder = Encoder()
-//        try {
-//            // Chuyển đổi
-//            encoder.encode(inputFile, outputFile, encodingAttributes)
-//            println("Chuyển đổi thành công từ MP4 sang MP3!")
-//        } catch (e: Exception) {
-//            println("Có lỗi xảy ra: ${e.message}")
-//        }
-//    }
-
-//    fun test(path: String) {
-//        val file = File(path)
-//        println("start")
-//        println(file.exists())
-//        val audio = File("c:\\Users\\Partizanin\\Downloads\\tapolsky.mp3")
-//
-//        val audioAttributes = AudioAttributes()
-//        audioAttributes.setCodec("libmp3lame")
-//        audioAttributes.setBitRate(128000)
-//        audioAttributes.setChannels(2)
-//        audioAttributes.setSamplingRate(44100)
-//
-//        val encodingAttributes = EncodingAttributes()
-//        encodingAttributes.setFormat("mp3")
-//        encodingAttributes.setAudioAttributes(audioAttributes)
-//
-//        val encoder = Encoder()
-//        encoder.encode(file, audio, encodingAttributes)
-//    }
 
     private suspend fun convertAllVideosToMp3() {
         listAudioSaved.clear()
@@ -267,10 +209,9 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
             hideLoadingOverlay()
         }
-
 //        startActivity(Intent(this, SavedActivity::class.java))
-
     }
+
 
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
@@ -284,8 +225,11 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     }
 
     fun convertVideoToMp3(videoUri: String, outputPath: String) {
+//        val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
         val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
+
 //        Log.d("check_iust_out_put_path", "convertAudio: "+  videoUri)
+//        val command =   "-i ${videoUri} -codec:a aac -b:a 192k ${outputPath}"
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
             listOutputPath.add(File(outputPath))
@@ -298,7 +242,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 cacheFile.copyTo(path, overwrite = true)
                 mp3Uri = Uri.parse(path.toString())
                 val infoFile = FileInfo.getFileInfoFromPath(mp3Uri!!.toString())
-                Const.videoConvert = VideoConvertModel(
+                videoConvert = VideoConvertModel(
                     mp3Uri!!,
                     infoFile!!.duration,
                     infoFile!!.fileSize,
@@ -352,6 +296,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }
     }
+
 
     private fun initViewFile() {
         binding.exoVideo.visibility = View.VISIBLE

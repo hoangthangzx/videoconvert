@@ -65,6 +65,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         initView()
         initAction()
     }
+
     private fun initView() {
         val colors = intArrayOf(
             ContextCompat.getColor(this@AudioConverterActivity, R.color.color_1),
@@ -324,6 +325,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }
     }
+
     private suspend fun convertAllSongsToMp3() {
         listAudioSaved.clear()
         listAudioMerger.clear()
@@ -345,6 +347,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
             delay(500)
             hideLoadingOverlay()
         }
+
     //        startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
     }
 
