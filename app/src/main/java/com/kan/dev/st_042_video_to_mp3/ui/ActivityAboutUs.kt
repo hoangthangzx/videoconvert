@@ -32,6 +32,6 @@ class ActivityAboutUs : AbsBaseActivity<ActivityAboutUsBinding>(false) {
             e.printStackTrace()
         }
 
-        binding.tvVersion.text = "Version: $versionName"
+        binding.tvVersion.text = "${getString(R.string.version)} $versionName"
     }
 }

@@ -47,6 +47,7 @@ import com.masoudss.lib.WaveformSeekBar
 import com.metaldetector.golddetector.finder.AbsBaseActivity
 import java.io.File
 import java.io.IOException
+import java.net.URLDecoder
 import java.util.concurrent.TimeUnit
 
 class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
@@ -76,6 +77,7 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         }
     }
     override fun init() {
+        Log.d("check_uri_play", "init: "+ uriPlay)
         initData()
         initDataWaveForn()
         initAction()
@@ -97,14 +99,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
             binding.imvPause.visibility = View.GONE
             binding.imvPlay.visibility = View.VISIBLE
         }
-//
-//        binding.lnDelete.onSingleClick {
-//            showDialogDelete()
-//        }
-//
-//        binding.lnRename.onSingleClick {
-//            showDialogRename()
-//        }
 
         binding.imvTick.onSingleClick {
             binding.lnMenu.visibility = View.GONE
@@ -153,8 +147,6 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
         dialog.setContentView(dialogBinding.root)
         dialog.setCancelable(false)
         dialogBinding.lnOk.onSingleClick{
-
-
             dialog.dismiss()
         }
         dialogBinding.lnCancel.onSingleClick {
@@ -245,7 +237,10 @@ class PlaySongActivity : AbsBaseActivity<ActivityPlayAudioBinding>(false) {
 
     fun shareAudioFile(context: Context, uri: Uri) {
         val filePath = uri.toString().replace("file://", "")
-        val file = File(filePath)
+        val decodedFilePath = URLDecoder.decode(filePath, "UTF-8")
+        val file = File(decodedFilePath)
+        Log.d("check_uriPlay", "initDataWaveForn: ____+JJIIJIIJ"+ decodedFilePath)
+
         val uri = FileProvider.getUriForFile(
             this,
             "${this.packageName}.provider",  // Package của ứng dụng bạn

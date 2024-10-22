@@ -26,6 +26,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countPlay
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.positionAudioPlay
+import com.kan.dev.st_042_video_to_mp3.utils.Const.selectTypeAudio
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo
 import com.kan.dev.st_042_video_to_mp3.utils.FileInfo.formatDuration
 import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils.formatTimeToHoursMinutes_1
@@ -470,6 +471,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initData() {
+        binding.waveformSeekBar.isEnabled = false
         checkCut = true
         mediaPlayer = MediaPlayer()
         binding.waveformSeekBar.setSampleFrom(listAudio[positionAudioPlay].uri)
@@ -558,6 +560,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     override fun onDestroy() {
         super.onDestroy()
+        clearCache()
         mediaPlayer?.release()
         Log.d("fergrhgreher", "destroy ")
         job?.cancel()
@@ -566,7 +569,20 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     }
 
     fun cutAndMergeAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
-        // Cắt đoạn từ đầu đến startTime
+        if (timeCut.equals("00:00")) {
+            val copyCommand = "-i \"$inputFilePath\" -c copy \"$outputFilePath\""
+            val copyResult = FFmpeg.execute(copyCommand)
+            if (copyResult == 0) {
+                Log.d("check_audio_mmmm", "Sao chép âm thanh thành công: $outputFilePath")
+                val videoUri = Uri.parse(outputFilePath)
+                val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
+                Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
+                startActivity(Intent(this@ActivityAudioCutter, SavedActivity::class.java))
+            } else {
+                Log.d("check_audio_mmmm", "Sao chép âm thanh thất bại. Mã lỗi: $copyResult")
+            }
+            return
+        }
         val firstPartPath = "${cacheDir.path}/first_part.mp3"
         val firstPartCommand = "-i \"$inputFilePath\" -to $startTime -c copy $firstPartPath"
         val firstPartResult = FFmpeg.execute(firstPartCommand)
@@ -607,6 +623,7 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     }
 
     fun cutAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
+
         Log.d("check_audio_speed", "$startTime    $endTime")
         val command = "-i \"$inputFilePath\" -ss $startTime -to $endTime -c copy \"$outputFilePath\""
         val resultCode = FFmpeg.execute(command)
@@ -653,14 +670,25 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     override fun onResume() {
         super.onResume()
+        selectTypeAudio = "AudioCutter"
         if(binding.loadingOverlay.visibility == View.VISIBLE){
             hideLoadingOverlay()
             isPlaying = false
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+//    override fun onStop() {
+//        super.onStop()
+//        if (mediaPlayer!=null && mediaPlayer!!.isPlaying){
+//            mediaPlayer!!.pause()
+//        }
+//        binding.imvPause.visibility = View.GONE
+//        binding.imvPlay.visibility = View.VISIBLE
+//        isPlaying = false
+//    }
+
+    override fun onPause() {
+        super.onPause()
         if (mediaPlayer!=null && mediaPlayer!!.isPlaying){
             mediaPlayer!!.pause()
         }
@@ -693,7 +721,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     fun startCoroutine() {
         FFmpeg.cancel()
-        clearCache()
         isPlaying = false
         binding.imvPause.visibility = View.GONE
         binding.imvPlay.visibility = View.VISIBLE

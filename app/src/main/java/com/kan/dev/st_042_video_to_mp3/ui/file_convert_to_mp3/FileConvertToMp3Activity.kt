@@ -19,6 +19,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.arthenica.mobileffmpeg.FFmpeg
+import com.bumptech.glide.load.Encoder
 //import com.arthenica.mobileffmpeg.FFmpeg
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivityFileConvertToMp3Binding
@@ -26,6 +27,7 @@ import com.kan.dev.st_042_video_to_mp3.model.AudioInfo
 import com.kan.dev.st_042_video_to_mp3.model.AudioSpeedModel
 import com.kan.dev.st_042_video_to_mp3.model.VideoConvertModel
 import com.kan.dev.st_042_video_to_mp3.ui.saved.SavedActivity
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
@@ -34,6 +36,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const.countVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioMerger
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioPick
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioSaved
+import com.kan.dev.st_042_video_to_mp3.utils.Const.listAudioStorage
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listConvertMp3
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.listVideoPick
@@ -65,7 +68,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     var videoPath: String? = null
     private var job: Job? = null
     var outputPath = ""
-    var checkDone = false
+    var shouldCancel = false
     var listOutputPath = mutableListOf<File>()
     private var isConverting = false
 
@@ -86,6 +89,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initData() {
+
         if (selectType.equals("VideoCutter")) {
             videoUri = videoCutter!!.uri
             Log.d("check_kfkfjfkf", "initData: " + videoUri)
@@ -93,8 +97,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             videoUri = Uri.parse(listVideo[positionVideoPlay].uri.toString())
             Log.d("check_mp3", "initData: " + videoUri)
         }
-
-
     }
 
     @OptIn(UnstableApi::class)
@@ -110,7 +112,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 //        exoPlayer!!.play()
         exoPlayer!!.playWhenReady = false
     }
-
     private fun initActionMulti() {
         adapter.onClickListener(object : FileConvertAdapter.onClickItemListener {
             override fun onItemClick(position: Int) {
@@ -147,6 +148,9 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             finish()
         }
         binding.LnConvert.onSingleClick {
+            shouldCancel = false
+            clearCache()
+            showLoadingOverlay()
             if (listVideoPick.size == 1) {
                 if (exoPlayer != null) {
                     exoPlayer!!.pause()
@@ -158,18 +162,17 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 } else {
                     videoPath = getRealPathFromURI(this, videoUri!!)
                 }
-                showLoadingOverlay()
+
                 val timestamp = System.currentTimeMillis()
 //                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
                 Log.d("check_path", "initAction: " + videoPath)
                 outputPath = "${cacheDir.path}/converter_to_mp3_cache_${timestamp}.mp3"
-
                 if (videoPath != null) {
-                    convertVideoToMp3(videoPath!!, outputPath)
+
+//                    convertVideoToMp3(videoPath!!, outputPath)
                 }
             } else {
                 if (!isConverting) {
-                    showLoadingOverlay()
                     isConverting = true
                     job = CoroutineScope(Dispatchers.Main).launch {
                         listAudioMerger.clear()
@@ -181,7 +184,67 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         }
     }
 
+//    fun convertMp4ToMp3(inputPath: String, outputPath: String) {
+//        val inputFile = File(inputPath) // Đường dẫn đến tệp MP4
+//        println("Bắt đầu chuyển đổi...")
+//
+//        // Kiểm tra tệp đầu vào có tồn tại không
+//        if (!inputFile.exists()) {
+//            println("Tệp không tồn tại: $inputPath")
+//            return
+//        }
+//
+//        val outputFile = File(outputPath) // Đường dẫn đầu ra MP3
+//
+//        // Thiết lập thuộc tính âm thanh
+//        val audioAttributes = AudioAttributes().apply {
+//            setCodec("libmp3lame")
+//            setBitRate(128000)
+//            setChannels(2)
+//            setSamplingRate(44100)
+//        }
+//
+//        // Thiết lập thuộc tính mã hóa
+//        val encodingAttributes = EncodingAttributes().apply {
+//            setFormat("mp3")
+//            setAudioAttributes(audioAttributes)
+//        }
+//
+//        // Khởi tạo bộ mã hóa
+//        val encoder = Encoder()
+//        try {
+//            // Chuyển đổi
+//            encoder.encode(inputFile, outputFile, encodingAttributes)
+//            println("Chuyển đổi thành công từ MP4 sang MP3!")
+//        } catch (e: Exception) {
+//            println("Có lỗi xảy ra: ${e.message}")
+//        }
+//    }
+
+//    fun test(path: String) {
+//        val file = File(path)
+//        println("start")
+//        println(file.exists())
+//        val audio = File("c:\\Users\\Partizanin\\Downloads\\tapolsky.mp3")
+//
+//        val audioAttributes = AudioAttributes()
+//        audioAttributes.setCodec("libmp3lame")
+//        audioAttributes.setBitRate(128000)
+//        audioAttributes.setChannels(2)
+//        audioAttributes.setSamplingRate(44100)
+//
+//        val encodingAttributes = EncodingAttributes()
+//        encodingAttributes.setFormat("mp3")
+//        encodingAttributes.setAudioAttributes(audioAttributes)
+//
+//        val encoder = Encoder()
+//        encoder.encode(file, audio, encodingAttributes)
+//    }
+
     private suspend fun convertAllVideosToMp3() {
+        listAudioSaved.clear()
+        listAudioMerger.clear()
+        listOutputPath.clear()
         withContext(Dispatchers.IO) { // Chạy trong IO context
             for (video in listVideoPick) {
                 val videoPath = getRealPathFromURI(this@FileConvertToMp3Activity, video.uri)
@@ -191,10 +254,22 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 if (videoPath != null) {
                     convertVideoToMp3(videoPath, outputPath)
                 }
+                if (shouldCancel) { // shouldCancel là một biến boolean mà bạn có thể đặt điều kiện
+                    break // Hủy vòng lặp
+                }
             }
         }
-        startActivity(Intent(this, SavedActivity::class.java))
-        isConverting = false
+        lifecycleScope.launch {
+            // Khởi động Activity mới
+            startActivity(Intent(this@FileConvertToMp3Activity, SavedActivity::class.java))
+            // Trì hoãn 500ms trước khi gọi hideLoadingOverlay
+            delay(500)
+            // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
+            hideLoadingOverlay()
+        }
+
+//        startActivity(Intent(this, SavedActivity::class.java))
+
     }
 
     private fun showLoadingOverlay() {
@@ -209,19 +284,19 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     }
 
     fun convertVideoToMp3(videoUri: String, outputPath: String) {
-        val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k $outputPath"
+        val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
+//        Log.d("check_iust_out_put_path", "convertAudio: "+  videoUri)
         val resultCode = FFmpeg.execute(command)
         if (resultCode == 0) {
             listOutputPath.add(File(outputPath))
-            Log.d("check_iust_out_put_path", "convertAudio: "+ listOutputPath  + listOutputPath.size + "  " + listAudioPick.size)
+            Log.d("check_iust_out_put_path", "convertAudio: "+  listOutputPath.size + "  " + listVideoPick.size)
             if (listVideoPick.size == 1) {
-                checkDone = true
                 val timestamp = System.currentTimeMillis()
                 val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                val path = File("${musicDir.absolutePath}/${timestamp}_video_converter.mp3")
+                val path = File("${musicDir.absolutePath}/${listOutputPath[0].name}_${timestamp}_video_converter.mp3")
                 val cacheFile = File(outputPath)
                 cacheFile.copyTo(path, overwrite = true)
-                mp3Uri = Uri.parse(outputPath)
+                mp3Uri = Uri.parse(path.toString())
                 val infoFile = FileInfo.getFileInfoFromPath(mp3Uri!!.toString())
                 Const.videoConvert = VideoConvertModel(
                     mp3Uri!!,
@@ -232,10 +307,8 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 lifecycleScope.launch {
                     // Khởi động Activity mới
                     startActivity(Intent(this@FileConvertToMp3Activity, SavedActivity::class.java))
-
                     // Trì hoãn 500ms trước khi gọi hideLoadingOverlay
                     delay(500)
-
                     // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
                     hideLoadingOverlay()
                 }
@@ -244,7 +317,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                     Log.d("check_iust_out_put_path", "convertAudio: "+ index  + "  ____  "+ cacheFile)
                     val timestamp = System.currentTimeMillis()
                     val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                    val path = File("${musicDir.absolutePath}/${timestamp}_convertMp3_$index.mp3")
+                    val path = File("${musicDir.absolutePath}/${listVideo[index].name.substringBeforeLast(".")}_${timestamp}_convertMp3_$index.mp3")
                     cacheFile.copyTo(path, overwrite = true)
                     var audioInfoConverter =
                         FileInfo.getFileInfoFromPath(Uri.parse(path.toString()).toString())
@@ -273,7 +346,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
                     Log.d("check__dkfnehbfebhjf", "convertVideoToMp3: " + listAudioMerger)
                 }
-                checkDone = true
+
             }
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
@@ -306,6 +379,7 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     override fun onDestroy() {
         super.onDestroy()
+        clearCache()
         if (exoPlayer != null) {
             exoPlayer?.release() // Giải phóng tài nguyên
         }
@@ -313,15 +387,31 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     }
 
-    override fun onStop() {
-        super.onStop()
-        job?.cancel()
-//        FFmpeg.cancel()
+//    override fun onStop() {
+//        super.onStop()
+////        job?.cancel()
+////        FFmpeg.cancel()
+//
+//    }
+
+    override fun onPause() {
+        super.onPause()
         if (exoPlayer?.isPlaying == true) {
             // Dừng phát âm thanh nếu đang phát
             exoPlayer?.pause() // Giải phóng tài nguyên
         }
     }
+
+    fun clearCache() {
+        val cacheDir = cacheDir
+        val files = cacheDir.listFiles()
+        if (files != null) {
+            for (file in files) {
+                file.delete() // Xóa từng tệp
+            }
+        }
+    }
+
 
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
         var path: String? = null
@@ -345,12 +435,12 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        job?.cancel()
         FFmpeg.cancel()
+        job?.cancel()
+        shouldCancel = true
         if (binding.loadingOverlay.visibility == View.VISIBLE) {
-            hideLoadingOverlay()
             startCoroutine()
-
+            hideLoadingOverlay()
         } else {
             finish()
         }
@@ -359,37 +449,15 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
-        listOutputPath.clear()
-        listAudioSaved.clear()
-        listAudioMerger.clear()
-//        if(binding.loadingOverlay.visibility == View.VISIBLE){
-//            hideLoadingOverlay()
-//        }
-//        if (binding.loadingOverlay.visibility == View.VISIBLE) {
-//            if (listVideoPick.size == 1) {
-//                val timestamp = System.currentTimeMillis()
-////                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-////                Log.d("check_path", "initAction: " + videoPath)
-//                outputPath = "${cacheDir.path}/converter_to_mp3_cache_${timestamp}.mp3"
-//                if (videoPath != null) {
-//                    convertVideoToMp3(videoPath!!, outputPath)
-//                }
-//            } else {
-//                job = CoroutineScope(Dispatchers.Main).launch {
-//                    listAudioMerger.clear()
-//                    listAudioSaved.clear()
-//                    convertAllVideosToMp3()
-//
-//                }
-//            }
-//        }
-
+        selectType = "Video"
+        isConverting = false
+        Log.d("check_list_videoPick", "onResume: "+ listVideoPick)
     }
 
     fun startCoroutine() {
+        listOutputPath.clear()
         listAudioSaved.clear()
         listAudioMerger.clear()
-        listOutputPath.clear()
         isConverting = false
     }
 

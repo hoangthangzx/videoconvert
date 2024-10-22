@@ -253,7 +253,19 @@ object AudioUtils {
                 val audioName = cursor.getString(nameColumn)
                 val dateAdded = cursor.getLong(dateAddedColumn) * 1000L
                 val formattedDate = formatDate(dateAdded)
-                val mimeType = cursor.getString(mimeTypeColumn)
+                val mimeType = cursor.getString(mimeTypeColumn)?.let {
+                    when (it) {
+                        "audio/mpeg" -> "mp3"
+                        "audio/aac" -> "aac"
+                        "audio/wav" -> "wav"
+                        "audio/flac" -> "flac"
+                        "audio/ogg" -> "ogg"
+                        "audio/ac3" -> "ac3" // Thêm định dạng ac3
+                        "audio/x-ms-wma" -> "wma"
+                        else -> it.substringAfter("audio/")
+                    }
+                } ?: "unknown"
+//                val mimeType = cursor.getString(mimeTypeColumn)
 
                 Const.listAudio.add(
                     AudioInfo(
@@ -263,7 +275,7 @@ object AudioUtils {
                         audioName,
                         formattedDate,
                         false,
-                        mimeType,
+                        mimeType.toString(),
                         countPos,
                         false
                     )

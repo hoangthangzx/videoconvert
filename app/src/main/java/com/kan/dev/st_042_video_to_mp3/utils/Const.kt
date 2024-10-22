@@ -53,6 +53,7 @@ object Const {
     var isTouchEventHandled = false
     var selectType = ""
     var selectTypeAudio = ""
+    var selecMerger = false
     var audioInfo : AudioSpeedModel? = null
     var videoInfo : VideoInfo? = null
     var audioInformation : AudioInfo? = null

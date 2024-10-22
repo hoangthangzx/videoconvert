@@ -55,7 +55,6 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
     var imvItems: List<LinearLayout> = listOf()
     var audioType = ""
     var checkItem = false
-    var checkDone = false
     var outputPath = ""
     var listOutputPath = mutableListOf<File>()
     var audioUri: Uri? = null
@@ -66,7 +65,6 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         initView()
         initAction()
     }
-
     private fun initView() {
         val colors = intArrayOf(
             ContextCompat.getColor(this@AudioConverterActivity, R.color.color_1),
@@ -96,25 +94,11 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
             }
         })
         binding.imvBack.onSingleClick {
-            if (binding.loadingOverlay.visibility == View.VISIBLE) {
-                job?.cancel()
-                FFmpeg.cancel()
-                hideLoadingOverlay()
-                startCoroutine()
-            } else {
-                finish()
-            }
+            finish()
         }
 
         binding.tvCancel.onSingleClick {
-            if (binding.loadingOverlay.visibility == View.VISIBLE) {
-                job?.cancel()
-                FFmpeg.cancel()
-                hideLoadingOverlay()
-                startCoroutine()
-            } else {
-                finish()
-            }
+            finish()
         }
 
         imvItems.forEachIndexed { index, imvItem ->
@@ -163,68 +147,68 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         }
     }
 
-    var resultCodex: Long? = null;
+    //    var resultCodex: Long? = null;
     fun convertAudio(inputPath: String, outputPath: String, format: String) {
         val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
         Log.d("check_mp3", "Chuyển đổi : $command")
-        // val resultCode = FFmpeg.execute(command)
-        resultCodex = FFmpeg.executeAsync(command, object : ExecuteCallback {
-            override fun apply(executionId: Long, returnCode: Int) {
-                Log.d("check_return", "apply: " + executionId + "____" + returnCode)
-                listOutputPath.add(File(outputPath))
-                Log.d(
-                    "check_iust_out_put_path",
-                    "convertAudio: " + listOutputPath + listOutputPath.size + "  " + listAudioPick.size
-                )
-                if (listOutputPath.size == listAudioPick.size) {
-                    listOutputPath.forEachIndexed { index, cacheFile ->
-                        Log.d(
-                            "check_iust_out_put_path",
-                            "convertAudio: " + index + "  ____  " + cacheFile
-                        )
-                        val timestamp = System.currentTimeMillis()
-                        val musicDir =
-                            File(Environment.getExternalStorageDirectory(), "Music/music")
-                        val path = File("${musicDir.absolutePath}/${timestamp}_convert.${format}")
-                        cacheFile.copyTo(path, overwrite = true)
-                        var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
-                        audioInformation = AudioInfo(
-                            Uri.parse(path.toString()),
-                            audioInfoConverter!!.duration.toString(),
-                            convertMbToBytes(
-                                audioInfoConverter.fileSize.toString()
-                            ),
-                            audioInfoConverter.fileName,
-                            getFormattedDate(),
-                            false,
-                            "mp3",
-                            0,
-                            false
-                        )
-                        listAudioMerger.add(audioInformation!!)
-                        audioInfo = AudioSpeedModel(
-                            Uri.parse(path.toString()),
-                            audioInfoConverter!!.duration.toString(),
-                            audioInfoConverter.fileSize,
-                            audioInfoConverter.fileName.toString()
-                        )
-                        listAudioSaved.add(audioInfo!!)
-                    }
-                    lifecycleScope.launch {
-                        // Khởi động Activity mới
-                        startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
-
-                        // Trì hoãn 500ms trước khi gọi hideLoadingOverlay
-                        delay(500)
-
-                        // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
-                        hideLoadingOverlay()
-                    }
-                }
-
-            }
-
-        })
+        val resultCode = FFmpeg.execute(command)
+//        resultCodex = FFmpeg.executeAsync(command, object : ExecuteCallback {
+//            override fun apply(executionId: Long, returnCode: Int) {
+//                Log.d("check_return", "apply: " + executionId + "____" + returnCode)
+//                listOutputPath.add(File(outputPath))
+//                Log.d(
+//                    "check_iust_out_put_path",
+//                    "convertAudio: " + listOutputPath + listOutputPath.size + "  " + listAudioPick
+//                )
+//                if (listOutputPath.size == listAudioPick.size) {
+//                    listOutputPath.forEachIndexed { index, cacheFile ->
+//                        Log.d(
+//                            "check_iust_out_put_path",
+//                            "convertAudio: " + index + "  ____  " + cacheFile
+//                        )
+//                        val timestamp = System.currentTimeMillis()
+//                        val musicDir =
+//                            File(Environment.getExternalStorageDirectory(), "Music/music")
+//                        val path = File("${musicDir.absolutePath}/${listAudioPick[index].name.substringBeforeLast(".")}_${timestamp}_convert.${format}")
+//                        cacheFile.copyTo(path, overwrite = true)
+//                        var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(path.toString()).toString())
+//                        audioInformation = AudioInfo(
+//                            Uri.parse(path.toString()),
+//                            audioInfoConverter!!.duration.toString(),
+//                            convertMbToBytes(
+//                                audioInfoConverter.fileSize.toString()
+//                            ),
+//                            audioInfoConverter.fileName,
+//                            getFormattedDate(),
+//                            false,
+//                            "mp3",
+//                            0,
+//                            false
+//                        )
+//                        listAudioMerger.add(audioInformation!!)
+//                        audioInfo = AudioSpeedModel(
+//                            Uri.parse(path.toString()),
+//                            audioInfoConverter!!.duration.toString(),
+//                            audioInfoConverter.fileSize,
+//                            audioInfoConverter.fileName.toString()
+//                        )
+//                        listAudioSaved.add(audioInfo!!)
+//                    }
+//                    lifecycleScope.launch {
+//                        // Khởi động Activity mới
+//                        startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
+//
+//                        // Trì hoãn 500ms trước khi gọi hideLoadingOverlay
+//                        delay(500)
+//
+//                        // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
+//                        hideLoadingOverlay()
+//                    }
+//                }
+//
+//            }
+//
+//        })
 
         /*resultCode = FFmpeg.executeAsync(command, object :
            ExecuteCallback {
@@ -254,32 +238,96 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
 
         } );*/
         // FFmpeg.cancel(resultCode)
-//        if (resultCode == 0) {
-//            listOutputPath.add(File(outputPath))
-//            Log.d("check_iust_out_put_path", "convertAudio: "+ listOutputPath  + listOutputPath.size + "  " + listAudioPick.size)
+        if (resultCode == 0) {
+            listOutputPath.add(File(outputPath))
+            Log.d(
+                "check_iust_out_put_path",
+                "convertAudio: " + listOutputPath + listOutputPath.size + "  " + listAudioPick.size
+            )
 //            if (listOutputPath.size == listAudioPick.size) {
 //                listOutputPath.forEachIndexed { index, cacheFile ->
-//                    Log.d("check_iust_out_put_path", "convertAudio: "+ index  + "  ____  "+ cacheFile)
+//                    Log.d(
+//                        "check_iust_out_put_path",
+//                        "convertAudio: " + index + "  ____  " + cacheFile
+//                    )
 //                    val timestamp = System.currentTimeMillis()
 //                    val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
 //                    val path = File("${musicDir.absolutePath}/${timestamp}_convert_$index.mp3")
 //                    cacheFile.copyTo(path, overwrite = true)
 //                    var audioInfoConverter = FileInfo.getFileInfoFromPath(cacheFile.toString())
-//                    audioInformation = AudioInfo(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),convertMbToBytes(audioInfoConverter.fileSize.toString()
-//                    ), audioInfoConverter.fileName, getFormattedDate(),false, "mp3", 0, false  )
+//                    audioInformation = AudioInfo(
+//                        Uri.parse(outputPath),
+//                        audioInfoConverter!!.duration.toString(),
+//                        convertMbToBytes(
+//                            audioInfoConverter.fileSize.toString()
+//                        ),
+//                        audioInfoConverter.fileName,
+//                        getFormattedDate(),
+//                        false,
+//                        "mp3",
+//                        0,
+//                        false
+//                    )
 //                    listAudioMerger.add(audioInformation!!)
-//                    audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
+//                    audioInfo = AudioSpeedModel(
+//                        Uri.parse(outputPath),
+//                        audioInfoConverter!!.duration.toString(),
+//                        audioInfoConverter.fileSize,
+//                        audioInfoConverter.fileName.toString()
+//                    )
 //                    listAudioSaved.add(audioInfo!!)
 //                }
 //            }
-//
-//            Log.d("check---------------", "convertAudio: " + audioInfo)
-//        } else {
-//            Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
-//        }
-    }
+            if (listOutputPath.size == listAudioPick.size) {
+                listOutputPath.forEachIndexed { index, cacheFile ->
+                    Log.d(
+                        "check_iust_out_put_path",
+                        "convertAudio: " + index + "  ____  " + cacheFile
+                    )
+                    val timestamp = System.currentTimeMillis()
+                    val musicDir =
+                        File(Environment.getExternalStorageDirectory(), "Music/music")
+                    val path = File(
+                        "${musicDir.absolutePath}/${
+                            listAudioPick[index].name.substringBeforeLast(".")
+                        }_${timestamp}_convert.${format}"
+                    )
+                    cacheFile.copyTo(path, overwrite = true)
+                    var audioInfoConverter =
+                        FileInfo.getFileInfoFromPath(Uri.parse(path.toString()).toString())
+                    audioInformation = AudioInfo(
+                        Uri.parse(path.toString()),
+                        audioInfoConverter!!.duration.toString(),
+                        convertMbToBytes(
+                            audioInfoConverter.fileSize.toString()
+                        ),
+                        audioInfoConverter.fileName,
+                        getFormattedDate(),
+                        false,
+                        "mp3",
+                        0,
+                        false
+                    )
+                    listAudioMerger.add(audioInformation!!)
+                    audioInfo = AudioSpeedModel(
+                        Uri.parse(path.toString()),
+                        audioInfoConverter!!.duration.toString(),
+                        audioInfoConverter.fileSize,
+                        audioInfoConverter.fileName.toString()
+                    )
+                    listAudioSaved.add(audioInfo!!)
+                }
+                Log.d("check---------------", "convertAudio: thahahahahahaaha " + audioInfo)
 
+            }
+        } else {
+            Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
+        }
+    }
     private suspend fun convertAllSongsToMp3() {
+        listAudioSaved.clear()
+        listAudioMerger.clear()
+        listOutputPath.clear()
         withContext(Dispatchers.IO) { // Chạy trong IO context
             for (audio in listAudioPick) {
                 Log.d("check_iust_out_put_path", "convertAllSongsToMp3: _____" + listAudioPick.size)
@@ -292,8 +340,12 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
                 }
             }
         }
-        checkDone = true
-//        startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
+        lifecycleScope.launch {
+            startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
+            delay(500)
+            hideLoadingOverlay()
+        }
+    //        startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
     }
 
     fun convertMbToBytes(sizeString: String): Long {
@@ -320,14 +372,12 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         }
         return path
     }
-
     private fun showLoadingOverlay() {
         binding.loadingOverlay.visibility = View.VISIBLE
         val animator = ObjectAnimator.ofInt(binding.lottieAnimationView, "progress", 0, 100)
         animator.duration = 2000 // Thời gian chạy animation (5 giây)
         animator.start()
     }
-
     private fun hideLoadingOverlay() {
         binding.loadingOverlay.visibility = View.GONE
     }
@@ -337,27 +387,15 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
     override fun onBackPressed() {
         if (binding.loadingOverlay.visibility == View.VISIBLE) {
             job?.cancel()
-            FFmpeg.cancel()
             hideLoadingOverlay()
             startCoroutine()
         } else {
             finish()
         }
     }
-
     override fun onStop() {
         super.onStop()
-        job?.cancel()
-//        resultCodex?.let { FFmpeg.cancel(it) }
-//        try {
-//            FFmpeg.cancel()
-//        }catch (e:Exception){
-//        }
-//        if (checkDone) {
-//            hideLoadingOverlay()
-//        }
     }
-
     private fun initData() {
         adapter = AudioConverterAdapter(this@AudioConverterActivity)
         adapter.getData(listAudioPick)
@@ -376,30 +414,30 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
     override fun onDestroy() {
         super.onDestroy()
         job?.cancel()
-//        hideLoadingOverlay()
+        clearCache()
     }
 
     override fun onResume() {
         super.onResume()
         selectTypeAudio = "AudioConvert"
-        listAudioMerger.clear()
-        listAudioSaved.clear()
-        listOutputPath.clear()
         isConverting = false
-//        showLoadingOverlay()
-//        if (binding.loadingOverlay.visibility == View.VISIBLE) {
-//            hideLoadingOverlay()
-////            // Gọi hàm chuyển đổi với Coroutine
-////            job = CoroutineScope(Dispatchers.Main).launch {
-////                convertAllSongsToMp3()
-////            }
-//        }
     }
 
     fun startCoroutine() {
+        FFmpeg.cancel()
         isConverting = false
         listAudioSaved.clear()
         listAudioMerger.clear()
         listOutputPath.clear()
+    }
+
+    fun clearCache() {
+        val cacheDir = cacheDir
+        val files = cacheDir.listFiles()
+        if (files != null) {
+            for (file in files) {
+                file.delete() // Xóa từng tệp
+            }
+        }
     }
 }

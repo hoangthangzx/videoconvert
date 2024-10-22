@@ -31,7 +31,7 @@ class MergerAudioAdapter ( var context: Context) : RecyclerView.Adapter<MergerAu
     inner class ViewHolder (val binding: ItemAudioMergerBinding): RecyclerView.ViewHolder(binding.root){
         @SuppressLint("SetTextI18n")
         fun bind(position: Int, holder: ViewHolder, mListener: onClickItemListener) {
-            binding.tvSize.text = "${data[position].sizeInMB} MB"
+            binding.tvSize.text = "${data[position].sizeInMB} KB"
             binding.tvDuration.text = data[position].duration
             binding.tvTitle.text = data[position].name
             binding.tvTitle.isSelected = true

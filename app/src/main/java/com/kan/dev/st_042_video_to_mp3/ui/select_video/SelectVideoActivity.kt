@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.kan.dev.st_042_video_to_mp3.R
 import com.kan.dev.st_042_video_to_mp3.databinding.ActivitySelectVideoBinding
 import com.kan.dev.st_042_video_to_mp3.model.VideoInfo
@@ -17,6 +18,7 @@ import com.kan.dev.st_042_video_to_mp3.ui.VideoConverterActivity
 import com.kan.dev.st_042_video_to_mp3.ui.VideoCutterActivity
 import com.kan.dev.st_042_video_to_mp3.ui.VideoSpeedActivity
 import com.kan.dev.st_042_video_to_mp3.ui.file_convert_to_mp3.FileConvertToMp3Activity
+import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkData
@@ -41,16 +43,19 @@ import com.kan.dev.st_042_video_to_mp3.utils.VideoUtils
 import com.kan.dev.st_042_video_to_mp3.utils.applyGradient
 import com.kan.dev.st_042_video_to_mp3.utils.onSingleClick
 import com.metaldetector.golddetector.finder.AbsBaseActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
     override fun getFragmentID(): Int = 0
     override fun getLayoutId(): Int = R.layout.activity_select_video
-    lateinit var adapter: SelectVideoAdapter
+//    lateinit var adapter:
+    val adapter by lazy {
+        SelectVideoAdapter(this)
+}
     var isAll = false
     override fun init() {
-        if(listVideo.size == 0){
-            binding.noItem.visibility = View.VISIBLE
-        }
         initData()
         initView()
         if(selectType.equals("VideoCutter")){
@@ -91,7 +96,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                     listVideoPick.remove(listVideo[position])
                     countSizeVideo -= listVideo[position].sizeInMB.toInt()
                 }
-                binding.tvSelected.text = "$countVideo Selected"
+                binding.tvSelected.text = "$countVideo ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSizeVideo MB"
             }
         })
@@ -129,7 +134,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                     listVideoPick.remove(listVideo[position])
                     countSizeVideo -= listVideo[position].sizeInMB.toInt()
                 }
-                binding.tvSelected.text = "$countVideo Selected"
+                binding.tvSelected.text = "$countVideo ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSizeVideo MB"
             }
         })
@@ -167,7 +172,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                     listVideoPick.remove(listVideo[position])
 //                    countSizeVideo -= listVideo[position].sizeInMB.toInt()
                 }
-                binding.tvSelected.text = "$countVideo Selected"
+                binding.tvSelected.text = "$countVideo ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSizeVideo MB"
             }
         })
@@ -217,7 +222,7 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
                     Log.d("chejjc-wd-d-e", "onItemClick: "+  listVideo[position])
                     countSizeVideo -= listVideo[position].sizeInMB.toInt()
                 }
-                binding.tvSelected.text = "$countVideo Selected"
+                binding.tvSelected.text = "$countVideo ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSizeVideo MB"
             }
         })
@@ -232,14 +237,14 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             listVideoPick = listVideo.map { it.copy() }.toMutableList()
             countVideo = listVideoPick.size
             countSizeVideo = listVideoPick.sumOf { it.sizeInMB.toInt() }
-            binding.tvSelected.text = "$countVideo Selected"
+            binding.tvSelected.text = "$countVideo ${getString(R.string.selected)}"
             binding.tvSize.text = "/ $countSizeVideo MB"
         }
 
         binding.imvTickTrue.onSingleClick {
             countVideo = 0
             countSizeVideo = 0
-            binding.tvSelected.text = "$countVideo Selected"
+            binding.tvSelected.text = "$countVideo ${getString(R.string.selected)}"
             binding.tvSize.text = "/ $countSizeVideo MB"
             isAll = false
             binding.imvTickTrue.visibility = View.GONE
@@ -257,15 +262,36 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
             ContextCompat.getColor(this@SelectVideoActivity, R.color.color_2)
         )
         binding.tvContinue.applyGradient(this@SelectVideoActivity,colors)
-        binding.tvSelected.text = "$countVideo Selected"
+        binding.tvSelected.text = "$countVideo ${getString(R.string.selected)}"
     }
 
     private fun initData() {
-        adapter = SelectVideoAdapter(this@SelectVideoActivity)
-        adapter.getData(listVideo)
-        binding.recVideo.adapter = adapter
+        listVideo.clear()
+        lifecycleScope.launch {
+            binding.progressBar.visibility = View.VISIBLE
+            withContext(Dispatchers.IO) {
+                VideoUtils.getAllVideos(contentResolver)
+                withContext(Dispatchers.Main){
+                    if (listVideo.size == 0) {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.noItem.visibility = View.VISIBLE
+                    } else {
+                        initRec()
+                    }
+                }
+            }
+
+        }
+
+
     }
 
+    private fun initRec() {
+//        adapter = SelectVideoAdapter(this@SelectVideoActivity)
+        adapter.getData(listVideo)
+        binding.recVideo.adapter = adapter
+        binding.progressBar.visibility = View.GONE
+    }
 //    fun formatTimeToHoursMinutes(duration: Long): String {
 //        val minutes = (duration / 1000) / 60
 //        val seconds = (duration / 1000) % 60
@@ -274,12 +300,13 @@ class SelectVideoActivity : AbsBaseActivity<ActivitySelectVideoBinding>(false) {
 
     override fun onResume() {
         super.onResume()
+        selectType = "Video"
         Log.d("check_crash", "onResume: "+ listVideoPick +  "_____" + listVideo)
         if(listVideoPick.size < listVideo.size){
             binding.imvTick.visibility = View.VISIBLE
             binding.imvTickTrue.visibility = View.GONE
         }
-        binding.tvSelected.text = "$countVideo Selected"
+        binding.tvSelected.text = "$countVideo ${getString(R.string.selected)}"
         binding.tvSize.text = "/ $countSizeVideo MB"
         adapter.notifyDataSetChanged()
     }

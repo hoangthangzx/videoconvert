@@ -150,5 +150,6 @@
     <string name="select_audio">ऑडियो चुनें</string>
     <string name="you_must_choose_a_format">आपको एक प्रारूप चुनना होगा</string>
     <string name="_00_00">00:00</string>
-
+    <string name="version">संस्करण: </string>
+    <string name="starttime_must_be_greater_than_0">कट समय 0 से अधिक होना चाहिए</string>
 </resources>

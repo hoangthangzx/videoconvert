@@ -116,7 +116,7 @@ class StorageFragment : Fragment() {
             listAudioPick = listAudioStorage.map { it.copy() }.toMutableList()
             countAudio = listAudioPick.size
             countSize = listAudioPick.sumOf { it.sizeInMB.toInt() }
-            binding.tvSelectedItem.text = "$countAudio Selected"
+            binding.tvSelectedItem.text = "$countAudio ${getString(R.string.selected)}"
             binding.size.text = "$countSize KB"
         }
         binding.lnAllTrue.onSingleClick {
@@ -128,7 +128,7 @@ class StorageFragment : Fragment() {
             adapterFr.notifyDataSetChanged()
             listAudioPick.clear()
             binding.size.visibility = View.GONE
-            binding.tvSelectedItem.text = "Selected items"
+            binding.tvSelectedItem.text = "${getString(R.string.select_items)}"
         }
 
         adapterVdFr.onClickListener(object : VideoAdapterFr.onClickItemListener {
@@ -149,7 +149,7 @@ class StorageFragment : Fragment() {
                         listVideoPick.removeAt(position)
                         countSizeVideo -= listVideoStorage[position].sizeInMB.toInt()
                     }
-                    binding.tvSelectedItem.text = "$countVideo Selected"
+                    binding.tvSelectedItem.text = "$countVideo ${getString(R.string.selected)}"
                     binding.size.text = "$countSizeVideo KB"
                 } else {
                     Log.d("check_logg", "onClickEven:  9liulk8iku8l8ul")
@@ -287,7 +287,7 @@ class StorageFragment : Fragment() {
                 adapterFr.notifyDataSetChanged()
                 binding.ctlStorage.visibility = View.VISIBLE
                 binding.ctlItem.visibility = View.GONE
-                binding.tvSelectedItem.text = "Select items"
+                binding.tvSelectedItem.text = "${getString(R.string.select_items)}"
                 binding.size.text = "$countSizeVideo KB"
                 viewModel.resetEvent()
             }
@@ -398,6 +398,20 @@ class StorageFragment : Fragment() {
     }
 
     private fun initData() {
+        shareData = SharedPreferenceUtils.getInstance(requireContext())
+        storageMusic = shareData.getStringValue("musicStorage").toString()
+        listAudioStorage.clear()
+        lifecycleScope.launch {
+            binding.progressBar.visibility = View.VISIBLE
+            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+            if (listAudioStorage.size == 0) {
+                binding.progressBar.visibility = View.GONE
+                binding.lnNoItem.visibility = View.VISIBLE
+            } else {
+                binding.lnNoItem.visibility = View.GONE
+                initRec()
+            }
+        }
 //        shareData = SharedPreferenceUtils.getInstance(requireContext())
 //        storageMusic = shareData.getStringValue("musicStorage").toString()
 //        storageVideo = shareData.getStringValue("videoStorage").toString()
@@ -415,7 +429,6 @@ class StorageFragment : Fragment() {
 //        }
 
     }
-
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
         var path: String? = null
         val proj = arrayOf(MediaStore.Video.Media.DATA)
@@ -432,20 +445,6 @@ class StorageFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         isClick = false
-        shareData = SharedPreferenceUtils.getInstance(requireContext())
-        storageMusic = shareData.getStringValue("musicStorage").toString()
-        listAudioStorage.clear()
-        lifecycleScope.launch {
-            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
-            if (listAudioStorage.size == 0) {
-                binding.lnNoItem.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.VISIBLE
-                binding.lnNoItem.visibility = View.GONE
-                initRec()
-            }
-        }
-//        listAudioStorage.clear()
 //        lifecycleScope.launch {
 //            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
 //            if (listAudioStorage.size == 0) {

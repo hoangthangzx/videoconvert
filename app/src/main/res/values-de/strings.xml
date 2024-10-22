@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Video covert to audio</string>
     <string name="language">Sprache</string>
     <string name="english">Englisch</string>
@@ -141,13 +141,14 @@
     <string name="items_cannot_be_deleted_you_need_at_least_1_items_to_convert">Elemente können nicht gelöscht werden, Sie benötigen mindestens 1 Element zur Konvertierung</string>
     <string name="_0_kb">0 KB</string>
     <string name="adjust_audio">Audio anpassen</string>
-    <string name="feel_free_to_adjust_mp3_according_to_your_needs_cut_merge_convert">Fühlen Sie sich frei, MP3 nach Ihren Bedürfnissen anzupassen: schneiden, zusammenführen, konvertieren,...</string>
+    <string name="feel_free_to_adjust_mp3_according_to_your_needs_cut_merge_convert" tools:ignore="TypographyEllipsis">Fühlen Sie sich frei, MP3 nach Ihren Bedürfnissen anzupassen: schneiden, zusammenführen, konvertieren,...</string>
     <string name="create_impressive_videos">Beeindruckende Videos erstellen</string>
-    <string name="supports_features_like_trim_merge_reduce_speed">Unterstützt Funktionen wie schneiden, zusammenführen, Geschwindigkeitsreduzierung,...</string>
+    <string name="supports_features_like_trim_merge_reduce_speed" tools:ignore="TypographyEllipsis">Unterstützt Funktionen wie schneiden, zusammenführen, Geschwindigkeitsreduzierung,...</string>
     <string name="convert_video_to_mp3">Video in MP3 konvertieren</string>
     <string name="easy_and_fast">einfach und schnell</string>
     <string name="select_audio">Audio auswählen</string>
     <string name="you_must_choose_a_format">Sie müssen ein Format auswählen</string>
     <string name="_00_00">00:00</string>
-
+    <string name="version">Version: </string>
+    <string name="starttime_must_be_greater_than_0">Die Schnittzeit muss größer als 0 sein.</string>
 </resources>

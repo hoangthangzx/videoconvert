@@ -150,5 +150,6 @@
     <string name="select_audio">Pilih Audio</string>
     <string name="you_must_choose_a_format">Anda harus memilih format</string>
     <string name="_00_00">00:00</string>
-
+    <string name="version">Versi: </string>
+    <string name="starttime_must_be_greater_than_0">Waktu pemotongan harus lebih besar dari 0</string>
 </resources>

@@ -4,6 +4,8 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.media.MediaExtractor
+import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Environment
@@ -230,6 +232,27 @@ object VideoUtils {
 //        }
 //    }
 
+    private fun hasAudioTrack(videoUri: Uri, contentResolver: ContentResolver): Boolean {
+        val extractor = MediaExtractor()
+        return try {
+            extractor.setDataSource(contentResolver.openFileDescriptor(videoUri, "r")?.fileDescriptor!!)
+            val trackCount = extractor.trackCount
+            for (i in 0 until trackCount) {
+                val format: MediaFormat = extractor.getTrackFormat(i)
+                val mimeType = format.getString(MediaFormat.KEY_MIME) ?: continue
+                // Kiểm tra nếu MIME type chứa "audio"
+                if (mimeType.startsWith("audio/")) {
+                    return true
+                }
+            }
+            false
+        } catch (e: Exception) {
+            false
+        } finally {
+            extractor.release()
+        }
+    }
+
 
     fun getAllVideos(contentResolver: ContentResolver) {
         val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
@@ -265,24 +288,40 @@ object VideoUtils {
                 val sizeInMB = size / (1024 * 1024)
                 val videoName = cursor.getString(nameColumn) // Lấy giá trị tên video
                 val formattedDate = formatDate(dateAdded)
-                listVideo.add(
-                    VideoInfo(
-                        videoUri,
-                        formatTimeToHoursMinutes(duration),
-                        sizeInMB,
-                        videoName,
-                        formattedDate,
-                        false,
-                        countVd
+//                listVideo.add(
+//                    VideoInfo(
+//                        videoUri,
+//                        formatTimeToHoursMinutes(duration),
+//                        sizeInMB,
+//                        videoName,
+//                        formattedDate,
+//                        false,
+//                        countVd
+//                    )
+//                )
+//                countVd += 1
+                if (size > 0 && duration > 1000 && hasAudioTrack(videoUri, contentResolver)) {
+                    listVideo.add(
+                        VideoInfo(
+                            videoUri,
+                            formatTimeToHoursMinutes(duration),
+                            sizeInMB,
+                            videoName,
+                            formattedDate,
+                            false,
+                            countVd
+                        )
                     )
-                )
-                countVd += 1
+                    countVd += 1
+                }
             }
         }
 
         Log.d("check_count", "getAllVideos: " + countVd)
 
     }
+
+
 
     fun formatTimeToHoursMinutes(duration: Long): String {
         val minutes = (duration / 1000) / 60
