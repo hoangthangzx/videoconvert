@@ -304,7 +304,16 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                         }else{
                             checkSpeed = false
                         }
-                        startActivity(Intent(this@AudioSpeedActivity, SavedActivity::class.java))
+                        lifecycleScope.launch {
+                            // Khởi động Activity mới
+                            startActivity(Intent(this@AudioSpeedActivity, SavedActivity::class.java))
+
+                            // Trì hoãn 500ms trước khi gọi hideLoadingOverlay
+                            delay(500)
+
+                            // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
+                            hideLoadingOverlay()
+                        }
                     }
                 }
             }
@@ -707,6 +716,9 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             mediaPlayer!!.pause()
             checkSpeed = false
         }
+//        if(checkDone){
+//            hideLoadingOverlay()
+//        }
         binding.imvPause.visibility = View.GONE
         binding.imvPlay.visibility = View.VISIBLE
         isPlaying = false

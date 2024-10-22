@@ -16,6 +16,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.END
@@ -49,6 +50,7 @@ import com.metaldetector.golddetector.finder.AbsBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -386,8 +388,16 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
                         }else{
                             checkMerger = false
                         }
-                        hideLoadingOverlay()
-                        startActivity(Intent(this@MergerAudioActivity,SavedActivity::class.java))
+                        lifecycleScope.launch {
+                            // Khởi động Activity mới
+                            startActivity(Intent(this@MergerAudioActivity, SavedActivity::class.java))
+
+                            // Trì hoãn 500ms trước khi gọi hideLoadingOverlay
+                            delay(500)
+
+                            // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
+                            hideLoadingOverlay()
+                        }
                     }else{
                         clearCache()
                     }
@@ -611,6 +621,9 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false){
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
+//        if(binding.loadingOverlay.visibility == View.VISIBLE){
+//            hideLoadingOverlay()
+//        }
 //        if(binding.progress.visibility == View.VISIBLE){
 //            checkDone = false
 //            val timestamp = System.currentTimeMillis()

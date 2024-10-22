@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -47,6 +48,7 @@ import com.metaldetector.golddetector.finder.AbsBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -227,7 +229,16 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                     infoFile!!.fileSize,
                     infoFile.fileName
                 )
-                startActivity(Intent(this@FileConvertToMp3Activity, SavedActivity::class.java))
+                lifecycleScope.launch {
+                    // Khởi động Activity mới
+                    startActivity(Intent(this@FileConvertToMp3Activity, SavedActivity::class.java))
+
+                    // Trì hoãn 500ms trước khi gọi hideLoadingOverlay
+                    delay(500)
+
+                    // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
+                    hideLoadingOverlay()
+                }
             } else if(listOutputPath.size == listVideoPick.size){
                 listOutputPath.forEachIndexed { index, cacheFile ->
                     Log.d("check_iust_out_put_path", "convertAudio: "+ index  + "  ____  "+ cacheFile)
@@ -236,9 +247,9 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                     val path = File("${musicDir.absolutePath}/${timestamp}_convertMp3_$index.mp3")
                     cacheFile.copyTo(path, overwrite = true)
                     var audioInfoConverter =
-                        FileInfo.getFileInfoFromPath(cacheFile.toString())
+                        FileInfo.getFileInfoFromPath(Uri.parse(path.toString()).toString())
                     audioInformation = AudioInfo(
-                        Uri.fromFile(cacheFile),
+                        Uri.parse(path.toString()),
                         audioInfoConverter!!.duration.toString(),
                         convertMbToBytes(
                             audioInfoConverter.fileSize.toString()
@@ -252,18 +263,18 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                     )
                     listAudioMerger.add(audioInformation!!)
                     audioInfo = AudioSpeedModel(
-                        Uri.fromFile(cacheFile),
+                        Uri.parse(path.toString()),
                         audioInfoConverter!!.duration.toString(),
                         audioInfoConverter.fileSize,
                         audioInfoConverter.fileName.toString()
                     )
                     listAudioSaved.add(audioInfo!!)
+                    listConvertMp3.add(path.toString())
+
                     Log.d("check__dkfnehbfebhjf", "convertVideoToMp3: " + listAudioMerger)
                 }
                 checkDone = true
-
             }
-            listConvertMp3.add(outputPath)
         } else {
             Log.d("check_mp3", "Chuyển đổi thất bại. Mã lỗi: $resultCode")
         }
@@ -304,9 +315,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     override fun onStop() {
         super.onStop()
-//        if (checkDone){
-//            hideLoadingOverlay()
-//        }
         job?.cancel()
 //        FFmpeg.cancel()
         if (exoPlayer?.isPlaying == true) {
@@ -354,6 +362,9 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         listOutputPath.clear()
         listAudioSaved.clear()
         listAudioMerger.clear()
+//        if(binding.loadingOverlay.visibility == View.VISIBLE){
+//            hideLoadingOverlay()
+//        }
 //        if (binding.loadingOverlay.visibility == View.VISIBLE) {
 //            if (listVideoPick.size == 1) {
 //                val timestamp = System.currentTimeMillis()

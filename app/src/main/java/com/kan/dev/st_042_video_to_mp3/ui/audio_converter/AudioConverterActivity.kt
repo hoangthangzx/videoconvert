@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.arthenica.mobileffmpeg.ExecuteCallback
 import com.arthenica.mobileffmpeg.FFmpeg
 //import com.arthenica.mobileffmpeg.FFmpeg
@@ -38,6 +39,7 @@ import com.metaldetector.golddetector.finder.AbsBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -72,6 +74,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         )
         binding.tvDone.applyGradient(this@AudioConverterActivity, colors)
     }
+
     private fun initAction() {
         adapter.onClickListener(object : AudioConverterAdapter.onClickItemListener {
             @SuppressLint("NotifyDataSetChanged")
@@ -159,36 +162,69 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
             }
         }
     }
+
     var resultCodex: Long? = null;
     fun convertAudio(inputPath: String, outputPath: String, format: String) {
         val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
         Log.d("check_mp3", "Chuyển đổi : $command")
-       // val resultCode = FFmpeg.execute(command)
-          resultCodex = FFmpeg.executeAsync(command,object :ExecuteCallback{
-              override fun apply(executionId: Long, returnCode: Int) {
-                  Log.d("check_return", "apply: "+ executionId + "____" + returnCode)
-                  listOutputPath.add(File(outputPath))
-            Log.d("check_iust_out_put_path", "convertAudio: "+ listOutputPath  + listOutputPath.size + "  " + listAudioPick.size)
-            if (listOutputPath.size == listAudioPick.size) {
-                listOutputPath.forEachIndexed { index, cacheFile ->
-                    Log.d("check_iust_out_put_path", "convertAudio: "+ index  + "  ____  "+ cacheFile)
-                    val timestamp = System.currentTimeMillis()
-                    val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                    val path = File("${musicDir.absolutePath}/${timestamp}_convert.${format}")
-                    cacheFile.copyTo(path, overwrite = true)
-                    var audioInfoConverter = FileInfo.getFileInfoFromPath(cacheFile.toString())
-                    audioInformation = AudioInfo(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),convertMbToBytes(audioInfoConverter.fileSize.toString()
-                    ), audioInfoConverter.fileName, getFormattedDate(),false, "mp3", 0, false  )
-                    listAudioMerger.add(audioInformation!!)
-                    audioInfo = AudioSpeedModel(Uri.parse(outputPath),audioInfoConverter!!.duration.toString(),audioInfoConverter.fileSize,audioInfoConverter.fileName.toString())
-                    listAudioSaved.add(audioInfo!!)
+        // val resultCode = FFmpeg.execute(command)
+        resultCodex = FFmpeg.executeAsync(command, object : ExecuteCallback {
+            override fun apply(executionId: Long, returnCode: Int) {
+                Log.d("check_return", "apply: " + executionId + "____" + returnCode)
+                listOutputPath.add(File(outputPath))
+                Log.d(
+                    "check_iust_out_put_path",
+                    "convertAudio: " + listOutputPath + listOutputPath.size + "  " + listAudioPick.size
+                )
+                if (listOutputPath.size == listAudioPick.size) {
+                    listOutputPath.forEachIndexed { index, cacheFile ->
+                        Log.d(
+                            "check_iust_out_put_path",
+                            "convertAudio: " + index + "  ____  " + cacheFile
+                        )
+                        val timestamp = System.currentTimeMillis()
+                        val musicDir =
+                            File(Environment.getExternalStorageDirectory(), "Music/music")
+                        val path = File("${musicDir.absolutePath}/${timestamp}_convert.${format}")
+                        cacheFile.copyTo(path, overwrite = true)
+                        var audioInfoConverter = FileInfo.getFileInfoFromPath(Uri.parse(outputPath).toString())
+                        audioInformation = AudioInfo(
+                            Uri.parse(path.toString()),
+                            audioInfoConverter!!.duration.toString(),
+                            convertMbToBytes(
+                                audioInfoConverter.fileSize.toString()
+                            ),
+                            audioInfoConverter.fileName,
+                            getFormattedDate(),
+                            false,
+                            "mp3",
+                            0,
+                            false
+                        )
+                        listAudioMerger.add(audioInformation!!)
+                        audioInfo = AudioSpeedModel(
+                            Uri.parse(path.toString()),
+                            audioInfoConverter!!.duration.toString(),
+                            audioInfoConverter.fileSize,
+                            audioInfoConverter.fileName.toString()
+                        )
+                        listAudioSaved.add(audioInfo!!)
+                    }
+                    lifecycleScope.launch {
+                        // Khởi động Activity mới
+                        startActivity(Intent(this@AudioConverterActivity, SavedActivity::class.java))
+
+                        // Trì hoãn 500ms trước khi gọi hideLoadingOverlay
+                        delay(500)
+
+                        // Gọi hideLoadingOverlay() sau khi đã khởi động Activity mới
+                        hideLoadingOverlay()
+                    }
                 }
-                startActivity(Intent(this@AudioConverterActivity,SavedActivity::class.java))
+
             }
 
-              }
-
-          })
+        })
 
         /*resultCode = FFmpeg.executeAsync(command, object :
            ExecuteCallback {
@@ -217,7 +253,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
             }
 
         } );*/
-       // FFmpeg.cancel(resultCode)
+        // FFmpeg.cancel(resultCode)
 //        if (resultCode == 0) {
 //            listOutputPath.add(File(outputPath))
 //            Log.d("check_iust_out_put_path", "convertAudio: "+ listOutputPath  + listOutputPath.size + "  " + listAudioPick.size)
@@ -246,7 +282,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
     private suspend fun convertAllSongsToMp3() {
         withContext(Dispatchers.IO) { // Chạy trong IO context
             for (audio in listAudioPick) {
-                Log.d("check_iust_out_put_path", "convertAllSongsToMp3: _____"+ listAudioPick.size)
+                Log.d("check_iust_out_put_path", "convertAllSongsToMp3: _____" + listAudioPick.size)
                 val audioPath = getRealPathFromURI(this@AudioConverterActivity, audio.uri!!)
                 val timestamp = System.currentTimeMillis()
 //                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
@@ -317,9 +353,9 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
 //            FFmpeg.cancel()
 //        }catch (e:Exception){
 //        }
-        if (checkDone) {
-            hideLoadingOverlay()
-        }
+//        if (checkDone) {
+//            hideLoadingOverlay()
+//        }
     }
 
     private fun initData() {
@@ -351,13 +387,15 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         listOutputPath.clear()
         isConverting = false
 //        showLoadingOverlay()
-        if (binding.loadingOverlay.visibility == View.VISIBLE) {
-                // Gọi hàm chuyển đổi với Coroutine
-                job = CoroutineScope(Dispatchers.Main).launch {
-                    convertAllSongsToMp3()
-            }
-        }
+//        if (binding.loadingOverlay.visibility == View.VISIBLE) {
+//            hideLoadingOverlay()
+////            // Gọi hàm chuyển đổi với Coroutine
+////            job = CoroutineScope(Dispatchers.Main).launch {
+////                convertAllSongsToMp3()
+////            }
+//        }
     }
+
     fun startCoroutine() {
         isConverting = false
         listAudioSaved.clear()

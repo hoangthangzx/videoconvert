@@ -144,7 +144,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 listAudioPick.add(listAudio[position])
                 dataItemChange()
                 holder.binding.edtStartTime.setText(countItemt.toString())
-                binding.tvSelected.text = "$countAudio Selected"
+                binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSize MB"
                 adapter.notifyDataSetChanged()
             }
@@ -163,7 +163,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     holder.binding.tvTime.visibility = View.GONE
                     countItemt = 1
                 }
-                binding.tvSelected.text = "$countAudio Selected"
+                binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSize MB"
                 holder.binding.edtStartTime.setText(countItemt.toString())
             }
@@ -199,7 +199,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     listAudio[position].active = false
                     countSize -= listAudio[position].sizeInMB.toInt()
                 }
-                binding.tvSelected.text = "$countAudio Selected"
+                binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSize MB"
             }
 
@@ -229,7 +229,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 adapter.notifyItemChanged(position)
             }
         })
-
 
         binding.lnContinue.onSingleClick {
 //            startActivity(Intent(this@SelectAudioActivity, ActivityAudioCutter::class.java))
@@ -261,7 +260,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     listAudio[position].active = false
                     countSize -= listAudio[position].sizeInMB.toInt()
                 }
-                binding.tvSelected.text = "$countAudio Selected"
+                binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
                 binding.tvSize.text = "/ $countSize MB"
             }
 
@@ -363,7 +362,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
         }
         listAudio.forEach { it.activePl = false }
         adapter.notifyDataSetChanged()
-        binding.tvSelected.text = "$countAudio Selected"
+        binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
     }
     override fun onStop() {
         super.onStop()

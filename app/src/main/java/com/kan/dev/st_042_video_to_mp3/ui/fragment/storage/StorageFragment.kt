@@ -394,25 +394,25 @@ class StorageFragment : Fragment() {
     private fun initRec() {
         adapterFr.getData(listAudioStorage)
         binding.recyclerViewTab2.adapter = adapterFr
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun initData() {
-        binding.progressBar.visibility = View.VISIBLE
-        shareData = SharedPreferenceUtils.getInstance(requireContext())
-        storageMusic = shareData.getStringValue("musicStorage").toString()
-        storageVideo = shareData.getStringValue("videoStorage").toString()
-
-        listAudioStorage.clear()
-        lifecycleScope.launch {
-            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
-            binding.progressBar.visibility = View.GONE
-            initRec()
-            if (listAudioStorage.size == 0) {
-                binding.lnNoItem.visibility = View.VISIBLE
-            } else {
-                binding.lnNoItem.visibility = View.GONE
-            }
-        }
+//        shareData = SharedPreferenceUtils.getInstance(requireContext())
+//        storageMusic = shareData.getStringValue("musicStorage").toString()
+//        storageVideo = shareData.getStringValue("videoStorage").toString()
+//
+//        listAudioStorage.clear()
+//        lifecycleScope.launch {
+//            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+//            binding.progressBar.visibility = View.GONE
+//            initRec()
+//            if (listAudioStorage.size == 0) {
+//                binding.lnNoItem.visibility = View.VISIBLE
+//            } else {
+//                binding.lnNoItem.visibility = View.GONE
+//            }
+//        }
 
     }
 
@@ -432,6 +432,19 @@ class StorageFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         isClick = false
+        shareData = SharedPreferenceUtils.getInstance(requireContext())
+        storageMusic = shareData.getStringValue("musicStorage").toString()
+        listAudioStorage.clear()
+        lifecycleScope.launch {
+            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
+            if (listAudioStorage.size == 0) {
+                binding.lnNoItem.visibility = View.VISIBLE
+            } else {
+                binding.progressBar.visibility = View.VISIBLE
+                binding.lnNoItem.visibility = View.GONE
+                initRec()
+            }
+        }
 //        listAudioStorage.clear()
 //        lifecycleScope.launch {
 //            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)

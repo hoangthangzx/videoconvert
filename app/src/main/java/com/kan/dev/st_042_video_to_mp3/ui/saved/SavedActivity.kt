@@ -191,6 +191,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     }
 
     private fun initActionAudioConvert() {
+        Log.d("chekcdmkmkde", "initActionAudioConvert: "+ listAudioSaved)
         binding.lnShare.onSingleClick {
             shareAudioUrisCv(this@SavedActivity, listAudioSaved)
         }
