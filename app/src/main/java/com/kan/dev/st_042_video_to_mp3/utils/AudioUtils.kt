@@ -51,6 +51,20 @@ object AudioUtils {
             }
         }
     }
+    suspend fun hasAudioFilesInDirectory(directoryPath: String): Boolean {
+        return withContext(Dispatchers.IO) { // Chạy trên background thread
+            val directory = File(directoryPath)
+            if (directory.exists() && directory.isDirectory) {
+                val audioExtensions = listOf("mp3", "wav", "aac", "ogg", "flac", "ac3", "wma")
+                // Kiểm tra nếu có file audio trong thư mục
+                val hasAudio = directory.listFiles()?.any { it.isFile && audioExtensions.any { ext -> it.name.endsWith(ext, ignoreCase = true) } } ?: false
+                return@withContext hasAudio
+            } else {
+                Log.e("CheckAudios", "Directory does not exist or is not a directory.")
+                return@withContext false
+            }
+        }
+    }
 
 //    suspend fun getAllAudiosFromSpecificDirectory_1(directoryPath: String) {
 //        withContext(Dispatchers.IO) { // Chạy trên background thread

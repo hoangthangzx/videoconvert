@@ -718,7 +718,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             finish()
         }
     }
-
     fun startCoroutine() {
         FFmpeg.cancel()
         isPlaying = false

@@ -445,24 +445,28 @@ class StorageFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         isClick = false
-//        lifecycleScope.launch {
-//            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
-//            if (listAudioStorage.size == 0) {
-//                binding.lnNoItem.visibility = View.VISIBLE
-//            } else {
-//                binding.lnNoItem.visibility = View.GONE
-//            }
-//        }
+        shareData = SharedPreferenceUtils.getInstance(requireContext())
+        storageMusic = shareData.getStringValue("musicStorage").toString()
+        lifecycleScope.launch {
+            val checkListAudio =  AudioUtils.hasAudioFilesInDirectory(storageMusic)
+            Log.d("check_logddd", "onResume: "+ checkListAudio)
+            if (!checkListAudio) {
+                binding.lnNoItem.visibility = View.VISIBLE
+                binding.recyclerViewTab2.visibility = View.GONE
+            } else {
+                binding.lnNoItem.visibility = View.GONE
+                binding.recyclerViewTab2.visibility = View.VISIBLE
+            }
+        }
 //        listAudioStorage.clear()
 //        lifecycleScope.launch {
 //            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
-//            if (listAudioStorage.size == 0) {
+//            if (listAudioStorage.size == 0) {//        Log.d("check_logddd", "onResume: "+ checkType)
 //                binding.lnNoItem.visibility = View.VISIBLE
 //            } else {
 //                binding.lnNoItem.visibility = View.GONE
 //            }
 //        }
-//        Log.d("check_logddd", "onResume: "+ checkType)
     }
 
 }

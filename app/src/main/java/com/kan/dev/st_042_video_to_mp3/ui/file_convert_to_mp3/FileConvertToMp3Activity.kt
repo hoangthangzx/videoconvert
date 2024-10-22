@@ -225,9 +225,8 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
     }
 
     fun convertVideoToMp3(videoUri: String, outputPath: String) {
-//        val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
         val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
-
+//        val command = "-i \"$videoUri\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
 //        Log.d("check_iust_out_put_path", "convertAudio: "+  videoUri)
 //        val command =   "-i ${videoUri} -codec:a aac -b:a 192k ${outputPath}"
         val resultCode = FFmpeg.execute(command)
