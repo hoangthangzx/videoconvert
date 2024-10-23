@@ -27,6 +27,7 @@
             android:fontFamily="@font/cater_one"
             android:textColor="@color/white"
             android:textSize="24sp"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
