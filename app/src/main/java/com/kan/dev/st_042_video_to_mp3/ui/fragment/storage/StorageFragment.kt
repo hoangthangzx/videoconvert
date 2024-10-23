@@ -453,6 +453,11 @@ class StorageFragment : Fragment() {
             if (!checkListAudio) {
                 binding.lnNoItem.visibility = View.VISIBLE
                 binding.recyclerViewTab2.visibility = View.GONE
+                binding.lnAllTrue.visibility = View.GONE
+                binding.lnAll.visibility = View.GONE
+                binding.size.visibility = View.GONE
+                binding.tvSelectedItem.text = getString(R.string.select_items)
+                listener?.onBottomNavVisibilityChanged(true)
             } else {
                 binding.lnNoItem.visibility = View.GONE
                 binding.recyclerViewTab2.visibility = View.VISIBLE

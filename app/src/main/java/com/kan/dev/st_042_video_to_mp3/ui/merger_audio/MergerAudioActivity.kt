@@ -186,6 +186,10 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initAction() {
+        binding.loadingOverlay.setOnTouchListener { _, _ ->
+            true
+        }
+
         Log.d("check_Type", "initAction: " + selectTypeAudio)
         binding.recFileConvert.itemAnimator = null
         adapter.onClickListener(object : MergerAudioAdapter.onClickItemListener {

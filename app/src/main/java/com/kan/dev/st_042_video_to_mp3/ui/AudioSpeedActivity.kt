@@ -94,7 +94,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             }
         }
     }
-
     override fun init() {
         binding.seekBarAudio.isEnabled = false
         binding.waveformSeekBar.isEnabled = false
@@ -103,7 +102,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         initAction()
         initView()
     }
-
     @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
     private fun initView() {
         binding.tvTimeDr.text = "${listAudio[positionAudioPlay].duration}"
@@ -114,8 +112,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         )
         binding.tvDone.applyGradient(this@AudioSpeedActivity, colors)
         binding.waveformSeekBar.setSampleFrom(audioUri!!)
-
-
         binding.waveformSeekBar.onProgressChanged = object :
             SeekBarOnProgressChanged {
             override fun onProgressChanged(
@@ -131,7 +127,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
                 }
             }
         }
-
         binding.waveformSeekBar.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 isUserSeeking = false
@@ -139,9 +134,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
             }
             false
         }
-
     }
-
     fun startPlaying() {
         if (!isPlaying) {
             mediaPlayer?.start()
@@ -188,9 +181,12 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
         }
     }
 
-
     @SuppressLint("ClickableViewAccessibility")
     private fun initAction() {
+        binding.loadingOverlay.setOnTouchListener { _, _ ->
+            true
+        }
+
         binding.imvBack.onSingleClick {
             finish()
         }

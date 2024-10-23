@@ -209,8 +209,13 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         return -1
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @OptIn(UnstableApi::class)
     private fun initAction() {
+        binding.loadingOverlay.setOnTouchListener { _, _ ->
+            true
+        }
+
         binding.exoVideo.setOnClickListener {
             binding.playerControlView.show()
         }

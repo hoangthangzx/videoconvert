@@ -72,7 +72,11 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         binding.tvDone.applyGradient(this@ActivityAudioCutter,colors)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initAction() {
+        binding.loadingOverlay.setOnTouchListener { _, _ ->
+            true
+        }
         binding.seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             @SuppressLint("DefaultLocale")
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

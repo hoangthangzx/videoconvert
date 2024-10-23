@@ -322,7 +322,7 @@ class MainActivity : AppCompatActivity(), BottomNavVisibilityListener {
         val bottomShare = findViewById<ConstraintLayout>(R.id.btShare)
         Log.d("check_visible", "onBottomNavVisibilityChanged: "+ isVisible)
         linearLayout.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
-        bottomShare.visibility = View.VISIBLE
+        bottomShare.visibility = if (isVisible) View.GONE else View.VISIBLE
     }
 
 }

@@ -75,7 +75,12 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         binding.tvDone.applyGradient(this@AudioConverterActivity, colors)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initAction() {
+        binding.loadingOverlay.setOnTouchListener { _, _ ->
+            true
+        }
+
         adapter.onClickListener(object : AudioConverterAdapter.onClickItemListener {
             @SuppressLint("NotifyDataSetChanged")
             override fun onItemClick(position: Int) {
@@ -414,8 +419,6 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
             binding.lnAcc,
             binding.lnOgg,
             binding.lnWAV,
-            binding.lnWMA,
-            binding.lnAc3
         )
     }
 
