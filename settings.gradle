@@ -23,4 +23,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "ST_042_Video_to_mp3"
 include ':app'
-include ':test-app'

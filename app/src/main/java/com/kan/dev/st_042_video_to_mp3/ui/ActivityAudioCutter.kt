@@ -570,17 +570,8 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
 
     fun cutAndMergeAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
         if (timeCut.equals("00:00")) {
-            val copyCommand = "-i \"$inputFilePath\" -c copy \"$outputFilePath\""
-            val copyResult = FFmpeg.execute(copyCommand)
-            if (copyResult == 0) {
-                Log.d("check_audio_mmmm", "Sao chép âm thanh thành công: $outputFilePath")
-                val videoUri = Uri.parse(outputFilePath)
-                val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
-                Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
-                startActivity(Intent(this@ActivityAudioCutter, SavedActivity::class.java))
-            } else {
-                Log.d("check_audio_mmmm", "Sao chép âm thanh thất bại. Mã lỗi: $copyResult")
-            }
+            hideLoadingOverlay()
+            Toast.makeText(this@ActivityAudioCutter, getString(R.string.starttime_must_be_greater_than_0), Toast.LENGTH_SHORT).show()
             return
         }
         val firstPartPath = "${cacheDir.path}/first_part.mp3"

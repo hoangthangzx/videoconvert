@@ -558,7 +558,7 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
     suspend fun changeAudioSpeed(audioUri: String, outputPath: String, speed: Float): Boolean {
         return withContext(Dispatchers.IO) {
-            val command = "-i \"$audioUri\" -filter:a \"atempo=$speed\" \"$outputPath\""
+            val command = "-i \"$audioUri\" -filter:a \"atempo=1.5\" \"$outputPath\""
             Log.d("check_command", "changeAudioSpeed: " + command)
             val resultCode = FFmpeg.execute(command)
             if (resultCode == 0) {

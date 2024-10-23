@@ -116,7 +116,7 @@
     <string name="song">Lied</string>
     <string name="video_converter">Videokonverter</string>
     <string name="_00">00</string>
-    <string name="_3_audio_files">3 Audiodateien</string>
+    <string name="_3_audio_files">Audiodateien</string>
     <string name="safe_sound"><![CDATA[Sicher & Klang]]></string>
     <string name="the_file_already_exists_please_enter_a_different_name">Die Datei existiert bereits, bitte geben Sie einen anderen Namen ein</string>
     <string name="set_ringtone_successfully">Klingelton erfolgreich festgelegt</string>

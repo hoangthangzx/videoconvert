@@ -39,6 +39,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.getAllAudiosFromSpecific
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
+import com.kan.dev.st_042_video_to_mp3.utils.Const.checkBoolean
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkData
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
@@ -147,14 +148,15 @@ class HomeFragment : Fragment() {
         binding.imvAboutUs.onSingleClick {
             startActivity(Intent(requireContext(),ActivityAboutUs::class.java))
         }
-        binding.lnAudioMerger.onSingleClick {
-            selectTypeAudio = "AudioMerger"
-            countAudio = 0
-            countSize = 0
-            listAudioStorage.clear()
-            Const.checkDataAudio = false
-            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
-        }
+//        binding.lnAudioMerger.onSingleClick {
+//            selectTypeAudio = "AudioMerger"
+//            checkBoolean = "AudioMerger"
+//            countAudio = 0
+//            countSize = 0
+//            listAudioStorage.clear()
+//            Const.checkDataAudio = false
+//            startActivity(Intent(requireContext(), SelectAudioActivity::class.java))
+//        }
 
         binding.lnVideoConvertToMp3.onSingleClick {
             selectType = "VideoConvert"
@@ -174,7 +176,7 @@ class HomeFragment : Fragment() {
         binding.lnVideoConvert.onSingleClick {
 //            listVideo.clear()
 //            VideoUtils.getAllVideos(requireContext().contentResolver)
-            selectType = "Video"
+            selectTypeAudio = "Video"
             Const.checkData = false
             countVideo = 0
             countSizeVideo = 0
@@ -265,6 +267,7 @@ class HomeFragment : Fragment() {
         checkType = true
         selectType = ""
         selectFr = ""
+        checkBoolean = ""
         selecMerger = false
         isTouchEventHandled = false
         selectTypeAudio = ""

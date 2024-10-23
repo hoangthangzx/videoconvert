@@ -56,6 +56,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
     var audioType = ""
     var checkItem = false
     var outputPath = ""
+    var shouldCancel = false
     var listOutputPath = mutableListOf<File>()
     var audioUri: Uri? = null
     private var job: Job? = null
@@ -340,6 +341,9 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
                 if (audioPath != null) {
                     convertAudio(audioPath, outputPath, audioType)
                 }
+                if (shouldCancel) { // shouldCancel là một biến boolean mà bạn có thể đặt điều kiện
+                    break // Hủy vòng lặp
+                }
             }
         }
         lifecycleScope.launch {
@@ -388,6 +392,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
+        shouldCancel = true
         if (binding.loadingOverlay.visibility == View.VISIBLE) {
             job?.cancel()
             hideLoadingOverlay()
@@ -416,6 +421,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
 
     override fun onDestroy() {
         super.onDestroy()
+        shouldCancel = true
         job?.cancel()
         clearCache()
     }

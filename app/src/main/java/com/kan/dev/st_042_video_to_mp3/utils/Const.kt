@@ -69,6 +69,7 @@ object Const {
     var checkType : Boolean = false
     var selectFr = "Fr"
     var countPlay = 0
+    var checkBoolean = ""
     var listLanguage = mutableListOf<LanguageModel>(
         LanguageModel("Spanish", "es", R.drawable.ic_flag_spanish),
         LanguageModel("French", "fr", R.drawable.ic_flag_french),

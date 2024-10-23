@@ -36,6 +36,7 @@ import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInformation
+import com.kan.dev.st_042_video_to_mp3.utils.Const.checkBoolean
 import com.kan.dev.st_042_video_to_mp3.utils.Const.checkType
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countAudio
 import com.kan.dev.st_042_video_to_mp3.utils.Const.countSize
@@ -75,18 +76,26 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
     private val handler = android.os.Handler()
     private var mediaPlayer: MediaPlayer? = null
     override fun init() {
-        Log.d("check_uri", "init: "+ Const.mp3Uri)
+        Log.d("check_uriPPPP", "init: "+ selectType + "   +++   " + selectTypeAudio   + checkBoolean)
         mediaPlayer = MediaPlayer()
         initAction()
         binding.tvTitleVideoSpeed.isSelected = true
-        if(listVideoPick.size == 1 && selectType.equals("Video")){
-            initActionFile()
-            initData()
-            initViewFile()
-        }else if( listVideoPick.size > 1 && selectType.equals("Video")){
-            initRec()
-            initActionMutil()
-            initViewMulti()
+        if(selectTypeAudio.equals("Video")){
+            if(listAudioSaved.size ==  1){
+                initActionFile()
+                initData()
+                initViewConvert()
+            }else{
+                initRecConvert()
+                initActionAudioConvert()
+            }
+//            initActionFile()
+//            initData()
+//            initViewFile()
+//        }else if( listVideoPick.size > 1 && selectType.equals("Video")){
+//            initRec()
+//            initActionMutil()
+//            initViewMulti()
         }else if(selectType.equals("VideoCutter")){
             initViewCutter()
             initActionCutter()
@@ -99,7 +108,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             initAudioSpeed()
             initData()
             initActionSpeed()
-        }else if (selectTypeAudio.equals("AudioConvert")){
+        }else if (selectTypeAudio.equals("AudioConvert") ){
             if(listAudioSaved.size ==  1){
                 initActionFile()
                 initData()
@@ -108,11 +117,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 initRecConvert()
                 initActionAudioConvert()
             }
-
         }else if(selectType.equals("VideoConvert")){
             initViewConveter()
             initActionCoberter()
-        }else if(selectTypeAudio.equals("AudioMerger")){
+        }else if(selectTypeAudio.equals("AudioMerger") ){
             initViewAudiMerger()
             initData()
             initActionFile()
@@ -187,7 +195,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             binding.lnRingtone.visibility = View.GONE
             binding.lnConvert.visibility = View.GONE
         }
-
     }
 
     private fun initActionAudioConvert() {
@@ -210,13 +217,11 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         adapterAudioSaved = AdapterAudioSaved(this@SavedActivity)
         adapterAudioSaved.getData(listAudioSaved)
         binding.recVideo.adapter = adapterAudioSaved
-
         adapterAudioSaved.onClickListener(object : AdapterAudioSaved.onClickItemListener{
             override fun onClickItem(position: Int, holder: AdapterAudioSaved.ViewHolder) {
                 uriPlayAll = "file://${listAudioSaved[position].uri}"
                 uriPlay = listAudioSaved[position].uri
                 audioInfo = listAudioSaved[position]
-
                 startActivity(Intent(this@SavedActivity,PlaySongActivity::class.java))
             }
 
@@ -231,7 +236,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.lnRingtone.onSingleClick {
             showDialogRingtone()
         }
-
     }
 
     private fun initViewCuttertoMp3() {
@@ -506,7 +510,8 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
     private fun initData() {
         if(listVideoPick.size == 1 && selectType.equals("Video")){
-            uriAll = videoConvert!!.uri
+//            uriAll = videoConvert!!.uri
+            uriAll = listAudioSaved[0].uri
         } else if (selectTypeAudio.equals("AudioSpeed")){
             uriAll = audioInfo!!.uri
         }else if(selectTypeAudio.equals("AudioMerger")){
@@ -635,25 +640,21 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             listConvertMp3.clear()
             audioInfo  = null
         }
-
         binding.imvBack.onSingleClick {
             finish()
         }
-
         binding.imvPlay.onSingleClick {
             binding.imvPlay.visibility = View.GONE
             binding.imvPause.visibility = View.VISIBLE
             startPlaying()
             updateTimeAndSeekBar()
         }
-
         binding.imvPause.onSingleClick {
             binding.imvPlay.visibility = View.VISIBLE
             binding.imvPause.visibility = View.GONE
             pausePlaying()
 //            handler.removeCallbacksAndMessages(null)
         }
-
         binding.imv15Left.setOnClickListener {
             rewindAudio(15000) // Tua về 15 giây
             Log.d("check_clickkkkkkk", "initAction: ")
@@ -663,9 +664,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             forwardAudio(15000)
             Log.d("check_clickkkkkkk", "initAction: ")// Tua tới 15 giây
         }
-
     }
-
     private fun rewindAudio(milliseconds: Int) {
         mediaPlayer?.let {
             val newPosition = it.currentPosition - milliseconds
@@ -676,7 +675,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             }
         }
     }
-
     // Hàm tua tới audio
     private fun forwardAudio(milliseconds: Int) {
         mediaPlayer?.let {
@@ -688,35 +686,29 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             }
         }
     }
-
     private fun startPlaying() {
         if (!isPlaying) {
             mediaPlayer?.start()
             isPlaying = true
         }
     }
-
     private fun pausePlaying() {
         if (isPlaying) {
             mediaPlayer?.pause()
             isPlaying = false
         }
     }
-
     private fun formatTime(timeInMillis: Int): String {
         val minutes = TimeUnit.MILLISECONDS.toMinutes(timeInMillis.toLong())
         val seconds = TimeUnit.MILLISECONDS.toSeconds(timeInMillis.toLong()) % 60
         return String.format("%02d:%02d", minutes, seconds)
     }
-
-
     fun convertTimeToSeconds(time: String): Int {
         val parts = time.split(":")
         val minutes = parts[0].toInt()
         val seconds = parts[1].toInt()
         return minutes * 60 + seconds // Chuyển đổi thành giây
     }
-
     override fun onStop() {
         super.onStop()
         if(mediaPlayer!=null){
