@@ -20,7 +20,6 @@ object FileInfo {
         } else {
             null // Nếu file không tồn tại
         }
-
         // Lấy duration của file media (nếu có)
         val mediaRetriever = MediaMetadataRetriever()
         var duration: String? = null
@@ -40,6 +39,11 @@ object FileInfo {
         }
 
         return FileInfoModel(fileName, fileSize, duration)
+    }
+
+    fun formatFileSizeKB(sizeInBytes: Long): String {
+        val kiloBytes = sizeInBytes / 1024
+        return "$kiloBytes"
     }
 
     fun formatDuration(durationMillis: Long): String {

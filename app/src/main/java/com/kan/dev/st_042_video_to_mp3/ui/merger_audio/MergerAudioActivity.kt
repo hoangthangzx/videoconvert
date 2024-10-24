@@ -88,7 +88,6 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
             finish()
         }
     }
-
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initData() {
         mediaPlayer = MediaPlayer()
@@ -153,7 +152,6 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
 //                convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
 //            val commandMerge =
 //                convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
-
             val filterComplex = convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
             val commandMerge = convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
             val rcMerge = FFmpeg.execute(commandMerge)

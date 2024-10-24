@@ -81,6 +81,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         initAction()
         binding.tvTitleVideoSpeed.isSelected = true
         if(selectTypeAudio.equals("Video")){
+            Log.d("check_size_mb", "init: "+ listAudioSaved)
             if(listAudioSaved.size ==  1){
                 initActionFile()
                 initData()
@@ -89,13 +90,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 initRecConvert()
                 initActionAudioConvert()
             }
-//            initActionFile()
-//            initData()
-//            initViewFile()
-//        }else if( listVideoPick.size > 1 && selectType.equals("Video")){
-//            initRec()
-//            initActionMutil()
-//            initViewMulti()
         }else if(selectType.equals("VideoCutter")){
             initViewCutter()
             initActionCutter()
@@ -131,7 +125,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             initViewAudioCutter()
         }
     }
-
     private fun initViewConvert() {
         binding.imvPlay.visibility = View.GONE
         binding.imvPause.visibility = View.VISIBLE
@@ -142,17 +135,14 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.tvDurationVideo.text = listAudioSaved[0].duration
         binding.tvDuration.text =" / ${listAudioSaved[0].duration}"
     }
-
     private fun initActionAudioCutter() {
         binding.lnShare.onSingleClick {
             uriAll?.let { shareMp3File(this@SavedActivity, it) }
         }
-
         binding.lnRingtone.onSingleClick {
             showDialogRingtone()
         }
     }
-
     private fun initViewAudioCutter() {
         binding.imvPlay.visibility = View.GONE
         binding.imvPause.visibility = View.VISIBLE
@@ -163,7 +153,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.tvDurationVideo.text = audioCutter!!.duration
         binding.tvDuration.text =" / ${audioCutter!!.duration}"
     }
-
     private fun initViewAudiMerger() {
         binding.imvPlay.visibility = View.GONE
         binding.imvPause.visibility = View.VISIBLE
@@ -174,13 +163,11 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.tvDurationVideo.text = audioInfo!!.duration
         binding.tvDuration.text =" / ${audioInfo!!.duration}"
     }
-
     private fun initActionCoberter() {
         binding.lnShare.onSingleClick {
             shareAudioUrisCv(this@SavedActivity, listAudioSaved)
         }
     }
-
     private fun initViewConveter() {
         binding.recVideo.visibility = View.VISIBLE
         adapterSaved = AdapterSaved(this)
@@ -196,21 +183,17 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             binding.lnConvert.visibility = View.GONE
         }
     }
-
     private fun initActionAudioConvert() {
         Log.d("chekcdmkmkde", "initActionAudioConvert: "+ listAudioSaved)
         binding.lnShare.onSingleClick {
             shareAudioUrisCv(this@SavedActivity, listAudioSaved)
         }
-
         binding.lnMerger.onSingleClick {
             startActivity(Intent(this@SavedActivity,MergerAudioActivity::class.java))
         }
-
         binding.lnMerger.visibility = View.VISIBLE
         binding.lnRingtone.visibility = View.GONE
     }
-
     private fun initRecConvert() {
         Log.d("check_audio__", "initRecConvert: okeeeee"+ listAudioSaved)
         binding.recVideo.visibility = View.VISIBLE
@@ -224,20 +207,16 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 audioInfo = listAudioSaved[position]
                 startActivity(Intent(this@SavedActivity,PlaySongActivity::class.java))
             }
-
         })
     }
-
     private fun initActionCuttertoMp3() {
         binding.lnShare.onSingleClick {
             shareMp3File(this@SavedActivity, videoConvert!!.uri)
         }
-
         binding.lnRingtone.onSingleClick {
             showDialogRingtone()
         }
     }
-
     private fun initViewCuttertoMp3() {
         binding.imvPlay.visibility = View.GONE
         binding.imvPause.visibility = View.VISIBLE
@@ -248,17 +227,14 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.tvDurationVideo.text = videoCutter!!.duration
         binding.tvDuration.text =" / ${videoCutter!!.duration}"
     }
-
     private fun initActionCutter() {
         binding.lnConvert.onSingleClick {
             startActivity(Intent(this@SavedActivity,FileConvertToMp3Activity::class.java))
         }
-
         binding.lnShare.onSingleClick {
             shareMp3File(this@SavedActivity, videoCutter!!.uri)
         }
     }
-
     private fun initViewCutter() {
         binding.lnRingtone.visibility = View.GONE
         binding.lnConvert.visibility = View.VISIBLE
@@ -267,14 +243,12 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         binding.tvDurationVideoSP.text = videoCutter!!.duration
         binding.tvSizeSp.text = videoCutter!!.sizeInMB
         Log.d("check_cutter_uri", "initViewCutter: "+ videoCutter!!.uri)
-
         val bitmap = getVideoFrameFromUri(this, videoCutter!!.uri)
         bitmap?.let {
             binding.imvVideoImage.setImageBitmap(it)
         }
         binding.tvTitleVideoSpeed.isSelected = true
     }
-
     private fun getVideoFrameFromUri(context: Context, videoUri: Uri): Bitmap? {
         val retriever = MediaMetadataRetriever()
         return try {
@@ -287,12 +261,10 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             retriever.release()
         }
     }
-
     private fun initViewMulti() {
         binding.lnRingtone.visibility = View.GONE
         binding.lnMerger.visibility = View.VISIBLE
     }
-
     private fun initActionMutil() {
         binding.lnShare.onSingleClick {
             shareAudioUris(this@SavedActivity, listConvertMp3)
@@ -321,7 +293,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             )
             uriList.add(uri) // Chuyển đổi chuỗi thành Uri
         }
-
         // Tạo Intent để chia sẻ danh sách Uri
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND_MULTIPLE // Chia sẻ nhiều tệp

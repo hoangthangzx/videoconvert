@@ -463,15 +463,6 @@ class StorageFragment : Fragment() {
                 binding.recyclerViewTab2.visibility = View.VISIBLE
             }
         }
-//        listAudioStorage.clear()
-//        lifecycleScope.launch {
-//            AudioUtils.getAllAudiosFromSpecificDirectory_1(storageMusic)
-//            if (listAudioStorage.size == 0) {//        Log.d("check_logddd", "onResume: "+ checkType)
-//                binding.lnNoItem.visibility = View.VISIBLE
-//            } else {
-//                binding.lnNoItem.visibility = View.GONE
-//            }
-//        }
     }
 
 }

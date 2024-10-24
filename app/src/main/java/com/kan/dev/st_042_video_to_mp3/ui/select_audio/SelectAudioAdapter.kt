@@ -58,16 +58,6 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
                         }
                     }
                 }
-//                else if(!data[position].active){
-//                    elementCounts.removeAll { it.count == 0 }
-//                    elementCounts.forEach {
-//                        if(!data[position].name.equals(it.element)){
-//                            binding.lnItemCount.visibility = View.INVISIBLE
-//                            binding.tvTime.visibility = View.VISIBLE
-////                            binding.edtStartTime.setText(it.count.toString())
-//                        }
-//                    }
-//                }
                 if(!data[position].active){
                     binding.tvTime.visibility = View.VISIBLE
                     binding.lnItemCount.visibility = View.GONE
@@ -84,7 +74,7 @@ class SelectAudioAdapter (var context: Context): RecyclerView.Adapter<SelectAudi
             }
 
             binding.tvTitle.isSelected = true
-            binding.tvSize.text = "${data[position].sizeInMB} MB"
+            binding.tvSize.text = "${data[position].sizeInMB} KB"
             binding.tvTitle.text = data[position].name
             binding.tvTime.text = data[position].date
             binding.tvDurationVideo.text = data[position].duration

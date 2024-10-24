@@ -34,8 +34,6 @@ import com.kan.dev.st_042_video_to_mp3.ui.select_audio.SelectAudioActivity
 import com.kan.dev.st_042_video_to_mp3.ui.select_video.SelectVideoActivity
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils
 import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.countPos
-import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.getAllAudiosFromSpecificDirectory
-import com.kan.dev.st_042_video_to_mp3.utils.AudioUtils.getAllAudiosFromSpecificDirectory_1
 import com.kan.dev.st_042_video_to_mp3.utils.Const
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioCutter
 import com.kan.dev.st_042_video_to_mp3.utils.Const.audioInfo

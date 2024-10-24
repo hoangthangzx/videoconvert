@@ -109,10 +109,8 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                         binding.tvTimeCut.text = timeCut
                         binding.customCutterSeekBar.resetBackgroundColorToDefault()
                         checkType = true
-                        if(checkCut == false){
-                            mediaPlayer?.pause()
-                            mediaPlayer?.seekTo(0)
-                        }
+                        mediaPlayer?.pause()
+                        mediaPlayer?.seekTo(0)
                         checkCut = true
                         isPlaying = false
                         binding.imvPlay.visibility = View.VISIBLE
@@ -124,10 +122,8 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                         binding.customCutterSeekBar.changeBackgroundColor()
                         checkType = false
                         isPlaying = false
-                        if(checkCut == false){
-                            mediaPlayer?.pause()
-                            mediaPlayer?.seekTo(0)
-                        }
+                        mediaPlayer?.pause()
+                        mediaPlayer?.seekTo(0)
                         checkCut = true
                         binding.imvPlay.visibility = View.VISIBLE
                         binding.imvPause.visibility = View.GONE
@@ -144,8 +140,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         binding.tvCancel.onSingleClick {
             finish()
         }
-
-
         binding.btnPlus.setOnClickListener {
             val currentTime = binding.edtStartTime.text.toString()
             binding.btnMinus.isClickable = true
@@ -302,10 +296,8 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             override fun onRangeSeekBarValuesChanged(minValue: Float, maxValue: Float) {
                 startTime = minValue
                 endTime = maxValue
-                if (checkCut == false){
-                    mediaPlayer!!.pause()
-                    mediaPlayer!!.seekTo(0)
-                }
+                mediaPlayer!!.pause()
+                mediaPlayer!!.seekTo(0)
                 checkCut = true
                 isPlaying = false
                 binding.imvPlay.visibility = View.VISIBLE
@@ -334,58 +326,65 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         }
 
         binding.imvPlay.onSingleClick {
-            countPlay += 1
-            Log.d("check_play", "initAction: "+ checkCut)
-            if(checkCut == true){
-                val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
-                val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
-                val timestamp = System.currentTimeMillis()
-                cutterUri = "${cacheDir.path}/cutter_${timestamp}.mp3"
-                Log.d("check_click", "initAction: thanhhhh anjanah"+ currentValueStart + "    " + currentValueEnd)
-                val videoPath = getRealPathFromURI(this, listAudio[positionAudioPlay].uri)
-                if (videoPath != null) {
-                    if(checkType == true){
-                        checkCut = true
-                        cutAudio(videoPath,cutterUri,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
-                    }else{
-                        checkCut = true
-                        cutAndMergeAudio(videoPath,cutterUri,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
-                    }
-                }
-                binding.seekBarAudio.isEnabled = true
-                binding.progress.visibility = View.GONE
-                createMediaPlayer()
-                Log.d("check_audio_speed", "fvgrnrohegjegmbvkermkbhtrnh")
-                checkCut = false
-                binding.progress.visibility = View.GONE
-                binding.seekBarAudio.max = mediaPlayer!!.duration
-                binding.tvDuration.text = "/ ${formatDuration(mediaPlayer!!.duration)}"
-                updateTimeAndSeekBar()
-                val handler = Handler(Looper.getMainLooper())
-                binding.imvPause.visibility = View.VISIBLE
-                binding.imvPlay.visibility = View.GONE
-                mediaPlayer!!.setOnCompletionListener {
-                    binding.tvTimeStart.text =
-                        formatTimeToHoursMinutes_1(mediaPlayer!!.duration)
-                        handler.postDelayed({
-                        binding.seekBarAudio.progress = 0
-                        mediaPlayer!!.seekTo(0)
-                        binding.tvTimeStart.text = "00:00"
-                        isPlaying = false
-                        binding.imvPause.visibility = View.GONE
-                        binding.imvPlay.visibility = View.VISIBLE
-//                                    handler.removeCallbacksAndMessages(null)
-                    }, 1000)
-                }
-                binding.imvPause.visibility = View.VISIBLE
-                binding.imvPlay.visibility = View.GONE
-                startPlaying()
+            clearCache()
+            if (timeCut.equals("00:00")) {
+                Toast.makeText(this@ActivityAudioCutter, getString(R.string.starttime_must_be_greater_than_0), Toast.LENGTH_SHORT).show()
+                checkCut = true
             }else{
-                Log.d("check_click", "initAction: huefuyhehgehghwttghtanah")
-                binding.imvPause.visibility = View.VISIBLE
-                binding.imvPlay.visibility = View.GONE
-                startPlaying()
+                countPlay += 1
+                Log.d("check_play", "initAction: "+ checkCut)
+                if(checkCut == true){
+                    val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
+                    val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
+                    val timestamp = System.currentTimeMillis()
+                    cutterUri = "${cacheDir.path}/cutter_${timestamp}.mp3"
+                    Log.d("check_click", "initAction: thanhhhh anjanah"+ currentValueStart + "    " + currentValueEnd)
+                    val videoPath = getRealPathFromURI(this, listAudio[positionAudioPlay].uri)
+                    if (videoPath != null) {
+                        if(checkType == true){
+                            checkCut = true
+                            cutAudio(videoPath,cutterUri,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
+                        }else{
+                            checkCut = true
+                            cutAndMergeAudio(videoPath,cutterUri,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
+                        }
+                    }
+                    binding.seekBarAudio.isEnabled = true
+                    binding.progress.visibility = View.GONE
+                    createMediaPlayer()
+                    Log.d("check_audio_speed", "fvgrnrohegjegmbvkermkbhtrnh")
+                    checkCut = false
+                    binding.progress.visibility = View.GONE
+                    binding.seekBarAudio.max = mediaPlayer!!.duration
+                    binding.tvDuration.text = "/ ${formatDuration(mediaPlayer!!.duration)}"
+                    updateTimeAndSeekBar()
+                    val handler = Handler(Looper.getMainLooper())
+                    binding.imvPause.visibility = View.VISIBLE
+                    binding.imvPlay.visibility = View.GONE
+                    mediaPlayer!!.setOnCompletionListener {
+                        binding.tvTimeStart.text =
+                            formatTimeToHoursMinutes_1(mediaPlayer!!.duration)
+                        handler.postDelayed({
+                            binding.seekBarAudio.progress = 0
+                            mediaPlayer!!.seekTo(0)
+                            binding.tvTimeStart.text = "00:00"
+                            isPlaying = false
+                            binding.imvPause.visibility = View.GONE
+                            binding.imvPlay.visibility = View.VISIBLE
+//                                    handler.removeCallbacksAndMessages(null)
+                        }, 1000)
+                    }
+                    binding.imvPause.visibility = View.VISIBLE
+                    binding.imvPlay.visibility = View.GONE
+                    startPlaying()
+                }else{
+                    Log.d("check_click", "initAction: huefuyhehgehghwttghtanah")
+                    binding.imvPause.visibility = View.VISIBLE
+                    binding.imvPlay.visibility = View.GONE
+                    startPlaying()
+                }
             }
+
         }
 
         binding.imvPause.onSingleClick {
@@ -395,33 +394,40 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         }
 
         binding.tvDone.onSingleClick {
-            if(mediaPlayer!!.isPlaying){
-                mediaPlayer?.pause()
-            }
-            binding.imvPause.visibility = View.GONE
-            binding.imvPlay.visibility = View.VISIBLE
-            val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
-            val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
-            val durationVideo = convertDurationToSeconds(listAudio[positionAudioPlay].duration)
-            if(currentValueStart > currentValueEnd || currentValueStart > durationVideo || currentValueEnd > durationVideo || currentValueEnd <0 || currentValueStart < 0 ){
-                Toast.makeText(this@ActivityAudioCutter, getString(R.string.you_must_choose_the_right_time), Toast.LENGTH_SHORT).show()
+            if (timeCut.equals("00:00")) {
+                Toast.makeText(this@ActivityAudioCutter, getString(R.string.starttime_must_be_greater_than_0), Toast.LENGTH_SHORT).show()
+                checkCut = true
             }else{
-                showLoadingOverlay()
-                val videoPath = getRealPathFromURI(this, listAudio[positionAudioPlay].uri)
-                val timestamp = System.currentTimeMillis()
-                val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-                Log.d("checkType", "initAction: "+ checkType+ "   "  + videoPath)
-                val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp3"
-                if (videoPath != null) {
-                    if (checkType == true){
-                        checkCut = false
-                        cutAudio(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
-                    }else{
-                        checkCut = false
-                        cutAndMergeAudio(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
+                if(mediaPlayer!!.isPlaying){
+                    mediaPlayer?.pause()
+                }
+                binding.imvPause.visibility = View.GONE
+                binding.imvPlay.visibility = View.VISIBLE
+                val currentValueStart = convertDurationToSeconds(binding.edtStartTime.text.toString())
+                val currentValueEnd = convertDurationToSeconds(binding.edtEndTime.text.toString())
+                val durationVideo = convertDurationToSeconds(listAudio[positionAudioPlay].duration)
+                if(currentValueStart > currentValueEnd || currentValueStart > durationVideo || currentValueEnd > durationVideo || currentValueEnd <0 || currentValueStart < 0 ){
+                    Toast.makeText(this@ActivityAudioCutter, getString(R.string.you_must_choose_the_right_time), Toast.LENGTH_SHORT).show()
+                }else{
+                    showLoadingOverlay()
+                    val videoPath = getRealPathFromURI(this, listAudio[positionAudioPlay].uri)
+                    val timestamp = System.currentTimeMillis()
+                    val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
+                    Log.d("checkType", "initAction: "+ checkType+ "   "  + videoPath)
+                    val outputPath = "${musicDir.absolutePath}/${File(videoPath).name.substringBeforeLast(".") }_${timestamp}_cutter.mp3"
+                    if (videoPath != null) {
+                        if (checkType == true){
+                            checkCut = false
+                            cutAudio(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
+                        }else{
+                            clearCache()
+                            checkCut = false
+                            cutAndMergeAudio(videoPath,outputPath,formatTime(currentValueStart.toInt()),formatTime(currentValueEnd.toInt()))
+                        }
                     }
                 }
             }
+
         }
     }
 
@@ -446,7 +452,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
             binding.tvTimeStart.text = "${elapsedTime}"
             handler.postDelayed({ updateTimeAndSeekBar() }, 1000)
         }
-
     }
 
     private fun rewindAudio(milliseconds: Int) {
@@ -510,6 +515,9 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     }
 
     private fun createMediaPlayer() {
+        if(mediaPlayer!=null){
+            mediaPlayer?.release()
+        }
         mediaPlayer = MediaPlayer().apply {
             try {
                 setDataSource(cutterUri) // Không cần ?. vì đã kiểm tra tồn tại
@@ -573,48 +581,79 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
     }
 
     fun cutAndMergeAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {
-        if (timeCut.equals("00:00")) {
-            hideLoadingOverlay()
-            Toast.makeText(this@ActivityAudioCutter, getString(R.string.starttime_must_be_greater_than_0), Toast.LENGTH_SHORT).show()
-            return
-        }
-        val firstPartPath = "${cacheDir.path}/first_part.mp3"
-        val firstPartCommand = "-i \"$inputFilePath\" -to $startTime -c copy $firstPartPath"
-        val firstPartResult = FFmpeg.execute(firstPartCommand)
-        // Cắt đoạn từ endTime đến cuối file
-        val secondPartPath = "${cacheDir.path}/second_part.mp3"
-        val secondPartCommand = "-i \"$inputFilePath\" -ss $endTime -c copy $secondPartPath"
-        val secondPartResult = FFmpeg.execute(secondPartCommand)
-
-        if (firstPartResult == 0 && secondPartResult == 0) {
-            val mergeCommand = "-i \"concat:$firstPartPath|$secondPartPath\" -c copy \"$outputFilePath\""
-            val mergeResult = FFmpeg.execute(mergeCommand)
-            if (mergeResult == 0) {
-                val videoUri = Uri.parse(outputFilePath)
-                val fPath = File(firstPartPath)
-                fPath.delete()
-                val sPath = File(secondPartPath)
-                sPath.delete()
-                if(checkCut == true){
-                    Log.d("check_click", "cutAudio: "+ cutterUri)
-//                    checkCut = false
-                }else{
-//                    checkCut = false
+        Log.d("logfgf_time", "cutAndMergeAudio: "+ startTime)
+        if(startTime.equals("00:00")){
+            val secondPartPath = "${cacheDir.path}/second_part.mp3"
+            val secondPartCommand = "-i \"$inputFilePath\" -ss $endTime -c copy $secondPartPath"
+            val secondPartResult = FFmpeg.execute(secondPartCommand)
+            if (secondPartResult == 0) {
+                val mergeCommand = "-i \"$secondPartPath\" -c copy \"$outputFilePath\""
+                val mergeResult = FFmpeg.execute(mergeCommand)
+                if (mergeResult == 0) {
                     val videoUri = Uri.parse(outputFilePath)
-                    val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
-                    Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
-                    startActivity(Intent(this@ActivityAudioCutter, SavedActivity::class.java))
+                    val sPath = File(secondPartPath)
+                    sPath.delete()
+                    if (checkCut == true) {
+                        Log.d("check_click", "cutAudio: " + cutterUri)
+                    } else {
+                        val videoUri = Uri.parse(outputFilePath)
+                        val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
+                        Const.audioCutter = VideoCutterModel(
+                            videoUri,
+                            timeCut,
+                            infoFile!!.fileSize,
+                            infoFile.fileName.toString()
+                        )
+                        startActivity(Intent(this@ActivityAudioCutter, SavedActivity::class.java))
+                    }
+                    Log.d("check_audio_mmmm", "Cắt và ghép âm thanh thành công: $videoUri")
+                } else {
+                    Log.d("check_audio_mmmm", "Ghép âm thanh thất bại. Mã lỗi: $mergeResult")
                 }
+            }
+            else {
+                Log.d("check_audio_mmmm", "Cắt âm thanh thất bại.")
+            }
+        }else{
+            val firstPartPath = "${cacheDir.path}/first_part.mp3"
+            val firstPartCommand = "-i \"$inputFilePath\" -to $startTime -c copy $firstPartPath"
+            val firstPartResult = FFmpeg.execute(firstPartCommand)
+            // Cắt đoạn từ endTime đến cuối file
+            val secondPartPath = "${cacheDir.path}/second_part.mp3"
+            val secondPartCommand = "-i \"$inputFilePath\" -ss $endTime -c copy $secondPartPath"
+            val secondPartResult = FFmpeg.execute(secondPartCommand)
+
+            if (firstPartResult == 0 && secondPartResult == 0) {
+                val mergeCommand = "-i \"concat:$firstPartPath|$secondPartPath\" -c copy \"$outputFilePath\""
+                val mergeResult = FFmpeg.execute(mergeCommand)
+                if (mergeResult == 0) {
+                    val videoUri = Uri.parse(outputFilePath)
+                    val fPath = File(firstPartPath)
+                    fPath.delete()
+                    val sPath = File(secondPartPath)
+                    sPath.delete()
+                    if(checkCut == true){
+                        Log.d("check_click", "cutAudio: "+ cutterUri)
+//                    checkCut = false
+                    }else{
+//                    checkCut = false
+                        val videoUri = Uri.parse(outputFilePath)
+                        val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
+                        Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
+                        startActivity(Intent(this@ActivityAudioCutter, SavedActivity::class.java))
+                    }
 //                val infoFile = FileInfo.getFileInfoFromPath(videoUri.toString())
 //                Const.audioCutter = VideoCutterModel(videoUri,timeCut ,infoFile!!.fileSize, infoFile.fileName.toString())
 //                startActivity(Intent(this@ActivityAudioCutter, SavedActivity::class.java))
-                Log.d("check_audio_mmmm", "Cắt và ghép âm thanh thành công: $videoUri")
+                    Log.d("check_audio_mmmm", "Cắt và ghép âm thanh thành công: $videoUri")
+                } else {
+                    Log.d("check_audio_mmmm", "Ghép âm thanh thất bại. Mã lỗi: $mergeResult")
+                }
             } else {
-                Log.d("check_audio_mmmm", "Ghép âm thanh thất bại. Mã lỗi: $mergeResult")
+                Log.d("check_audio_mmmm", "Cắt âm thanh thất bại.")
             }
-        } else {
-            Log.d("check_audio_mmmm", "Cắt âm thanh thất bại.")
         }
+
     }
 
     fun cutAudio(inputFilePath: String, outputFilePath: String, startTime: String, endTime: String) {

@@ -100,7 +100,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     adapter.notifyDataSetChanged()
                 }
                 binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
-                binding.tvSize.text = "/ $countSize MB"
+                binding.tvSize.text = "/ $countSize KB"
             }
 
             override fun onClickPlayAudio(position: Int, holder: SelectAudioAdapter.ViewHolder) {
@@ -122,7 +122,6 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     if(mediaPlayer!= null){
                         mediaPlayer!!.start()
                     }
-
                 } else {
                     // Nếu item hiện tại đang phát, tạm dừng
                     holder.binding.imvPlayVideo.setImageResource(R.drawable.imv_play_audio)
@@ -145,7 +144,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                 dataItemChange()
                 holder.binding.edtStartTime.setText(countItemt.toString())
                 binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
-                binding.tvSize.text = "/ $countSize MB"
+                binding.tvSize.text = "/ $countSize KB"
                 adapter.notifyDataSetChanged()
             }
             @RequiresApi(Build.VERSION_CODES.N)
@@ -164,13 +163,10 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     countItemt = 1
                 }
                 binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
-                binding.tvSize.text = "/ $countSize MB"
+                binding.tvSize.text = "/ $countSize KB"
                 holder.binding.edtStartTime.setText(countItemt.toString())
             }
-
         })
-
-
     }
 
     private fun initActionAudioSpeed() {
@@ -200,7 +196,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     countSize -= listAudio[position].sizeInMB.toInt()
                 }
                 binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
-                binding.tvSize.text = "/ $countSize MB"
+                binding.tvSize.text = "/ $countSize KB"
             }
 
             override fun onClickPlayAudio(position: Int, holder: SelectAudioAdapter.ViewHolder) {
@@ -261,7 +257,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
                     countSize -= listAudio[position].sizeInMB.toInt()
                 }
                 binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
-                binding.tvSize.text = "/ $countSize MB"
+                binding.tvSize.text = "/ $countSize KB"
             }
 
             override fun onClickPlayAudio(position: Int, holder: SelectAudioAdapter.ViewHolder) {
@@ -320,7 +316,7 @@ class SelectAudioActivity : AbsBaseActivity<ActivitySelectAudioBinding>(false) {
             ContextCompat.getColor(this@SelectAudioActivity, R.color.color_1),
             ContextCompat.getColor(this@SelectAudioActivity, R.color.color_2)
         )
-        binding.tvSelected.text = "$countAudio Selected"
+        binding.tvSelected.text = "$countAudio ${getString(R.string.selected)}"
         binding.tvContinue.applyGradient(this@SelectAudioActivity,colors)
 
         if(listAudio.size == 0){

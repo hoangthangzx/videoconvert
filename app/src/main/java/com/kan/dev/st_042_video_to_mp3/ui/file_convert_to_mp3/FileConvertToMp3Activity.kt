@@ -175,7 +175,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
                 muxer.writeSampleData(trackIndex, buffer, info)
                 extractor.advance()
             }
-
             muxer.stop()
             muxer.release()
         }
@@ -185,7 +184,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
 
     fun playAudio(audioPath: String) {
         // Đường dẫn đến file M4A
-
         mediaPlayer = MediaPlayer()
         try {
             mediaPlayer.setDataSource(audioPath) // Đặt nguồn phát
@@ -524,14 +522,12 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         binding.tvTitle.text = getString(R.string.multifile_convert)
         binding.recFileConvert.visibility = View.VISIBLE
     }
-
     private fun initDataMulti() {
         adapter = FileConvertAdapter(this@FileConvertToMp3Activity)
         adapter.getData(listVideoPick)
         binding.recFileConvert.adapter = adapter
         Log.d("check_size_list", "initDataMulti: " + listVideoPick.size)
     }
-
     override fun onDestroy() {
         super.onDestroy()
         clearCache()
@@ -539,16 +535,13 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             exoPlayer?.release() // Giải phóng tài nguyên
         }
         job?.cancel()
-
     }
-
 //    override fun onStop() {
 //        super.onStop()
 ////        job?.cancel()
 ////        FFmpeg.cancel()
 //
 //    }
-
     override fun onPause() {
         super.onPause()
         if (exoPlayer?.isPlaying == true) {
@@ -556,7 +549,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             exoPlayer?.pause() // Giải phóng tài nguyên
         }
     }
-
     fun clearCache() {
         val cacheDir = cacheDir
         val files = cacheDir.listFiles()
@@ -566,8 +558,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             }
         }
     }
-
-
     fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
         var path: String? = null
         val proj = arrayOf(MediaStore.Video.Media.DATA)
@@ -580,13 +570,11 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         }
         return path
     }
-
     fun convertMbToBytes(sizeString: String): Long {
         val numericString = sizeString.replace(" MB", "").replace(",", ".").trim()
         val mbSize = numericString.toDouble()
-        return (mbSize * 1024 * 1024).toLong() // Nhân để chuyển đổi từ MB sang bytes
+        return (mbSize*1024).toLong() // Nhân để chuyển đổi từ MB sang bytes
     }
-
     @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
@@ -600,7 +588,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
             finish()
         }
     }
-
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
@@ -608,7 +595,6 @@ class FileConvertToMp3Activity : AbsBaseActivity<ActivityFileConvertToMp3Binding
         isConverting = false
         Log.d("check_list_videoPick", "onResume: " + listVideoPick)
     }
-
     fun startCoroutine() {
         listOutputPath.clear()
         listAudioSaved.clear()

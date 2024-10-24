@@ -66,151 +66,6 @@ object AudioUtils {
         }
     }
 
-//    suspend fun getAllAudiosFromSpecificDirectory_1(directoryPath: String) {
-//        withContext(Dispatchers.IO) { // Chạy trên background thread
-//            val directory = File(directoryPath)
-//            if (directory.exists() && directory.isDirectory) {
-//                val audioExtensions = listOf("mp3", "wav", "aac", "ogg", "flac", "ac3", "wma")
-//                directory.listFiles()?.forEachIndexed { index, file ->
-//                    if (file.isFile && audioExtensions.any { file.name.endsWith(it, ignoreCase = true) }) {
-//                        val audioUri = Uri.fromFile(file) // Tạo URI từ tệp
-//                        val duration = getAudioDuration(file) // Gọi hàm lấy thời gian
-//                        val sizeInMB = file.length() / 1024 // Kích thước tệp tính bằng MB
-//                        val name = file.name
-//                        val mimeType = file.extension
-//                        val date = formatDate(file.lastModified()) // Định dạng ngày
-//                        // Thêm vào danh sách sau khi xử lý xong
-//                        listAudioStorage.add(0,
-//                            AudioInfo(
-//                                audioUri, duration, sizeInMB, name, date,
-//                                false, mimeType, index, false
-//                            )
-//                        )
-//                    }
-//                }
-//            } else {
-//                Log.e("GetAudios", "Directory does not exist or is not a directory.")
-//            }
-//        }
-//    }
-//    var countPos = 0
-
-//
-//        fun getAllAudiosFromSpecificDirectory_1(directoryPath: String) {
-//        val directory = File(directoryPath)
-//        if (directory.exists() && directory.isDirectory) {
-//            val audioExtensions = listOf("mp3", "wav", "aac", "ogg", "flac","ac3","wma")
-//            directory.listFiles()?.forEachIndexed { index, file ->
-//                if (file.isFile && audioExtensions.any { file.name.endsWith(it, ignoreCase = true) }) {
-//                    val audioUri = Uri.fromFile(file) // Tạo URI từ tệp
-//                    val duration = getAudioDuration(file) // Gọi hàm lấy thời gian
-//                    val sizeInMB = file.length() / (1024 * 1024) // Kích thước tệp tính bằng MB
-//                    val name = file.name
-//                    val mimeType = file.extension
-//                    val date = formatDate(file.lastModified()) // Định dạng ngày
-//                    listAudioStorage.add(AudioInfo(audioUri, duration, sizeInMB, name, date, false,mimeType, index, false))
-//                }
-//            }
-//        } else {
-//            Log.e("GetAudios", "Directory does not exist or is not a directory.")
-//        }
-//    }
-//    suspend fun getAllAudiosFromSpecificDirectory_1(directoryPath: String): List<AudioInfo> {
-//        val audioList = mutableListOf<AudioInfo>() // Danh sách âm thanh sẽ được trả về
-//        val directory = File(directoryPath)
-//
-//        if (directory.exists() && directory.isDirectory) {
-//            val audioExtensions = listOf("mp3", "wav", "aac", "ogg", "flac", "ac3", "wma")
-//
-//            directory.listFiles()?.forEachIndexed { index, file ->
-//                if (file.isFile && audioExtensions.any {
-//                        file.name.endsWith(
-//                            it,
-//                            ignoreCase = true
-//                        )
-//                    }) {
-//                    val audioUri = Uri.fromFile(file) // Tạo URI từ tệp
-//                    val duration = getAudioDuration(file) // Gọi hàm lấy thời gian
-//                    val sizeInMB = file.length() / (1024 * 1024) // Kích thước tệp tính bằng MB
-//                    val name = file.name
-//                    val mimeType = file.extension
-//                    val date = formatDate(file.lastModified()) // Định dạng ngày
-//
-//                    audioList.add(
-//                        AudioInfo(
-//                            audioUri,
-//                            duration,
-//                            sizeInMB,
-//                            name,
-//                            date,
-//                            false,
-//                            mimeType,
-//                            index,
-//                            false
-//                        )
-//                    )
-//                }
-//            }
-//        } else {
-//            Log.e("GetAudios", "Directory does not exist or is not a directory.")
-//        }
-//        return audioList // Trả về danh sách âm thanh
-//    }
-
-    fun getAllAudiosFromSpecificDirectory(context: Context, directoryPath: String) {
-        val projection = arrayOf(
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.DISPLAY_NAME,
-            MediaStore.Audio.Media.DURATION,
-            MediaStore.Audio.Media.SIZE,
-            MediaStore.Audio.Media.DATE_MODIFIED,
-            MediaStore.Audio.Media.MIME_TYPE
-        )
-
-        val selection = "${MediaStore.Audio.Media.DATA} LIKE ?"
-        val selectionArgs = arrayOf("$directoryPath/%") // Tìm các tệp trong thư mục
-        Log.d("check_link", "getAllAudiosFromSpecificDirectory: " + selectionArgs)
-        val sortOrder = "${MediaStore.Audio.Media.DATE_MODIFIED} DESC"
-
-        val contentResolver = context.contentResolver
-        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-
-        contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)?.use { cursor ->
-            val idIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-            val nameIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
-            val durationIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
-            val sizeIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
-            val dateModifiedIndex =
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
-            val mimeTypeIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
-
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(idIndex)
-                val name = cursor.getString(nameIndex)
-                val duration = cursor.getLong(durationIndex)
-                val sizeInMB = cursor.getLong(sizeIndex) / 1024
-                val date = formatDateFromSeconds(cursor.getLong(dateModifiedIndex))
-                val mimeType = cursor.getString(mimeTypeIndex)
-                val audioUri =
-                    ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
-                listAudioStorage.add(
-                    AudioInfo(
-                        audioUri,
-                        formatMilliseconds(duration),
-                        sizeInMB,
-                        name,
-                        date,
-                        false,
-                        mimeType,
-                        countPos,
-                        false
-                    )
-                )
-                countPos += 1
-            }
-        }
-    }
-
     fun getAudioDuration(file: File): String {
         val retriever = MediaMetadataRetriever()
         var duration = "0:00"
@@ -299,36 +154,13 @@ object AudioUtils {
         }
     }
 
-    fun renameAudioFile(context: Context, audioUri: Uri, newNameWithExtension: String) {
-        // Tạo ContentValues với tên mới
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Video.Media.DISPLAY_NAME, newNameWithExtension)
-        }
-        // Sử dụng ContentResolver để cập nhật
-        context.contentResolver.update(audioUri, contentValues, null, null)?.let { rowsUpdated ->
-            if (rowsUpdated > 0) {
-                Log.d("RenameVideo", "Video renamed successfully to $newNameWithExtension")
-            } else {
-                Log.e("RenameVideo", "Failed to rename video")
-            }
-        }
-    }
-
-
     private fun formatTimeToHoursMinutes(duration: Long): String {
         val minutes = (duration / 1000) / 60
         val seconds = (duration / 1000) % 60
         return String.format("%02d:%02d", minutes, seconds)
     }
-//
-//    private fun formatDate(timestamp: Long): String {
-//        val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-//        val date = Date(timestamp)
-//        return sdf.format(date)
-//    }
 
     fun formatDateFromSeconds(seconds: Long): String {
-        // Chuyển từ giây sang milliseconds
         val timeInMillis = seconds * 1000
         val sdf = SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH)
         val date = Date(timeInMillis)
