@@ -90,14 +90,15 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 initRecConvert()
                 initActionAudioConvert()
             }
-        }else if(selectType.equals("VideoCutter")){
-            initViewCutter()
-            initActionCutter()
-        }else if(selectType.equals("VideoCutterToMp3")){
-            initViewFile()
-            initData()
-            initActionCuttertoMp3()
         }
+//        else if(selectType.equals("VideoCutter")){
+//            initViewCutter()
+//            initActionCutter()
+//        }else if(selectType.equals("VideoCutterToMp3")){
+//            initViewFile()
+//            initData()
+//            initActionCuttertoMp3()
+//        }
         if(selectTypeAudio.equals("AudioSpeed")){
             initAudioSpeed()
             initData()
@@ -111,10 +112,12 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 initRecConvert()
                 initActionAudioConvert()
             }
-        }else if(selectType.equals("VideoConvert")){
-            initViewConveter()
-            initActionCoberter()
-        }else if(selectTypeAudio.equals("AudioMerger") ){
+        }
+//        else if(selectType.equals("VideoConvert")){
+//            initViewConveter()
+//            initActionCoberter()
+//        }
+        else if(selectTypeAudio.equals("AudioMerger") ){
             initViewAudiMerger()
             initData()
             initActionFile()
@@ -293,15 +296,12 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             )
             uriList.add(uri) // Chuyển đổi chuỗi thành Uri
         }
-        // Tạo Intent để chia sẻ danh sách Uri
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND_MULTIPLE // Chia sẻ nhiều tệp
             putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList) // Gửi danh sách Uri
             type = "audio/*" // Định dạng loại tệp
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Cấp quyền đọc cho các ứng dụng nhận
         }
-
-        // Bắt đầu Intent chia sẻ
         context.startActivity(Intent.createChooser(shareIntent, "Share Audio Files"))
     }
 
@@ -313,7 +313,7 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 "${this.packageName}.provider",  // Package của ứng dụng bạn
                 File(audio.uri.toString())
             )
-            uriList.add(uri) // Chuyển đổi chuỗi thành Uri
+            uriList.add(uri)
         }
 
         val shareIntent = Intent().apply {
@@ -322,8 +322,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             type = "audio/*" // Định dạng loại tệp
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Cấp quyền đọc cho các ứng dụng nhận
         }
-
-        // Bắt đầu Intent chia sẻ
         context.startActivity(Intent.createChooser(shareIntent, "Share Audio Files"))
     }
 
@@ -359,7 +357,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         }
         dialog.show()
     }
-
     @RequiresApi(Build.VERSION_CODES.M)
     private fun handleWriteSettingsPermission(type: Int) {
         val permission: Boolean = Settings.System.canWrite(this)
@@ -369,24 +366,20 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             openAndroidPermissionsMenu()
         }
     }
-
     private fun openAndroidPermissionsMenu() {
         val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
         intent.setData(Uri.parse("package:" + this.packageName))
         startActivity(intent)
     }
-
     private fun setRingtone(type: Int) {
         val customRingtoneUri = Uri.parse(uriAll.toString())
         when (type) {
             0       -> {
                 RingtoneManager.setActualDefaultRingtoneUri(this, RingtoneManager.TYPE_RINGTONE, customRingtoneUri)
             }
-
             1 -> {
                 RingtoneManager.setActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION, customRingtoneUri)
             }
-
             2-> {
                 RingtoneManager.setActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM, customRingtoneUri)
             }
@@ -394,7 +387,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         }
         Toast.makeText(this@SavedActivity, R.string.set_ringtone_successfully, Toast.LENGTH_SHORT).show()
     }
-
     private fun initRec() {
         binding.recVideo.visibility = View.VISIBLE
         adapterSaved = AdapterSaved(this)
@@ -408,7 +400,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 audioInformation = listAudioMerger[position]
                 startActivity(Intent(this@SavedActivity,PlaySongActivity::class.java))
             }
-
         })
     }
 
@@ -424,8 +415,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             Log.d("chejkckfkjefke", "initActionSpeed: "+ uriAll  + " ___ " + uriPlay)
             uriAll?.let { shareMp3File(this@SavedActivity, it) }
         }
-
-
         binding.lnRingtone.onSingleClick {
             showDialogRingtone()
         }
@@ -456,7 +445,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)  // Cấp quyền đọc URI cho ứng dụng chia sẻ
         }
-
         context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ tệp MP3"))
     }
 
@@ -471,17 +459,14 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 type = "audio/mpeg" // Định nghĩa loại tệp
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Cấp quyền đọc
             }
-
             context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ MP3"))
         } else {
             Log.e("ShareError", "File does not exist: ${file.absolutePath}")
             Toast.makeText(context, "Tệp không tồn tại", Toast.LENGTH_SHORT).show()
         }
     }
-
     private fun initData() {
-        if(listVideoPick.size == 1 && selectType.equals("Video")){
-//            uriAll = videoConvert!!.uri
+        if(listVideoPick.size == 1 && selectTypeAudio.equals("Video")){
             uriAll = listAudioSaved[0].uri
         } else if (selectTypeAudio.equals("AudioSpeed")){
             uriAll = audioInfo!!.uri
@@ -507,7 +492,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
                 handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
             }
         })
-
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             @SuppressLint("DefaultLocale")
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

@@ -80,7 +80,6 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         binding.loadingOverlay.setOnTouchListener { _, _ ->
             true
         }
-
         adapter.onClickListener(object : AudioConverterAdapter.onClickItemListener {
             @SuppressLint("NotifyDataSetChanged")
             override fun onItemClick(position: Int) {
@@ -103,11 +102,9 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
         binding.imvBack.onSingleClick {
             finish()
         }
-
         binding.tvCancel.onSingleClick {
             finish()
         }
-
         imvItems.forEachIndexed { index, imvItem ->
             imvItem.onSingleClick {
                 checkItem = true
@@ -124,9 +121,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
                     5 -> audioType = "wma"
                     6 -> audioType = "ac3"
                 }
-
                 Log.d("check_style", "initAction: " + audioType)
-
             }
         }
         binding.tvDone.onSingleClick {
@@ -153,8 +148,6 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
             }
         }
     }
-
-    //    var resultCodex: Long? = null;
     fun convertAudio(inputPath: String, outputPath: String, format: String) {
         val command = "-i \"$inputPath\" -vn -ar 44100 -ac 2 -b:a 192k \"$outputPath\""
         Log.d("check_mp3", "Chuyển đổi : $command")
