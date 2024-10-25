@@ -144,14 +144,6 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
                 if (!isActive) return@withContext false
                 convertedFiles.forEach { out.println("file '$it'") }
             }
-//            val commandMerge = "-f concat -safe 0 -i \"$fileListPath\" -c copy \"$outputPath\""
-//
-//            val commandMerge = "-f concat -safe 0 -i \"$fileListPath\" -c:a libmp3lame \"$outputPath\""
-//
-//            val filterComplex =
-//                convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
-//            val commandMerge =
-//                convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
             val filterComplex = convertedFiles.indices.joinToString(" ") { "[$it:a]" } + "concat=n=${convertedFiles.size}:v=0:a=1[outa]"
             val commandMerge = convertedFiles.joinToString(" ") { "-i \"$it\"" } + " -filter_complex \"$filterComplex\" -map \"[outa]\" \"$outputPath\""
             val rcMerge = FFmpeg.execute(commandMerge)
@@ -167,9 +159,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
                     Uri.fromFile(path),
                     audioInfoConverter!!.duration.toString(),
                     audioInfoConverter.fileSize,
-                    audioInfoConverter.fileName.toString()
-                )// Copy file sang external storage
-//                    cacheFile.delete() // Xóa file cache sau khi di chuyển thành công
+                    audioInfoConverter.fileName.toString())
                 Log.d("check_merger", "Gộp âm thanh thành công.")
                 selectTypeAudio = "AudioMerger"
                 true
@@ -452,15 +442,7 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
         }
     }
     private fun playVideo() {
-//        runOnUiThread(object : Runnable {
-//            override fun run() {
-//                    if(mediaPlayer!=null){
-//                        val currentPosition = mediaPlayer.currentPosition
-//                        binding.seekBarAudio.progress = currentPosition
-//                    }
-//                handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
-//            }
-//        })
+
         binding.tvDuration.text = "/ ${formatTimeToHoursMinutes(mediaPlayer!!.duration)}"
         mediaPlayer!!.setOnCompletionListener {
             binding.tvTimeStart.text = formatTimeToHoursMinutes(mediaPlayer!!.duration)

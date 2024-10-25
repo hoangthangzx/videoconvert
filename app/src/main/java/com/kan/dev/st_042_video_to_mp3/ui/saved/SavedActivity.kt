@@ -448,23 +448,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
         context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ tệp MP3"))
     }
 
-    fun shareMp3File_1(context: Context, fileName: String) {
-        val file = File(context.cacheDir, fileName) // Tạo đối tượng File
-        if (file.exists()) {
-            val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_STREAM, uri)
-                type = "audio/mpeg" // Định nghĩa loại tệp
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Cấp quyền đọc
-            }
-            context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ MP3"))
-        } else {
-            Log.e("ShareError", "File does not exist: ${file.absolutePath}")
-            Toast.makeText(context, "Tệp không tồn tại", Toast.LENGTH_SHORT).show()
-        }
-    }
     private fun initData() {
         if(listVideoPick.size == 1 && selectTypeAudio.equals("Video")){
             uriAll = listAudioSaved[0].uri
@@ -630,7 +613,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
             }
         }
     }
-    // Hàm tua tới audio
     private fun forwardAudio(milliseconds: Int) {
         mediaPlayer?.let {
             val newPosition = it.currentPosition + milliseconds
@@ -676,12 +658,6 @@ class SavedActivity: AbsBaseActivity<ActivitySaveTheConvertedVideoFileBinding>(f
 
     override fun onDestroy() {
         super.onDestroy()
-//        if (mediaPlayer!=null){
-//            binding.imvPause.visibility = View.GONE
-//            binding.imvPlay.visibility = View.VISIBLE
-//            mediaPlayer!!.seekTo(0)
-//            mediaPlayer!!.release()
-//        }
         handler.removeCallbacksAndMessages(null) // Dừng Handler
     }
     override fun onResume() {

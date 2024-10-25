@@ -71,7 +71,6 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
         )
         binding.tvDone.applyGradient(this@ActivityAudioCutter,colors)
     }
-
     @SuppressLint("ClickableViewAccessibility")
     private fun initAction() {
         binding.loadingOverlay.setOnTouchListener { _, _ ->
@@ -91,16 +90,13 @@ class ActivityAudioCutter : AbsBaseActivity<ActivityAudioCutterBinding>(false) {
                     binding.tvTimeStart.text = "${elapsedTime}"
                 }
             }
-
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 handler.removeCallbacksAndMessages(null)
             }
-
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 updateTimeAndSeekBar()
             }
         })
-
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {

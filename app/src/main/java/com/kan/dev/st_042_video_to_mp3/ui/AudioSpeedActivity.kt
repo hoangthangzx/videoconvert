@@ -353,15 +353,6 @@ class AudioSpeedActivity : AbsBaseActivity<ActivityAudioSpeedBinding>(false) {
 
         binding.imvPause.visibility = View.VISIBLE
         binding.imvPlay.visibility = View.GONE
-//                                runOnUiThread(object : Runnable {
-//                                    override fun run() {
-//                                        if(mediaPlayer != null ){
-//                                            val currentPosition = mediaPlayer!!.currentPosition
-//                                            binding.seekBarAudio.progress = currentPosition
-//                                        }
-//                                        handler.postDelayed(this, 100) // Cập nhật SeekBar mỗi giây
-//                                    }
-//                                })
         binding.tvDuration.text = "/ ${binding.tvNewDuration.text}"
         mediaPlayer!!.setOnCompletionListener {
             binding.tvTimeStart.text =
