@@ -223,7 +223,6 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
                             Log.d("check_pickckck", "onItemClick: okeeee")
                             listAudio[pos].active = false
                         }
-
                     }
                     listAudioPickMerger.removeAt(position)
                     if (listAudioPickMerger.size > 1) {
@@ -233,7 +232,6 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
                     adapter.notifyDataSetChanged()
                 }
             }
-
             override fun onClickPlay(position: Int, holder: MergerAudioAdapter.ViewHolder) {
                 binding.seekBarAudio.isEnabled = false
                 adapter.notifyDataSetChanged()
@@ -272,7 +270,6 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
                     if (mediaPlayer_1 != null) {
                         mediaPlayer_1!!.start()
                     }
-
                 } else {
                     // Nếu item hiện tại đang phát, tạm dừng
                     if (position % 5 == 0) {
@@ -442,7 +439,6 @@ class MergerAudioActivity : AbsBaseActivity<ActivityAudioMergerBinding>(false) {
         }
     }
     private fun playVideo() {
-
         binding.tvDuration.text = "/ ${formatTimeToHoursMinutes(mediaPlayer!!.duration)}"
         mediaPlayer!!.setOnCompletionListener {
             binding.tvTimeStart.text = formatTimeToHoursMinutes(mediaPlayer!!.duration)

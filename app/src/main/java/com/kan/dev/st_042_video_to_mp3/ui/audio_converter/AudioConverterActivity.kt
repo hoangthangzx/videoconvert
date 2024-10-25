@@ -244,40 +244,7 @@ class AudioConverterActivity : AbsBaseActivity<ActivityAudioConverterBinding>(fa
                 "check_iust_out_put_path",
                 "convertAudio: " + listOutputPath + listOutputPath.size + "  " + listAudioPick.size
             )
-//            if (listOutputPath.size == listAudioPick.size) {
-//                listOutputPath.forEachIndexed { index, cacheFile ->
-//                    Log.d(
-//                        "check_iust_out_put_path",
-//                        "convertAudio: " + index + "  ____  " + cacheFile
-//                    )
-//                    val timestamp = System.currentTimeMillis()
-//                    val musicDir = File(Environment.getExternalStorageDirectory(), "Music/music")
-//                    val path = File("${musicDir.absolutePath}/${timestamp}_convert_$index.mp3")
-//                    cacheFile.copyTo(path, overwrite = true)
-//                    var audioInfoConverter = FileInfo.getFileInfoFromPath(cacheFile.toString())
-//                    audioInformation = AudioInfo(
-//                        Uri.parse(outputPath),
-//                        audioInfoConverter!!.duration.toString(),
-//                        convertMbToBytes(
-//                            audioInfoConverter.fileSize.toString()
-//                        ),
-//                        audioInfoConverter.fileName,
-//                        getFormattedDate(),
-//                        false,
-//                        "mp3",
-//                        0,
-//                        false
-//                    )
-//                    listAudioMerger.add(audioInformation!!)
-//                    audioInfo = AudioSpeedModel(
-//                        Uri.parse(outputPath),
-//                        audioInfoConverter!!.duration.toString(),
-//                        audioInfoConverter.fileSize,
-//                        audioInfoConverter.fileName.toString()
-//                    )
-//                    listAudioSaved.add(audioInfo!!)
-//                }
-//            }
+
             if (listOutputPath.size == listAudioPick.size) {
                 listOutputPath.forEachIndexed { index, cacheFile ->
                     Log.d(
